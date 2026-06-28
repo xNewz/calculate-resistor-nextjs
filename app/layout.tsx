@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Kanit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const kanit = Kanit({
+  variable: "--font-kanit",
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["thai", "latin"],
 });
 
 const geistMono = Geist_Mono({
@@ -13,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Calculate Resistor",
-  description: "Calculate Resistor by Pargorn Ruasijan",
+  title: "เครื่องคำนวณรหัสสีตัวต้านทาน | Resistor Color Code Calculator",
+  description: "คำนวณค่าความต้านทานและค่าความคลาดเคลื่อนจากรหัสสีตัวต้านทานแบบ 4 แถบสี และ 5 แถบสี ด้วยระบบที่สวยงามและใช้งานง่าย",
 };
 
 export default function RootLayout({
@@ -23,9 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${kanit.variable} ${geistMono.variable} font-sans antialiased`}
       >
         {children}
       </body>

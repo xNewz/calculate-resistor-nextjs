@@ -1,23 +1,8 @@
 "use client";
 import React from "react";
-import { type Digit, type Multiplier, type Tolerance } from "@/lib/resistor";
+import { COLOR_MAP } from "@/lib/resistor";
 
-const COLOR_TO_CSS: Record<string, string> = {
-  black: "#000000",
-  brown: "#7B3F00",
-  red: "#D32F2F",
-  orange: "#EF6C00",
-  yellow: "#F9A825",
-  green: "#2E7D32",
-  blue: "#1565C0",
-  purple: "#6A1B9A",
-  gray: "#9E9E9E",
-  white: "#F5F5F5",
-  gold: "#D4AF37",
-  silver: "#BDBDBD",
-};
-
-function getBandStyle(color: keyof typeof COLOR_TO_CSS): React.CSSProperties {
+function getBandStyle(color: string): React.CSSProperties {
   const base: React.CSSProperties = {
     width: "4.2%",
     height: "82%",
@@ -40,9 +25,11 @@ function getBandStyle(color: keyof typeof COLOR_TO_CSS): React.CSSProperties {
     };
   }
 
+  const hex = COLOR_MAP[color]?.hex || "#000000";
+
   const style: React.CSSProperties = {
     ...base,
-    backgroundColor: COLOR_TO_CSS[color],
+    backgroundColor: hex,
   };
   if (color === "white" || color === "yellow") {
     style.boxShadow = "inset 0 0 0 1px rgba(0,0,0,0.15)";
@@ -50,25 +37,38 @@ function getBandStyle(color: keyof typeof COLOR_TO_CSS): React.CSSProperties {
   return style;
 }
 
-export default function ResistorPreview({
-  first, second, third, fourth,
-}: {
-  first: Digit; second: Digit; third: Multiplier; fourth: Tolerance;
-}) {
+export default function ResistorPreview({ colors }: { colors: string[] }) {
+  const is5Band = colors.length === 5;
+  const positions = is5Band
+    ? ["34%", "40.5%", "47%", "53.5%", "62%"]
+    : ["34%", "42%", "50%", "62%"];
+
+  const bgImage = is5Band ? "/5band.png" : "/4band.png";
+
   return (
-    <div className="relative mx-auto w-full max-w-[900px] select-none">
+    <div className="relative mx-auto w-full max-w-[800px] select-none">
       <div
-        className="relative w-full overflow-hidden rounded-xl"
+        className="relative w-full overflow-hidden rounded-2xl bg-zinc-900/50 backdrop-blur-sm p-4 border border-zinc-800 shadow-2xl transition-all duration-300"
         style={{ aspectRatio: "800/180" }}
       >
         <div
-          className="absolute inset-0 bg-center bg-no-repeat"
-          style={{ backgroundImage: "url(/4band.png)", backgroundSize: "contain" }}
+          className="absolute inset-0 bg-center bg-no-repeat transition-all duration-500"
+          style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "contain" }}
         />
-        <div className="absolute left-[34%] top-[9%]" style={getBandStyle(first)} />
-        <div className="absolute left-[42%] top-[9%]" style={getBandStyle(second)} />
-        <div className="absolute left-[50%] top-[9%]" style={getBandStyle(third)} />
-        <div className="absolute left-[62%] top-[9%]" style={getBandStyle(fourth)} />
+        {colors.map((color, index) => {
+          const leftPos = positions[index];
+          if (!leftPos) return null;
+          return (
+            <div
+              key={index}
+              className="absolute top-[9%] transition-all duration-500 shadow-md"
+              style={{
+                ...getBandStyle(color),
+                left: leftPos,
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );
