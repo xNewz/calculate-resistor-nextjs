@@ -140,7 +140,7 @@ export default function HomePage() {
                 ซึ่งแต่ละสีแทนตัวเลขตามมาตรฐาน — ทักษะการอ่านค่าเหล่านี้จำเป็นอย่างยิ่งในงานอิเล็กทรอนิกส์
               </p>
               <div className="space-y-2">
-                {["แถบ 4 สี: ตัวเลข × ตัวเลข × คูณ × ค่าเผื่อ", "แถบ 5 สี: ตัวเลข × ตัวเลข × ตัวเลข × คูณ × ค่าเผื่อ"].map((t) => (
+                {["แถบ 4 สี: ตัวเลข × ตัวเลข × คูณ × ค่าความผิดพลาด", "แถบ 5 สี: ตัวเลข × ตัวเลข × ตัวเลข × คูณ × ค่าความผิดพลาด"].map((t) => (
                   <div key={t} className="flex items-start gap-2 text-sm text-zinc-300">
                     <CheckCircle2 className="size-4 text-indigo-400 shrink-0 mt-0.5" />
                     <span>{t}</span>

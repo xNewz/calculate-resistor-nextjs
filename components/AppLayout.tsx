@@ -145,6 +145,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const dashboardNavItems = [
     ...(user ? [{
+      href: "/learn",
+      label: "บทเรียน",
+      icon: BookOpen,
+      description: "สื่อการสอนการอ่านรหัสสีตัวต้านทาน"
+    }] : []),
+    ...(user ? [{
       href: "/quiz",
       label: "เกมตอบคำถาม (Quiz)",
       icon: Award,
