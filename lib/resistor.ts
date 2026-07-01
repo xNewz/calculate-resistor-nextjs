@@ -25,11 +25,11 @@ export const MULTIPLIER_MAP: Record<string, number> = {
 };
 
 export const TOLERANCE_MAP: Record<string, number> = {
-  brown: 1,
-  red: 2,
-  green: 0.5,
-  blue: 0.25,
-  purple: 0.1,
+  // brown: 1,
+  // red: 2,
+  // green: 0.5,
+  // blue: 0.25,
+  // purple: 0.1,
   gold: 5,
   silver: 10,
 };
@@ -78,11 +78,11 @@ export const multipliers = [
 ] as const;
 
 export const tolerances = [
-  "brown",
-  "red",
-  "green",
-  "blue",
-  "purple",
+  // "brown",
+  // "red",
+  // "green",
+  // "blue",
+  // "purple",
   "gold",
   "silver",
 ] as const;

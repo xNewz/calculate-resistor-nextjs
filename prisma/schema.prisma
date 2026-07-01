@@ -1,0 +1,75 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  LEARNER
+  TEACHER
+}
+
+model User {
+  id                String       @id @default(uuid())
+  email             String       @unique
+  password          String
+  name              String
+  role              Role         @default(LEARNER)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  classroomsCreated Classroom[]  @relation("TeacherClassrooms")
+  enrollments       Enrollment[]
+  submissions       Submission[]
+}
+
+model Classroom {
+  id          String       @id @default(uuid())
+  code        String       @unique // unique invite code (e.g. 6 chars uppercase)
+  name        String
+  description String?      @db.Text
+  teacherId   String
+  teacher     User         @relation("TeacherClassrooms", fields: [teacherId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  enrollments Enrollment[]
+  assignments Assignment[]
+}
+
+model Enrollment {
+  id          String    @id @default(uuid())
+  userId      String
+  classroomId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, classroomId])
+}
+
+model Assignment {
+  id            String       @id @default(uuid())
+  title         String
+  description   String?      @db.Text
+  bandType      String       // "4" or "5"
+  questionCount Int
+  classroomId   String
+  classroom     Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  submissions   Submission[]
+}
+
+model Submission {
+  id           String     @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  score        Int
+  answers      Json       // Store details of each question and student answer
+  createdAt    DateTime   @default(now())
+  completedAt  DateTime   @default(now())
+}

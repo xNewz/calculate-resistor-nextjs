@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   description: "คำนวณค่าความต้านทานและค่าความคลาดเคลื่อนจากรหัสสีตัวต้านทานแบบ 4 แถบสี และ 5 แถบสี ด้วยระบบที่สวยงามและใช้งานง่าย",
 };
 
-import Navbar from "@/components/Navbar";
+import AppLayout from "@/components/AppLayout";
 
 export default function RootLayout({
   children,
@@ -35,8 +35,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${kanit.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <Navbar />
-        {children}
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   );

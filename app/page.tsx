@@ -173,7 +173,7 @@ export default function Page() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-4xl space-y-8">
           {/* Calculator Card */}
           <Card className="bg-zinc-900/60 backdrop-blur-md border-zinc-850 shadow-2xl overflow-visible rounded-2xl">
@@ -181,7 +181,7 @@ export default function Page() {
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                   <CardTitle className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                    <Calculator className="size-5 text-amber-400" />
+                    <Calculator className="size-5 text-indigo-400" />
                     <span>ตัวคำนวณค่าตัวต้านทาน</span>
                   </CardTitle>
                   <CardDescription className="text-zinc-400">เลือกประเภทแถบสีและกำหนดแถบสีที่ต้องการคำนวณ</CardDescription>
@@ -194,7 +194,7 @@ export default function Page() {
                     size="sm"
                     className="gap-1.5 cursor-pointer border-zinc-850 bg-zinc-900/50 hover:bg-zinc-900 hover:text-zinc-100 h-9 px-3 rounded-lg text-xs"
                   >
-                    <Sparkles className="size-4 text-amber-400 animate-pulse" />
+                    <Sparkles className="size-4 text-indigo-400 animate-pulse" />
                     <span className="font-semibold">สุ่มแถบสี</span>
                   </Button>
 
@@ -294,12 +294,12 @@ export default function Page() {
                 <div className="text-center md:text-left space-y-2">
                   <div className="flex items-center justify-center md:justify-start gap-2">
                     <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">ค่าความต้านทานรวม</span>
-                    <Badge variant="outline" className="border-amber-400/30 bg-amber-400/10 text-amber-400 text-[10px] py-0.5 px-2">
+                    <Badge variant="outline" className="border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-[10px] py-0.5 px-2">
                       {bandType === "4" ? "4-Band" : "5-Band"}
                     </Badge>
                   </div>
                   <div className="flex items-baseline gap-2 justify-center md:justify-start">
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 font-heading">
+                    <h2 className="text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-300 font-heading">
                       {result.formatted}
                     </h2>
                     <span className="text-xl md:text-2xl font-bold text-zinc-400">
@@ -339,8 +339,8 @@ export default function Page() {
                     <span className="font-semibold text-zinc-300">{formatValue(result.maxResistance)}</span>
                   </div>
                   <div className="col-span-2">
-                    <span className="text-zinc-500 block text-xs">ช่วงค่าความต้านทานที่ยอมรับได้</span>
-                    <span className="font-mono text-xs text-amber-500/90 font-medium">{result.formattedRange}</span>
+                    <span className="text-zinc-550 block text-xs">ช่วงค่าความต้านทานที่ยอมรับได้</span>
+                    <span className="font-mono text-xs text-indigo-400/90 font-medium">{result.formattedRange}</span>
                   </div>
                 </div>
               </div>
@@ -352,7 +352,7 @@ export default function Page() {
           <Card className="bg-zinc-900/40 border-zinc-850 shadow-xl rounded-2xl">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-2">
-                <Table className="size-5 text-amber-400/80" />
+                <Table className="size-5 text-indigo-400/80" />
                 <CardTitle className="text-lg font-bold text-zinc-100 flex items-center gap-1.5">
                   <Table className="size-4.5" />
                   <span>ตารางอ้างอิงรหัสสีตัวต้านทาน</span>
@@ -365,7 +365,7 @@ export default function Page() {
             <CardContent>
               <Accordion className="border-t border-zinc-800">
                 <AccordionItem value="color-table" className="border-zinc-800">
-                  <AccordionTrigger className="text-zinc-200 text-sm font-semibold hover:text-amber-400 hover:no-underline py-3 cursor-pointer">
+                  <AccordionTrigger className="text-zinc-200 text-sm font-semibold hover:text-indigo-400 hover:no-underline py-3 cursor-pointer">
                     แสดงตารางค่าสีทั้งหมด
                   </AccordionTrigger>
                   <AccordionContent className="pt-2">
@@ -411,7 +411,7 @@ export default function Page() {
                                 </td>
                                 <td className="p-3 text-center font-mono text-zinc-400">
                                   {isTol ? (
-                                    <Badge variant="outline" className="font-mono border-amber-500/20 bg-amber-500/5 text-amber-400 px-1.5 h-4.5 rounded text-[10px]">
+                                    <Badge variant="outline" className="font-mono border-indigo-500/20 bg-indigo-500/5 text-indigo-400 px-1.5 h-4.5 rounded text-[10px]">
                                       ±{TOLERANCE_MAP[key]}%
                                     </Badge>
                                   ) : "-"}
