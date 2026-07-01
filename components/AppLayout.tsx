@@ -135,12 +135,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const mainNavItems = [
-    {
-      href: "/",
-      label: "เครื่องคำนวณ",
-      icon: Calculator,
-      description: "ตัวคำนวณแถบสีตัวต้านทาน"
-    },
+    // {
+    //   href: "/",
+    //   label: "เครื่องคำนวณ",
+    //   icon: Calculator,
+    //   description: "ตัวคำนวณแถบสีตัวต้านทาน"
+    // },
     {
       href: "/quiz",
       label: "เกมตอบคำถาม (Quiz)",

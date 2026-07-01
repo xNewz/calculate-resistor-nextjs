@@ -28,8 +28,10 @@ import {
   Clock,
   Settings,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  BarChart
 } from "lucide-react";
+import { StudentStatsModal } from "@/components/StudentStatsModal";
 
 interface ClassroomDetailProps {
   user: {
@@ -72,6 +74,8 @@ export default function ClassroomDetail({
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [selectedStatsStudent, setSelectedStatsStudent] = useState<{ id: string; name: string } | null>(null);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [editName, setEditName] = useState(classroom.name);
@@ -477,8 +481,24 @@ export default function ClassroomDetail({
                         {enrollments.map((enr) => (
                           <tr key={enr.id} className="hover:bg-zinc-900/10">
                             <td className="p-3.5 pl-5">
-                              <div className="font-semibold text-zinc-200">{enr.user.name}</div>
-                              <div className="text-[10px] text-zinc-500">{enr.user.email}</div>
+                              <div className="flex items-center gap-2">
+                                <div>
+                                  <div className="font-semibold text-zinc-200">{enr.user.name}</div>
+                                  <div className="text-[10px] text-zinc-500">{enr.user.email}</div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="size-6 rounded-full text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 ml-auto cursor-pointer"
+                                  title="ดูสถิติการเรียน"
+                                  onClick={() => {
+                                    setSelectedStatsStudent({ id: enr.userId, name: enr.user.name });
+                                    setShowStatsModal(true);
+                                  }}
+                                >
+                                  <BarChart className="size-3.5" />
+                                </Button>
+                              </div>
                             </td>
                             {assignments.map((asg) => {
                               const sub = getStudentSubmission(asg.id, enr.userId);
@@ -887,6 +907,20 @@ export default function ClassroomDetail({
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {/* Student Stats Modal */}
+        {selectedStatsStudent && (
+          <StudentStatsModal
+            isOpen={showStatsModal}
+            onClose={() => {
+              setShowStatsModal(false);
+              setTimeout(() => setSelectedStatsStudent(null), 200);
+            }}
+            studentName={selectedStatsStudent.name}
+            assignments={assignments}
+            submissions={submissions.filter(s => s.userId === selectedStatsStudent.id)}
+          />
         )}
 
       </div>
