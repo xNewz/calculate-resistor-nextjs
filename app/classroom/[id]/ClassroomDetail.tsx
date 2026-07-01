@@ -325,7 +325,7 @@ export default function ClassroomDetail({
                               {assignment.title}
                             </h3>
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
-                              {assignment.bandType}-Band
+                              {assignment.bandType} แถบสี
                             </Badge>
                             <Badge variant="secondary" className="bg-zinc-950 text-zinc-400 text-[10px] py-0 px-2 h-5 rounded-full">
                               โจทย์ {assignment.questionCount} ข้อ
