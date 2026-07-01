@@ -665,7 +665,7 @@ export default function ClassroomDetail({
                       <Label htmlFor="allowLate" className="text-xs font-bold text-zinc-300 cursor-pointer">อนุญาตให้ส่งช้ากว่ากำหนด (Late Submission)</Label>
                       <span className="text-[9px] text-zinc-550 block">เปิดการใช้งานเพื่อให้ผู้เรียนเข้าทำแบบทดสอบล่าช้ากว่าที่กำหนดส่งได้</span>
                     </div>
-                    <div className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <label htmlFor="allowLate" className="relative inline-flex items-center cursor-pointer shrink-0">
                       <input
                         type="checkbox"
                         id="allowLate"
@@ -675,7 +675,7 @@ export default function ClassroomDetail({
                         className="sr-only peer"
                       />
                       <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary peer-checked:after:bg-primary-foreground peer-checked:after:border-primary-foreground"></div>
-                    </div>
+                    </label>
                   </div>
 
                   <div className="flex gap-2 justify-end pt-2">
