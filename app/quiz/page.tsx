@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+
+import { useState, useEffect, useCallback, useRef } from "react";
 import ResistorPreview from "@/components/ResistorPreview";
 import {
   digits,
@@ -24,8 +25,26 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Award, Trophy, HelpCircle, CheckCircle2, XCircle, ArrowRight, Eye } from "lucide-react";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Award,
+  Trophy,
+  HelpCircle,
+  XCircle,
+  Timer,
+  Clock,
+  RotateCcw,
+  Home,
+  Check,
+  ArrowRight,
+} from "lucide-react";
+import Link from "next/link";
 
 interface Question {
   bands: 4 | 5;
@@ -33,6 +52,13 @@ interface Question {
   resistance: number;
   formatted: string;
   tolerance: number;
+}
+
+interface UserAttempt {
+  question: Question;
+  userAnswer: string;
+  isCorrect: boolean;
+  isTimeout: boolean;
 }
 
 function formatMultiplierValue(value: number): string {
@@ -77,10 +103,7 @@ const generateQuestion = (): Question => {
 };
 
 function parseTextAnswer(input: string): number | null {
-  // Strip spacing, common units and Ω / ohm
   const clean = input.trim().toLowerCase().replace(/[\sΩohmωโอห์ม]/g, "");
-
-  // Regex to match number and optional unit
   const match = clean.match(/^([0-9.]+)(k|m|g)?$/);
   if (!match) return null;
 
@@ -95,93 +118,126 @@ function parseTextAnswer(input: string): number | null {
 }
 
 export default function QuizPage() {
-  const [question, setQuestion] = useState<Question | null>(null);
+  const [gameState, setGameState] = useState<"idle" | "playing" | "ended">("idle");
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
-  const [feedback, setFeedback] = useState<{
-    type: "success" | "error" | "warning" | null;
-    message: string;
-  }>({ type: null, message: "" });
+  const [attempts, setAttempts] = useState<UserAttempt[]>([]);
+  const [timeLeft, setTimeLeft] = useState(30);
 
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
-  const [hasChecked, setHasChecked] = useState(false);
 
-  // Load highscore from localStorage on mount
+  const inputRef = useRef<HTMLInputElement>(null);
+  const processingRef = useRef(false);
+
+  // Load highscore from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("resistor_quiz_highscore");
+    const saved = localStorage.getItem("resistor_quiz_highscore_v2");
     if (saved) {
       setHighScore(parseInt(saved, 10));
     }
-    // Generate first question
-    setQuestion(generateQuestion());
   }, []);
 
-  const handleNext = useCallback(() => {
-    setQuestion(generateQuestion());
-    setUserAnswer("");
-    setFeedback({ type: null, message: "" });
-    setIsAnswerRevealed(false);
-    setHasChecked(false);
-  }, []);
-
-  const handleCheck = () => {
-    if (!question || !userAnswer.trim()) {
-      setFeedback({ type: "warning", message: "กรุณากรอกคำตอบก่อนตรวจคำตอบครับ" });
-      return;
+  // Autofocus input when index changes
+  useEffect(() => {
+    if (gameState === "playing" && inputRef.current) {
+      inputRef.current.focus();
     }
+  }, [gameState, currentIndex]);
 
-    const parsed = parseTextAnswer(userAnswer);
-    if (parsed === null) {
-      setFeedback({
-        type: "warning",
-        message: "รูปแบบคำตอบไม่ถูกต้อง ตัวอย่างที่ถูกต้อง: 150, 1.5k, 2.2M",
-      });
-      return;
-    }
+  // Reset processing ref on index/state transitions
+  useEffect(() => {
+    processingRef.current = false;
+  }, [currentIndex, gameState]);
 
-    // Compare with margin for floats
-    const diff = Math.abs(parsed - question.resistance);
-    const limit = 0.01 * question.resistance; // 1% tolerance margin on answer math rounding
+  // Guard against undefined questions during state transitions
+  const currentQuestion = questions[currentIndex];
 
-    if (diff <= limit) {
-      const nextScore = score + 10 + streak * 2;
-      setScore(nextScore);
-      const nextStreak = streak + 1;
-      setStreak(nextStreak);
+  // Handle saving the user's attempt and moving to next question or ending game
+  const saveAttemptAndProceed = useCallback((answer: string, isTimeoutState = false) => {
+    if (gameState !== "playing") return;
+    if (processingRef.current) return;
+    
+    const currentQuestion = questions[currentIndex];
+    if (!currentQuestion) return;
 
-      if (nextScore > highScore) {
-        setHighScore(nextScore);
-        localStorage.setItem("resistor_quiz_highscore", nextScore.toString());
+    processingRef.current = true;
+    const cleanAnswer = answer.trim();
+
+    let isCorrect = false;
+    if (cleanAnswer && !isTimeoutState) {
+      const parsed = parseTextAnswer(cleanAnswer);
+      if (parsed !== null) {
+        const diff = Math.abs(parsed - currentQuestion.resistance);
+        const limit = 0.01 * currentQuestion.resistance;
+        isCorrect = diff <= limit;
       }
-
-      setFeedback({
-        type: "success",
-        message: `ถูกต้องแล้ว! 🎉 คำตอบคือ ${formatValue(question.resistance)} (คุณได้รับ +${10 + streak * 2} คะแนน)`,
-      });
-      setHasChecked(true);
-    } else {
-      setStreak(0);
-      setFeedback({
-        type: "error",
-        message: `ยังไม่ถูกต้อง! ลองคำนวณใหม่อีกครั้ง หรือกดปุ่มเฉลย`,
-      });
     }
+
+    const newAttempt: UserAttempt = {
+      question: currentQuestion,
+      userAnswer: isTimeoutState ? "หมดเวลา" : (cleanAnswer || "ข้าม"),
+      isCorrect,
+      isTimeout: isTimeoutState,
+    };
+
+    const nextAttempts = [...attempts, newAttempt];
+    setAttempts(nextAttempts);
+
+    const currentScore = nextAttempts.filter(a => a.isCorrect).length;
+    setScore(currentScore);
+
+    if (nextAttempts.length === 10) {
+      setGameState("ended");
+      if (currentScore > highScore) {
+        setHighScore(currentScore);
+        localStorage.setItem("resistor_quiz_highscore_v2", currentScore.toString());
+      }
+    } else {
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      setUserAnswer("");
+      setTimeLeft(30);
+    }
+  }, [questions, currentIndex, highScore, gameState, attempts]);
+
+  // Handle timeout
+  const handleTimeout = useCallback(() => {
+    saveAttemptAndProceed("", true);
+  }, [saveAttemptAndProceed]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (gameState !== "playing") return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleTimeout();
+          return 30; // resets for next question
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [gameState, currentIndex, handleTimeout]);
+
+  const startQuiz = () => {
+    const newQuestions = Array.from({ length: 10 }, generateQuestion);
+    setQuestions(newQuestions);
+    setCurrentIndex(0);
+    setUserAnswer("");
+    setAttempts([]);
+    setScore(0);
+    setTimeLeft(30);
+    processingRef.current = false;
+    setGameState("playing");
   };
 
-  const handleReveal = () => {
-    setIsAnswerRevealed(true);
-    setStreak(0);
-    setFeedback({
-      type: "error",
-      message: `เฉลยคำตอบคือ: ${formatValue(question!.resistance)} (ระบบรีเซ็ต Streak ของคุณ)`,
-    });
-  };
-
-  const handleSkip = () => {
-    setStreak(0);
-    handleNext();
+  const handleNext = () => {
+    saveAttemptAndProceed(userAnswer, false);
   };
 
   const getExplanation = (q: Question) => {
@@ -205,47 +261,47 @@ export default function QuizPage() {
     const infoTol = COLOR_MAP[tol];
 
     return (
-      <div className="space-y-3 text-xs text-zinc-300 bg-zinc-950/70 p-4 rounded-xl border border-zinc-800/80 mt-4">
-        <h4 className="font-bold text-amber-400 mb-1 text-sm flex items-center gap-1.5">
+      <div className="space-y-3 text-xs text-muted-foreground bg-muted/30 p-4 rounded-lg border mt-2">
+        <h4 className="font-semibold text-foreground mb-1 text-sm flex items-center gap-1.5">
           <HelpCircle className="size-4" />
           <span>วิธีคำนวณคำตอบ ({q.bands} แถบสี):</span>
         </h4>
         <ul className="space-y-2 list-none pl-0">
           <li className="flex items-center gap-2 flex-wrap">
-            <span className="text-zinc-500 w-28">แถบที่ 1 (หลักที่ 1):</span>
+            <span className="text-muted-foreground w-28">แถบที่ 1 (หลักที่ 1):</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: info1?.hex }} />
-            <span className="font-semibold text-zinc-200">{info1?.nameTh} ({info1?.nameEn})</span>
+            <span className="font-semibold text-foreground">{info1?.nameTh} ({info1?.nameEn})</span>
             <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[10px]">{d1}</Badge>
           </li>
           <li className="flex items-center gap-2 flex-wrap">
-            <span className="text-zinc-500 w-28">แถบที่ 2 (หลักที่ 2):</span>
+            <span className="text-muted-foreground w-28">แถบที่ 2 (หลักที่ 2):</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: info2?.hex }} />
-            <span className="font-semibold text-zinc-200">{info2?.nameTh} ({info2?.nameEn})</span>
+            <span className="font-semibold text-foreground">{info2?.nameTh} ({info2?.nameEn})</span>
             <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[10px]">{d2}</Badge>
           </li>
           {is5 && info3 && (
             <li className="flex items-center gap-2 flex-wrap">
-              <span className="text-zinc-500 w-28">แถบที่ 3 (หลักที่ 3):</span>
+              <span className="text-muted-foreground w-28">แถบที่ 3 (หลักที่ 3):</span>
               <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: info3?.hex }} />
-              <span className="font-semibold text-zinc-200">{info3?.nameTh} ({info3?.nameEn})</span>
+              <span className="font-semibold text-foreground">{info3?.nameTh} ({info3?.nameEn})</span>
               <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[10px]">{d3}</Badge>
             </li>
           )}
           <li className="flex items-center gap-2 flex-wrap">
-            <span className="text-zinc-500 w-28">แถบที่ {is5 ? 4 : 3} (ตัวคูณ):</span>
+            <span className="text-muted-foreground w-28">แถบที่ {is5 ? 4 : 3} (ตัวคูณ):</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: infoMult?.hex }} />
-            <span className="font-semibold text-zinc-200">{infoMult?.nameTh} ({infoMult?.nameEn})</span>
-            <Badge variant="outline" className="font-mono border-zinc-800 px-1.5 h-4.5 rounded text-[10px]">x {formatMultiplierValue(multiplierVal)}</Badge>
+            <span className="font-semibold text-foreground">{infoMult?.nameTh} ({infoMult?.nameEn})</span>
+            <Badge variant="outline" className="font-mono px-1.5 h-4.5 rounded text-[10px]">x {formatMultiplierValue(multiplierVal)}</Badge>
           </li>
           <li className="flex items-center gap-2 flex-wrap">
-            <span className="text-zinc-500 w-28">แถบความคลาดเคลื่อน:</span>
+            <span className="text-muted-foreground w-28">แถบความคลาดเคลื่อน:</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: infoTol?.hex }} />
-            <span className="font-semibold text-zinc-200">{infoTol?.nameTh} ({infoTol?.nameEn})</span>
-            <Badge variant="outline" className="font-mono border-amber-500/20 bg-amber-500/5 text-amber-400 px-1.5 h-4.5 rounded text-[10px]">±{toleranceVal}%</Badge>
+            <span className="font-semibold text-foreground">{infoTol?.nameTh} ({infoTol?.nameEn})</span>
+            <Badge variant="outline" className="font-mono text-foreground px-1.5 h-4.5 rounded text-[10px]">±{toleranceVal}%</Badge>
           </li>
         </ul>
-        <div className="pt-2.5 border-t border-zinc-800/80 font-mono text-zinc-400 flex flex-wrap gap-1.5 items-center">
-          <span className="font-semibold text-zinc-300">สมการ:</span>
+        <div className="pt-2 border-t font-mono text-muted-foreground flex flex-wrap gap-1.5 items-center">
+          <span className="font-semibold text-foreground">สมการ:</span>
           {is5 ? (
             <span>({d1}{d2}{d3}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance)})</span>
           ) : (
@@ -256,161 +312,301 @@ export default function QuizPage() {
     );
   };
 
-  if (!question) {
-    return (
-      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Trophy className="size-12 text-amber-400 animate-bounce mx-auto" />
-          <p className="text-lg font-bold text-zinc-300">กำลังเตรียมข้อคำถาม...</p>
-        </div>
-      </div>
-    );
-  }
+  const getVerdict = (finalScore: number) => {
+    if (finalScore === 10) return { text: "ระดับเทพ! อ่านรหัสสีได้แม่นยำและรวดเร็วไม่มีที่ติ 🎉", color: "text-green-500 dark:text-green-400" };
+    if (finalScore >= 8) return { text: "ยอดเยี่ยมมาก! คุณมีความเข้าใจในรหัสสีอย่างดีเยี่ยม 🌟", color: "text-green-500 dark:text-green-400" };
+    if (finalScore >= 5) return { text: "ผ่านเกณฑ์! ฝึกฝนอีกนิดจะทำให้คล่องแคล่วขึ้น 💪", color: "text-amber-500 dark:text-amber-400" };
+    return { text: "ลองใหม่อีกครั้ง! ทบทวนตารางสีเพื่อทำคะแนนให้ดียิ่งขึ้น 📚", color: "text-destructive" };
+  };
 
   return (
     <TooltipProvider>
-      <div className="min-h-[calc(100-4rem)] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-[calc(100vh-4rem)] bg-background text-foreground flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-4xl space-y-8">
-          {/* Dashboard Stats */}
-          <div className="grid grid-cols-3 gap-4">
-            <Card className="bg-zinc-900/40 border-zinc-850 p-4 flex flex-col items-center justify-center text-center rounded-xl shadow-lg">
-              <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">คะแนนปัจจุบัน</span>
-              <span className="text-2xl md:text-3xl font-black text-amber-400 mt-1 font-heading">{score}</span>
-            </Card>
-            <Card className="bg-zinc-900/40 border-zinc-850 p-4 flex flex-col items-center justify-center text-center rounded-xl shadow-lg">
-              <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">คะแนนสูงสุด</span>
-              <span className="text-2xl md:text-3xl font-black text-yellow-500 mt-1 font-heading flex items-center gap-1">
-                <Trophy className="size-4 md:size-5 text-yellow-500" />
-                <span>{highScore}</span>
-              </span>
-            </Card>
-            <Card className="bg-zinc-900/40 border-zinc-850 p-4 flex flex-col items-center justify-center text-center rounded-xl shadow-lg">
-              <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">สถิติต่อเนื่อง (Streak)</span>
-              <span className="text-2xl md:text-3xl font-black text-orange-400 mt-1 font-heading">
-                {streak > 0 ? `🔥 ${streak}` : "0"}
-              </span>
-            </Card>
-          </div>
-
-          {/* Main Content Card */}
-          <Card className="bg-zinc-900/60 backdrop-blur-md border-zinc-850 shadow-2xl rounded-2xl">
-            <CardHeader className="border-b border-zinc-800/80 pb-6">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div>
-                  <CardTitle className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                    <Award className="size-5 text-amber-400" />
-                    <span>ตอบคำถามค่าโอห์ม</span>
-                  </CardTitle>
-                  <CardDescription className="text-zinc-400">
-                    คำนวณและตอบค่าความต้านทานจากรูปภาพด้านล่าง
-                  </CardDescription>
+          
+          {/* IDLE STATE (START SCREEN) */}
+          {gameState === "idle" && (
+            <Card className="max-w-2xl mx-auto border-border">
+              <CardHeader className="text-center pb-6">
+                <div className="mx-auto p-4 rounded-full bg-muted w-fit mb-4">
+                  <Award className="size-12 text-foreground" />
                 </div>
-                <Badge variant="outline" className="border-amber-400/30 bg-amber-400/10 text-amber-400 py-1 px-3">
-                  แถบสี: {question.bands} แถบสี ({question.bands}-Band)
-                </Badge>
-              </div>
-            </CardHeader>
+                <CardTitle className="text-2xl font-semibold tracking-tight">
+                  แบบทดสอบรหัสสีตัวต้านทาน
+                </CardTitle>
+                <CardDescription className="text-muted-foreground mt-2 text-sm">
+                  ทดสอบทักษะการคำนวณและอ่านค่าแถบสีตัวต้านทานจำนวน 10 ข้อ
+                </CardDescription>
+              </CardHeader>
 
-            <CardContent className="space-y-8 pt-6">
+              <CardContent className="space-y-6">
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-muted/40 border p-4 rounded-lg text-center">
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">จำนวนข้อสอบ</span>
+                    <span className="text-lg font-semibold mt-1">10 ข้อ</span>
+                  </div>
+                  <div className="bg-muted/40 border p-4 rounded-lg text-center">
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">คะแนนสูงสุด</span>
+                    <span className="text-lg font-semibold mt-1 flex items-center justify-center gap-1">
+                      <Trophy className="size-4 text-muted-foreground" />
+                      <span>{highScore}/10</span>
+                    </span>
+                  </div>
+                </div>
 
-              {/* Visual Preview */}
-              <div className="py-4">
-                <ResistorPreview colors={question.colors} />
-              </div>
+                {/* Rules */}
+                <div className="bg-muted/20 border p-5 rounded-lg space-y-3 text-sm text-muted-foreground">
+                  <h4 className="font-semibold text-foreground flex items-center gap-2">
+                    <Timer className="size-4 text-foreground" />
+                    กติกาการทำแบบทดสอบ:
+                  </h4>
+                  <ul className="list-disc pl-5 space-y-1.5">
+                    <li>ระบบจะสุ่มคำถามตัวต้านทานแบบ 4 แถบสี และ 5 แถบสี รวมทั้งสิ้น 10 ข้อ</li>
+                    <li>มีเวลานับถอยหลังในการตอบข้อละ 30 วินาที</li>
+                    <li>เมื่อส่งคำตอบแต่ละข้อ ระบบจะบันทึกและข้ามไปยังข้อถัดไปทันที</li>
+                    <li>หากหมดเวลาก่อนตอบ จะถือว่าข้อนั้นผิด (Timeout) และข้ามข้อโดยอัตโนมัติ</li>
+                    <li>ระบบจะสรุปคะแนนและเฉลยคำตอบพร้อมวิธีคำนวณให้ดูทั้งหมด 10 ข้อในตอนท้าย</li>
+                  </ul>
+                </div>
 
-              {/* Form Input Section */}
-              <div className="max-w-md mx-auto space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="answer-input" className="text-sm font-semibold text-zinc-300">
-                    ค่าความต้านทาน (หน่วยโอห์ม):
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="answer-input"
-                      type="text"
-                      placeholder="ตัวอย่าง: 150, 1.5k, 2.2M, 10"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      disabled={hasChecked || isAnswerRevealed}
-                      className="h-11 bg-zinc-950/60 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:ring-zinc-700/50 pr-4 text-base rounded-xl"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleCheck();
-                      }}
+                <Button
+                  onClick={startQuiz}
+                  size="lg"
+                  className="w-full h-11"
+                >
+                  เริ่มทำแบบทดสอบ
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* PLAYING STATE */}
+          {gameState === "playing" && questions.length > 0 && currentQuestion && (
+            <div className="space-y-6 max-w-2xl mx-auto">
+              {/* Question Progress bar & stats */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    คำถามข้อที่ {currentIndex + 1}/10
+                  </span>
+                  <div className="h-1.5 w-32 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all duration-300"
+                      style={{ width: `${((currentIndex + 1) / 10) * 100}%` }}
                     />
                   </div>
-                  <p className="text-[10px] text-zinc-500">
-                    * ไม่จำเป็นต้องพิมพ์ตัวหน่วย Ω หรือโอห์ม สามารถพิมพ์ k หรือ M แทนการคูณหนึ่งพัน/หนึ่งล้านได้
-                  </p>
                 </div>
 
-                {/* Feedback Panel */}
-                {feedback.type && (
-                  <div
-                    className={`p-4 rounded-xl border flex items-start gap-3 transition-all duration-300 ${
-                      feedback.type === "success"
-                        ? "bg-green-500/10 border-green-500/30 text-green-400"
-                        : feedback.type === "error"
-                        ? "bg-red-500/10 border-red-500/30 text-red-400"
-                        : "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                    }`}
-                  >
-                    {feedback.type === "success" ? (
-                      <CheckCircle2 className="size-5 shrink-0 mt-0.5" />
-                    ) : feedback.type === "error" ? (
-                      <XCircle className="size-5 shrink-0 mt-0.5" />
-                    ) : (
-                      <HelpCircle className="size-5 shrink-0 mt-0.5" />
-                    )}
-                    <span className="text-sm font-medium">{feedback.message}</span>
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                  <Badge variant="outline">
+                    {currentQuestion.bands}-Band
+                  </Badge>
+                  <div className="text-xs text-muted-foreground">
+                    คะแนนปัจจุบัน: <span className="font-semibold text-foreground">{score}</span>
                   </div>
-                )}
-
-                {/* Buttons Control Grid */}
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  {!hasChecked && !isAnswerRevealed ? (
-                    <>
-                      <Button
-                        onClick={handleCheck}
-                        className="h-11 cursor-pointer bg-amber-400 hover:bg-amber-500 text-zinc-950 font-bold rounded-xl"
-                      >
-                        ตรวจคำตอบ
-                      </Button>
-                      <Button
-                        onClick={handleReveal}
-                        variant="outline"
-                        className="h-11 cursor-pointer border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900 hover:text-zinc-100 text-zinc-300 rounded-xl"
-                      >
-                        <Eye className="size-4 mr-1.5" />
-                        เฉลยข้อนี้
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      onClick={handleNext}
-                      className="col-span-2 h-11 cursor-pointer bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-1.5"
-                    >
-                      <span>ทำโจทย์ข้อต่อไป</span>
-                      <ArrowRight className="size-4" />
-                    </Button>
-                  )}
                 </div>
-
-                {!hasChecked && !isAnswerRevealed && (
-                  <Button
-                    onClick={handleSkip}
-                    variant="ghost"
-                    className="w-full h-10 cursor-pointer text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/30 text-xs rounded-xl"
-                  >
-                    ข้ามข้อนี้ (Streak จะเป็น 0)
-                  </Button>
-                )}
               </div>
 
-              {/* Show calculation details on check/reveal */}
-              {(hasChecked || isAnswerRevealed) && getExplanation(question)}
+              {/* Timer Bar */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Clock className="size-3.5" />
+                    <span>เวลานับถอยหลัง</span>
+                  </span>
+                  <span className={`font-mono text-sm ${timeLeft <= 5 ? "text-destructive font-semibold animate-pulse" : "text-foreground"}`}>
+                    {timeLeft} วินาที
+                  </span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-1000 ease-linear ${
+                      timeLeft <= 5 ? "bg-destructive animate-pulse" : "bg-primary"
+                    }`}
+                    style={{ width: `${(timeLeft / 30) * 100}%` }}
+                  />
+                </div>
+              </div>
 
-            </CardContent>
-          </Card>
+              {/* Main Resistor Quiz Card */}
+              <Card className="border-border">
+                <CardContent className="space-y-6 pt-6">
+                  {/* Visual Preview */}
+                  <div className="py-2">
+                    <ResistorPreview colors={currentQuestion.colors} />
+                  </div>
+
+                  {/* Form Input Section */}
+                  <div className="max-w-md mx-auto space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="answer-input">ค่าความต้านทาน (หน่วยโอห์ม):</Label>
+                      <Input
+                        id="answer-input"
+                        ref={inputRef}
+                        type="text"
+                        placeholder="ตัวอย่าง: 150, 1.5k, 2.2M, 10"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        className="h-10 text-base"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleNext();
+                        }}
+                      />
+                      <p className="text-[11px] text-muted-foreground">
+                        * พิมพ์ตัวย่อได้ เช่น k แทนพัน หรือ M แทนล้าน (เว้นว่างแล้วกดปุ่มเพื่อข้ามข้อได้)
+                      </p>
+                    </div>
+
+                    {/* Controls */}
+                    <div className="pt-2">
+                      <Button
+                        onClick={handleNext}
+                        className="w-full h-10 flex items-center justify-center gap-1.5"
+                      >
+                        <span>{currentIndex === 9 ? "ส่งคำตอบและตรวจคะแนน" : "บันทึกและข้อถัดไป"}</span>
+                        <ArrowRight className="size-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* ENDED STATE (RESULTS SUMMARY SCREEN) */}
+          {gameState === "ended" && (
+            <Card className="max-w-2xl mx-auto border-border">
+              <CardHeader className="text-center border-b pb-6">
+                <div className="mx-auto p-4 rounded-full bg-muted w-fit mb-4">
+                  <Trophy className="size-12 text-foreground" />
+                </div>
+                <CardTitle className="text-2xl font-semibold tracking-tight">
+                  แบบทดสอบเสร็จสมบูรณ์!
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-sm mt-2">
+                  สรุปผลคะแนนและรายละเอียดการคำนวณทั้งหมด
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-8 pt-6">
+                
+                {/* Score Showcase */}
+                <div className="flex flex-col items-center justify-center p-6 rounded-lg bg-muted/40 border max-w-sm mx-auto text-center space-y-3">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">คะแนนสอบรวม</span>
+                  <div className="flex items-baseline justify-center">
+                    <h2 className="text-5xl font-bold tracking-tight text-foreground">
+                      {score}
+                    </h2>
+                    <span className="text-xl font-medium text-muted-foreground">/10 คะแนน</span>
+                  </div>
+                  
+                  <div className={`text-sm font-medium ${getVerdict(score).color}`}>
+                    {getVerdict(score).text}
+                  </div>
+                </div>
+
+                {/* Score breakdown listing */}
+                <div className="space-y-4">
+                  <h3 className="text-base font-semibold text-foreground">เฉลยและวิธีคำนวณแต่ละข้อ</h3>
+                  
+                  <Accordion className="w-full flex flex-col gap-2">
+                    {attempts.map((attempt, index) => {
+                      const isCorrect = attempt.isCorrect;
+                      const isTimeout = attempt.isTimeout;
+                      
+                      return (
+                        <AccordionItem
+                          key={index}
+                          value={`item-${index}`}
+                          className="bg-card border rounded-lg px-4 py-1"
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-3 py-3">
+                              {/* Status Circle */}
+                              {isCorrect ? (
+                                <div className="p-1 rounded-full bg-green-500/10 text-green-500 border border-green-500/20">
+                                  <Check className="size-4" />
+                                </div>
+                              ) : (
+                                <div className="p-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20">
+                                  <XCircle className="size-4" />
+                                </div>
+                              )}
+
+                              <div>
+                                <h4 className="text-sm font-medium text-foreground">
+                                  ข้อที่ {index + 1}: ตัวต้านทานแบบ {attempt.question.bands} แถบสี
+                                </h4>
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-xs text-muted-foreground">
+                                  <span>ตอบ: <span className="font-mono text-foreground font-semibold">{attempt.userAnswer}</span></span>
+                                  <span>•</span>
+                                  <span>เฉลย: <span className="font-mono text-foreground font-semibold">{formatValue(attempt.question.resistance)}</span></span>
+                                  {isTimeout && (
+                                    <Badge variant="destructive" className="h-4.5 rounded py-0 px-1 text-[9px] font-medium leading-none">
+                                      หมดเวลา
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <AccordionTrigger className="hover:no-underline py-4 text-xs text-muted-foreground hover:text-foreground font-medium cursor-pointer">
+                              ดูวิธีคิด
+                            </AccordionTrigger>
+                          </div>
+                          <AccordionContent className="pb-4 border-t pt-2">
+                            {/* Color bands list */}
+                            <div className="flex items-center gap-1.5 mb-3 mt-1">
+                              <span className="text-[10px] text-muted-foreground mr-1 uppercase tracking-wider">สีแถบตัวต้านทาน:</span>
+                              {attempt.question.colors.map((color, colorIdx) => {
+                                const info = COLOR_MAP[color];
+                                return (
+                                  <Tooltip key={colorIdx}>
+                                    <TooltipTrigger className="cursor-pointer bg-transparent border-0 p-0 flex items-center justify-center">
+                                      <div
+                                        className="size-3 rounded-full border border-white/20 shadow-sm"
+                                        style={{ backgroundColor: info?.hex || "#000" }}
+                                      />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-popover text-popover-foreground border text-[10px] py-1 px-2">
+                                      {colorIdx + 1}. {info?.nameEn} ({info?.nameTh})
+                                    </TooltipContent>
+                                  </Tooltip>
+                                );
+                              })}
+                            </div>
+                            {getExplanation(attempt.question)}
+                          </AccordionContent>
+                        </AccordionItem>
+                      );
+                    })}
+                  </Accordion>
+                </div>
+
+                {/* Final Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t">
+                  <Button
+                    onClick={startQuiz}
+                    className="w-full h-11 flex items-center justify-center gap-2"
+                  >
+                    <RotateCcw className="size-4" />
+                    <span>เริ่มทำแบบทดสอบใหม่</span>
+                  </Button>
+                  <Link href="/" className="w-full block">
+                    <Button
+                      variant="outline"
+                      className="w-full h-11 flex items-center justify-center gap-2"
+                    >
+                      <Home className="size-4" />
+                      <span>กลับไปหน้าหลัก (ตัวคำนวณ)</span>
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
         </div>
       </div>
