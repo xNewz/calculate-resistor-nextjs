@@ -3,38 +3,15 @@ import React from "react";
 import { COLOR_MAP } from "@/lib/resistor";
 
 function getBandStyle(color: string): React.CSSProperties {
-  const base: React.CSSProperties = {
+  return {
     width: "4.2%",
     height: "82%",
     borderRadius: 6,
-    mixBlendMode: "multiply",
+    backgroundImage: `url('/tab_color/${color}.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
   };
-
-  if (color === "gold") {
-    return {
-      ...base,
-      backgroundImage:
-        "linear-gradient(90deg, #B38E2E, #E4C24A 35%, #B38E2E 65%, #E4C24A)",
-    };
-  }
-  if (color === "silver") {
-    return {
-      ...base,
-      backgroundImage:
-        "linear-gradient(90deg, #9EA3A8, #CFD3D6 35%, #9EA3A8 65%, #E3E6E8)",
-    };
-  }
-
-  const hex = COLOR_MAP[color]?.hex || "#000000";
-
-  const style: React.CSSProperties = {
-    ...base,
-    backgroundColor: hex,
-  };
-  if (color === "white" || color === "yellow") {
-    style.boxShadow = "inset 0 0 0 1px rgba(0,0,0,0.15)";
-  }
-  return style;
 }
 
 export default function ResistorPreview({ colors }: { colors: string[] }) {
