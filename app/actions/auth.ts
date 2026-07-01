@@ -174,3 +174,101 @@ export async function getSessionAction() {
   };
 }
 
+export async function updateProfileAction(
+  prevState: AuthState | null,
+  formData: FormData
+): Promise<AuthState> {
+  const session = await getSession();
+  if (!session) {
+    return { success: false, error: "ยังไม่ได้เข้าสู่ระบบ" };
+  }
+
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const currentPassword = formData.get("currentPassword") as string;
+  const newPassword = formData.get("newPassword") as string;
+
+  const errors: Record<string, string> = {};
+  if (!name || name.trim().length < 2) {
+    errors.name = "ชื่อต้องมีความยาวอย่างน้อย 2 ตัวอักษร";
+  }
+  if (!email || !email.includes("@")) {
+    errors.email = "กรุณากรอกอีเมลให้ถูกต้อง";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { success: false, fieldErrors: errors };
+  }
+
+  try {
+    // Find the user in DB
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+    });
+
+    if (!user) {
+      return { success: false, error: "ไม่พบข้อมูลผู้ใช้งาน" };
+    }
+
+    // Check if email has changed and if it is already taken
+    if (email !== user.email) {
+      const emailTaken = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (emailTaken) {
+        return { success: false, error: "อีเมลนี้ถูกใช้งานแล้วโดยผู้ใช้อื่น" };
+      }
+    }
+
+    let hashedPassword = user.password;
+
+    // If changing password, currentPassword must match
+    if (newPassword && newPassword.trim().length > 0) {
+      if (newPassword.length < 6) {
+        return { success: false, error: "รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร" };
+      }
+      if (!currentPassword) {
+        return { success: false, error: "กรุณากรอกรหัสผ่านปัจจุบันเพื่อยืนยันการเปลี่ยนรหัสผ่าน" };
+      }
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordValid) {
+        return { success: false, error: "รหัสผ่านปัจจุบันไม่ถูกต้อง" };
+      }
+      hashedPassword = await bcrypt.hash(newPassword, 10);
+    }
+
+    // Update user in DB
+    const updatedUser = await prisma.user.update({
+      where: { id: session.userId },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    // Re-encrypt session token
+    const token = await encrypt({
+      userId: updatedUser.id,
+      email: updatedUser.email,
+      name: updatedUser.name,
+      role: updatedUser.role,
+    });
+
+    // Save cookie
+    const cookieStore = await cookies();
+    cookieStore.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return { success: false, error: "เกิดข้อผิดพลาดในการบันทึกข้อมูลส่วนตัว" };
+  }
+}
+
+

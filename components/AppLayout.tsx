@@ -18,10 +18,12 @@ import {
   FolderClosed,
   Loader2,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  UserCog,
+  ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getSessionAction, logoutAction } from "@/app/actions/auth";
+import { getSessionAction, logoutAction, updateProfileAction } from "@/app/actions/auth";
 import { getUserClassroomsAction } from "@/app/actions/classroom";
 import { Button } from "./ui/button";
 
@@ -46,6 +48,60 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showClassesDropdown, setShowClassesDropdown] = useState(true);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileSuccess, setProfileSuccess] = useState(false);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+
+  useEffect(() => {
+    if (user && showProfileModal) {
+      setProfileName(user.name);
+      setProfileEmail(user.email);
+      setCurrentPassword("");
+      setNewPassword("");
+      setProfileError(null);
+      setProfileSuccess(false);
+    }
+  }, [showProfileModal]);
+
+  const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setProfileError(null);
+    setProfileSuccess(false);
+    setUpdatingProfile(true);
+
+    const formData = new FormData(e.currentTarget);
+
+    // Run async actions outside of startTransition
+    (async () => {
+      try {
+        const res = await updateProfileAction(null, formData);
+        setUpdatingProfile(false);
+        if (res.success) {
+          setProfileSuccess(true);
+          const updatedSession = await getSessionAction();
+          setUser(updatedSession);
+          
+          // Clear password fields on successful save
+          setCurrentPassword("");
+          setNewPassword("");
+          
+          startTransition(() => {
+            router.refresh();
+          });
+        } else {
+          setProfileError(res.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        }
+      } catch (err) {
+        setUpdatingProfile(false);
+        setProfileError("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+      }
+    })();
+  };
 
   useEffect(() => {
     async function loadLayoutData() {
@@ -236,7 +292,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => setShowClassesDropdown(!showClassesDropdown)}
                 className="w-full flex items-center justify-between px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 cursor-pointer hover:text-zinc-300 transition-colors"
               >
-                <span>ห้องเรียนด่วน ({classrooms.length})</span>
+                <span>ห้องเรียนทั้งหมด ({classrooms.length})</span>
                 <ChevronDown className={cn("size-3 transition-transform", showClassesDropdown ? "" : "transform -rotate-90")} />
               </button>
 
@@ -285,6 +341,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 {user.role === "TEACHER" ? "ผู้สอน" : "ผู้เรียน"}
               </span>
             </div>
+
+            <Button
+              onClick={() => setShowProfileModal(true)}
+              variant="ghost"
+              size="icon"
+              className="size-8 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/10 rounded-lg shrink-0 cursor-pointer"
+              title="แก้ไขโปรไฟล์"
+            >
+              <UserCog className="size-3.5" />
+            </Button>
 
             <Button
               onClick={handleLogout}
@@ -427,14 +493,27 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 </div>
                 
-                <Button
-                  onClick={handleLogout}
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 hover:bg-red-500/10 hover:text-red-400 rounded-lg cursor-pointer"
-                >
-                  <LogOut className="size-3.5" />
-                </Button>
+                <div className="flex items-center gap-0.5">
+                  <Button
+                    onClick={() => { setMobileMenuOpen(false); setShowProfileModal(true); }}
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-zinc-500 hover:text-indigo-400 rounded-lg cursor-pointer"
+                    title="แก้ไขโปรไฟล์"
+                  >
+                    <UserCog className="size-3.5" />
+                  </Button>
+                  
+                  <Button
+                    onClick={handleLogout}
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 hover:bg-red-500/10 hover:text-red-400 rounded-lg cursor-pointer"
+                    title="ออกจากระบบ"
+                  >
+                    <LogOut className="size-3.5" />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -447,6 +526,131 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       
+      {/* EDIT PROFILE MODAL */}
+      {showProfileModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+          <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 shadow-2xl rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <UserCog className="size-5 text-indigo-400" />
+                <h3 className="text-base font-bold text-zinc-100">แก้ไขข้อมูลส่วนตัว</h3>
+              </div>
+              <Button
+                type="button"
+                onClick={() => setShowProfileModal(false)}
+                variant="ghost"
+                size="icon"
+                className="size-8 rounded-full text-zinc-450 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+            
+            <div className="p-6">
+              <form onSubmit={handleUpdateProfile} className="space-y-4">
+                {profileError && (
+                  <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                    <ShieldAlert className="size-4 shrink-0" />
+                    <span>{profileError}</span>
+                  </div>
+                )}
+
+                {profileSuccess && (
+                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+                    <UserCog className="size-4 shrink-0 text-emerald-400" />
+                    <span>บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว</span>
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <label htmlFor="profileName" className="text-xs font-semibold text-zinc-400 uppercase">ชื่อ-นามสกุล</label>
+                  <input
+                    id="profileName"
+                    name="name"
+                    type="text"
+                    value={profileName}
+                    onChange={(e) => setProfileName(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="profileEmail" className="text-xs font-semibold text-zinc-400 uppercase">อีเมล</label>
+                  <input
+                    id="profileEmail"
+                    name="email"
+                    type="email"
+                    value={profileEmail}
+                    onChange={(e) => setProfileEmail(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                    required
+                  />
+                </div>
+
+                <div className="h-px bg-zinc-800 my-4" />
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <label htmlFor="newPassword" className="text-xs font-semibold text-zinc-400 uppercase">รหัสผ่านใหม่ (หากต้องการเปลี่ยน)</label>
+                  </div>
+                  <input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="อย่างน้อย 6 ตัวอักษร"
+                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                  />
+                </div>
+
+                {newPassword.trim().length > 0 && (
+                  <div className="space-y-1.5 animate-[fadeIn_0.2s_ease-out]">
+                    <label htmlFor="currentPassword" className="text-xs font-bold text-yellow-500 uppercase">รหัสผ่านปัจจุบัน (เพื่อยืนยันการเปลี่ยนรหัสผ่าน)</label>
+                    <input
+                      id="currentPassword"
+                      name="currentPassword"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="กรอกรหัสผ่านปัจจุบันของคุณ"
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="flex gap-2 justify-end pt-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setShowProfileModal(false)}
+                    className="h-9 px-4 text-xs hover:bg-zinc-800 cursor-pointer"
+                  >
+                    ปิด
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={updatingProfile}
+                    className="h-9 px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs cursor-pointer rounded-lg shadow-sm"
+                  >
+                    {updatingProfile ? (
+                      <span className="flex items-center gap-1.5">
+                        <Loader2 className="size-3.5 animate-spin" />
+                        กำลังบันทึก...
+                      </span>
+                    ) : (
+                      "บันทึกข้อมูล"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
