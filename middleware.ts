@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("auth_token")?.value;
   const { pathname } = request.nextUrl;
 
-  let session = null;
+  let session: any = null;
   if (token) {
     try {
       const { payload } = await jwtVerify(token, key, {
@@ -23,6 +23,7 @@ export async function middleware(request: NextRequest) {
 
   // Paths requiring authentication
   const isProtectedRoute = pathname.startsWith("/classroom");
+  const isAdminRoute = pathname.startsWith("/admin");
 
   // Paths for login/register
   const isAuthRoute = pathname === "/login" || pathname === "/register";
@@ -30,9 +31,21 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute && !session) {
     // Redirect to login if trying to access classroom pages without session
     const response = NextResponse.redirect(new URL("/login", request.url));
-    // Clear cookie just in case it was invalid
     response.cookies.delete("auth_token");
     return response;
+  }
+
+  if (isAdminRoute) {
+    if (!session) {
+      // Not logged in at all
+      const response = NextResponse.redirect(new URL("/login", request.url));
+      response.cookies.delete("auth_token");
+      return response;
+    }
+    if (session.role !== "ADMIN") {
+      // Logged in but not an admin → redirect to classroom
+      return NextResponse.redirect(new URL("/classroom", request.url));
+    }
   }
 
   if (isAuthRoute && session) {
@@ -46,6 +59,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/classroom/:path*",
+    "/admin/:path*",
     "/login",
     "/register",
   ],
