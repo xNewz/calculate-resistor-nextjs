@@ -111,7 +111,7 @@ export default function LoginPage() {
             <div className="text-center pt-2 text-xs text-zinc-400">
               ยังไม่มีบัญชีสมาชิก?{" "}
               <Link href="/register" className="text-amber-400 hover:text-amber-300 font-semibold hover:underline">
-                สมัครใช้งานฟรีที่นี่
+                สมัครใช้งานที่นี่
               </Link>
             </div>
           </form>
