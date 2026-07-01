@@ -340,7 +340,7 @@ export default function ClassroomDetail({
                                 }`}
                               >
                                 {isPastDue
-                                  ? (assignment.allowLate ? "เลยกำหนดส่ง (ส่งเลทได้)" : "ปิดรับส่งแล้ว")
+                                  ? (assignment.allowLate ? "เลยกำหนดส่ง (ส่งเกินเวลาได้)" : "ปิดรับส่งแล้ว")
                                   : "กำลังเปิดรับงาน"}
                               </Badge>
                             )}
@@ -376,7 +376,7 @@ export default function ClassroomDetail({
                                 </span>
                                 <span>•</span>
                                 <span className="text-[9px] text-zinc-550">
-                                  {assignment.allowLate ? "ส่งเลทได้" : "ห้ามส่งเลท"}
+                                  {assignment.allowLate ? "ส่งเกินเวลาได้" : "ห้ามส่งเกินเวลา"}
                                 </span>
                               </div>
                             )}
@@ -408,7 +408,7 @@ export default function ClassroomDetail({
                                     <span className="text-[11px] text-zinc-400 flex flex-col items-end">
                                       <span>คะแนน: <strong className="text-zinc-200">{mySub.score}</strong>/{assignment.questionCount}</span>
                                       {assignment.dueDate && new Date(mySub.createdAt) > new Date(assignment.dueDate) && (
-                                        <span className="text-[8px] text-red-400 font-bold block mt-0.5">ส่งล่าช้า (ส่งเลท)</span>
+                                        <span className="text-[8px] text-red-400 font-bold block mt-0.5">ส่งล่าช้า (ส่งเกินเวลา)</span>
                                       )}
                                     </span>
                                   </div>
@@ -427,7 +427,7 @@ export default function ClassroomDetail({
                                 <Link href={`/classroom/${classroom.id}/assignment/${assignment.id}`}>
                                   <Button className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs rounded-lg gap-1 px-3 cursor-pointer shadow-sm">
                                     <Play className="size-3 fill-primary-foreground text-primary-foreground" />
-                                    <span>ทำแบบทดสอบ{isPastDue ? " (ส่งเลท)" : ""}</span>
+                                    <span>ทำแบบทดสอบ{isPastDue ? " (ส่งเกินเวลา)" : ""}</span>
                                   </Button>
                                 </Link>
                               )}
@@ -511,7 +511,7 @@ export default function ClassroomDetail({
                                         {sub.score}
                                       </Badge>
                                       {isSubLate && (
-                                        <span className="text-[8px] text-red-400 font-bold block">ส่งเลท</span>
+                                        <span className="text-[8px] text-red-400 font-bold block">ส่งเกินเวลา</span>
                                       )}
                                     </div>
                                   ) : (
