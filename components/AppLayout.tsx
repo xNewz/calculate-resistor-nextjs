@@ -31,7 +31,7 @@ interface UserSession {
   userId: string;
   email: string;
   name: string;
-  role: "LEARNER" | "TEACHER";
+  role: "LEARNER" | "TEACHER" | "ADMIN";
 }
 
 interface ClassroomShort {
@@ -156,6 +156,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       label: "ห้องเรียนทั้งหมด",
       icon: LayoutDashboard,
       description: "ห้องเรียนวิชารหัสสี"
+    }] : []),
+    ...(user?.role === "ADMIN" ? [{
+      href: "/admin/users",
+      label: "จัดการผู้ใช้งาน",
+      icon: ShieldAlert,
+      description: "Admin Panel"
     }] : [])
   ];
 
@@ -338,7 +344,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 "inline-block text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md border mt-0.5",
                 user.role === "TEACHER" ? "bg-indigo-500/5 text-indigo-400 border-indigo-500/20" : "bg-emerald-500/5 text-emerald-400 border-emerald-500/20"
               )}>
-                {user.role === "TEACHER" ? "ผู้สอน" : "ผู้เรียน"}
+                                {user.role === "TEACHER" ? "ผู้สอน" : user.role === "ADMIN" ? "แอดมิน" : "ผู้เรียน"}
               </span>
             </div>
 
@@ -488,7 +494,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <div className="min-w-0">
                     <div className="font-bold text-[11px] text-zinc-200 truncate w-[100px]">{user.name}</div>
                     <span className="text-[8px] font-bold text-zinc-500 uppercase">
-                      {user.role === "TEACHER" ? "ผู้สอน" : "ผู้เรียน"}
+                      {user.role === "TEACHER" ? "ผู้สอน" : user.role === "ADMIN" ? "แอดมิน" : "ผู้เรียน"}
                     </span>
                   </div>
                 </div>

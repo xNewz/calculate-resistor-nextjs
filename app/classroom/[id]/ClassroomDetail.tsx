@@ -38,7 +38,7 @@ interface ClassroomDetailProps {
     id: string;
     email: string;
     name: string;
-    role: "LEARNER" | "TEACHER";
+    role: "LEARNER" | "TEACHER" | "ADMIN";
   };
   classroom: {
     id: string;

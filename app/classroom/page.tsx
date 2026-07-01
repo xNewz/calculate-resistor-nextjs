@@ -14,7 +14,22 @@ export default async function ClassroomPage() {
 
   let classrooms: any[] = [];
 
-  if (user.role === "TEACHER") {
+  if (user.role === "ADMIN") {
+    classrooms = await prisma.classroom.findMany({
+      include: {
+        teacher: {
+          select: { name: true },
+        },
+        _count: {
+          select: {
+            enrollments: true,
+            assignments: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } else if (user.role === "TEACHER") {
     classrooms = await prisma.classroom.findMany({
       where: {
         teacherId: user.id,
