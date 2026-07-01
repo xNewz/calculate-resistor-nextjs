@@ -134,23 +134,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const mainNavItems = [
+  const mainNavItems: { href: string; label: string; icon: any; description: string }[] = [
     // {
     //   href: "/",
     //   label: "เครื่องคำนวณ",
     //   icon: Calculator,
     //   description: "ตัวคำนวณแถบสีตัวต้านทาน"
     // },
-    {
+  ];
+
+  const dashboardNavItems = [
+    ...(user ? [{
       href: "/quiz",
       label: "เกมตอบคำถาม (Quiz)",
       icon: Award,
       description: "ทดสอบการคำนวณรหัสสี"
-    },
-  ];
-
-  const dashboardNavItems = [
-    ...mainNavItems,
+    }] : []),
     ...(user ? [{
       href: "/classroom",
       label: "ห้องเรียนทั้งหมด",
