@@ -294,7 +294,7 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                     <Input
                       id="name"
                       name="name"
-                      placeholder="เช่น ฟิสิกส์ ม.4/1, วิชาไมโครคอนโทรลเลอร์"
+                      placeholder="เช่น แลปวงจรไฟฟ้า, อิเล็กทรอนิกส์เบื้องต้น"
                       className="bg-zinc-950/60 border-zinc-800 h-10 text-xs focus:ring-zinc-750/50"
                       required
                     />
