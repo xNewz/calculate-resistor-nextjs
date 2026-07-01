@@ -144,6 +144,8 @@ export async function createAssignmentAction(
   const bandType = formData.get("bandType") as string;
   const questionCountStr = formData.get("questionCount") as string;
   const classroomId = formData.get("classroomId") as string;
+  const dueDateStr = formData.get("dueDate") as string;
+  const allowLateStr = formData.get("allowLate") as string;
 
   if (!title || title.trim().length < 2) {
     return { success: false, error: "กรุณากรอกหัวข้อแบบฝึกหัดอย่างน้อย 2 ตัวอักษร" };
@@ -155,6 +157,16 @@ export async function createAssignmentAction(
   if (isNaN(questionCount) || questionCount < 1 || questionCount > 50) {
     return { success: false, error: "จำนวนข้อไม่ถูกต้อง (กำหนดได้ 1-50 ข้อ)" };
   }
+
+  let dueDate: Date | null = null;
+  if (dueDateStr && dueDateStr.trim() !== "") {
+    dueDate = new Date(dueDateStr);
+    if (isNaN(dueDate.getTime())) {
+      return { success: false, error: "วันกำหนดส่งไม่ถูกต้อง" };
+    }
+  }
+
+  const allowLate = allowLateStr === "true" || allowLateStr === "on";
 
   try {
     // Verify teacher owns the classroom
@@ -175,6 +187,8 @@ export async function createAssignmentAction(
         description: description || null,
         bandType,
         questionCount,
+        dueDate,
+        allowLate,
         classroomId,
       },
     });
@@ -209,6 +223,11 @@ export async function submitQuizAction(
 
     if (!assignment) {
       return { success: false, error: "ไม่พบการมอบหมายแบบฝึกหัดนี้" };
+    }
+
+    // Verify due date and late submission allowance
+    if (assignment.dueDate && new Date() > assignment.dueDate && !assignment.allowLate) {
+      return { success: false, error: "เลยกำหนดส่งแล้วและผู้สอนปิดรับการส่งล่าช้า" };
     }
 
     // Verify enrollment
@@ -269,4 +288,93 @@ export async function getUserClassroomsAction() {
     return [];
   }
 }
+
+/**
+ * Action to update a classroom (Teacher only)
+ */
+export async function updateClassroomAction(
+  classroomId: string,
+  name: string,
+  description: string | null
+): Promise<ActionResponse> {
+  const session = await getSession();
+  if (!session || session.role !== "TEACHER") {
+    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้ (เฉพาะผู้สอนเท่านั้น)" };
+  }
+
+  if (!name || name.trim().length < 2) {
+    return { success: false, error: "ชื่อห้องเรียนต้องมีตัวอักษรอย่างน้อย 2 ตัว" };
+  }
+
+  try {
+    // Verify owner
+    const existing = await prisma.classroom.findFirst({
+      where: {
+        id: classroomId,
+        teacherId: session.userId,
+      },
+    });
+
+    if (!existing) {
+      return { success: false, error: "ไม่พบห้องเรียนนี้หรือคุณไม่มีสิทธิ์ในการดำเนินการ" };
+    }
+
+    const updated = await prisma.classroom.update({
+      where: { id: classroomId },
+      data: {
+        name,
+        description: description || null,
+      },
+    });
+
+    revalidatePath(`/classroom`);
+    revalidatePath(`/classroom/${classroomId}`);
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Update classroom error:", error);
+    return { success: false, error: "ไม่สามารถอัปเดตข้อมูลห้องเรียนได้เนื่องจากข้อผิดพลาดของระบบ" };
+  }
+}
+
+/**
+ * Action to delete a classroom (Teacher only)
+ */
+export async function deleteClassroomAction(
+  classroomId: string,
+  confirmText: string
+): Promise<ActionResponse> {
+  const session = await getSession();
+  if (!session || session.role !== "TEACHER") {
+    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้ (เฉพาะผู้สอนเท่านั้น)" };
+  }
+
+  if (confirmText !== "DELETE") {
+    return { success: false, error: "กรุณาพิมพ์ยืนยันให้ถูกต้อง" };
+  }
+
+  try {
+    // Verify owner
+    const existing = await prisma.classroom.findFirst({
+      where: {
+        id: classroomId,
+        teacherId: session.userId,
+      },
+    });
+
+    if (!existing) {
+      return { success: false, error: "ไม่พบห้องเรียนนี้หรือคุณไม่มีสิทธิ์ในการดำเนินการ" };
+    }
+
+    await prisma.classroom.delete({
+      where: { id: classroomId },
+    });
+
+    revalidatePath(`/classroom`);
+    return { success: true };
+  } catch (error) {
+    console.error("Delete classroom error:", error);
+    return { success: false, error: "ไม่สามารถลบห้องเรียนได้เนื่องจากข้อผิดพลาดของระบบ" };
+  }
+}
+
 

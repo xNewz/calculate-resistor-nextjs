@@ -55,6 +55,8 @@ model Assignment {
   description   String?      @db.Text
   bandType      String       // "4" or "5"
   questionCount Int
+  dueDate       DateTime?
+  allowLate     Boolean      @default(true)
   classroomId   String
   classroom     Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   createdAt     DateTime     @default(now())

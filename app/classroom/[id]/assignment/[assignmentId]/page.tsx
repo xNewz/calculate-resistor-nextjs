@@ -29,6 +29,11 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
     redirect(`/classroom/${classroomId}`);
   }
 
+  // Check if past due and late submission is blocked
+  if (assignment.dueDate && new Date() > new Date(assignment.dueDate) && !assignment.allowLate) {
+    redirect(`/classroom/${classroomId}`);
+  }
+
   // Teachers do not take quizzes, redirect to class detail
   if (user.role === "TEACHER") {
     redirect(`/classroom/${classroomId}`);

@@ -3,7 +3,7 @@
 import React, { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createAssignmentAction } from "@/app/actions/classroom";
+import { createAssignmentAction, updateClassroomAction, deleteClassroomAction } from "@/app/actions/classroom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,11 @@ import {
   ShieldAlert,
   Loader2,
   ChevronRight,
-  UserCheck
+  UserCheck,
+  Clock,
+  Settings,
+  Trash2,
+  MoreVertical
 } from "lucide-react";
 
 interface ClassroomDetailProps {
@@ -65,6 +69,46 @@ export default function ClassroomDetail({
   const [joinUrl, setJoinUrl] = useState("");
   
   const [error, setError] = useState<string | null>(null);
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [editName, setEditName] = useState(classroom.name);
+  const [editDescription, setEditDescription] = useState(classroom.description || "");
+
+  // Handle Edit Classroom
+  const handleEditClassroom = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+
+    startTransition(async () => {
+      const res = await updateClassroomAction(classroom.id, editName, editDescription);
+      if (res.success) {
+        setShowEditModal(false);
+        router.refresh();
+      } else {
+        setError(res.error || "ไม่สามารถแก้ไขห้องเรียนได้");
+      }
+    });
+  };
+
+  // Handle Delete Classroom
+  const handleDeleteClassroom = () => {
+    if (deleteConfirmText !== "DELETE") return;
+    setError(null);
+
+    startTransition(async () => {
+      const res = await deleteClassroomAction(classroom.id, deleteConfirmText);
+      if (res.success) {
+        setShowDeleteModal(false);
+        router.push("/classroom");
+        router.refresh();
+      } else {
+        setError(res.error || "ไม่สามารถลบห้องเรียนได้");
+      }
+    });
+  };
 
   // Set join URL client-side
   useEffect(() => {
@@ -126,7 +170,7 @@ export default function ClassroomDetail({
         </div>
 
         {/* Classroom Header Banner */}
-        <div className="relative overflow-hidden bg-zinc-900/60 p-6 sm:p-8 rounded-2xl border border-zinc-850 backdrop-blur-md">
+        <div className="relative bg-zinc-900/60 p-6 sm:p-8 rounded-2xl border border-zinc-850 backdrop-blur-md">
           <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 size-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
           
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -165,6 +209,55 @@ export default function ClassroomDetail({
                 <QrCode className="size-3.5 text-indigo-400" />
                 <span>แสดง QR Code</span>
               </Button>
+
+              {user.role === "TEACHER" && (
+                <div className="relative">
+                  <Button
+                    onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
+                    variant="outline"
+                    size="sm"
+                    className="h-9 w-9 p-0 border-zinc-850 bg-zinc-900/50 text-zinc-300 hover:bg-zinc-800 rounded-lg flex items-center justify-center cursor-pointer"
+                  >
+                    <MoreVertical className="size-4 text-zinc-400" />
+                  </Button>
+
+                  {showSettingsDropdown && (
+                    <>
+                      {/* Overlay to handle click outside */}
+                      <div className="fixed inset-0 z-10" onClick={() => setShowSettingsDropdown(false)}></div>
+                      
+                      <div className="absolute right-0 mt-2 w-44 rounded-xl border border-zinc-800 bg-zinc-950 p-1.5 shadow-2xl z-20 animate-[slideDown_0.15s_ease-out]">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setError(null);
+                            setShowEditModal(true);
+                            setShowSettingsDropdown(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/85 rounded-lg flex items-center gap-2 cursor-pointer transition-colors"
+                        >
+                          <Settings className="size-3.5 text-zinc-450" />
+                          <span>แก้ไขห้องเรียน</span>
+                        </button>
+                        <div className="h-px bg-zinc-850 my-1"></div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setError(null);
+                            setDeleteConfirmText("");
+                            setShowDeleteModal(true);
+                            setShowSettingsDropdown(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-lg flex items-center gap-2 cursor-pointer transition-colors"
+                        >
+                          <Trash2 className="size-3.5" />
+                          <span>ลบห้องเรียน</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -217,6 +310,7 @@ export default function ClassroomDetail({
                 {assignments.map((assignment) => {
                   const subCount = getSubmissionsForAssignment(assignment.id);
                   const mySub = user.role === "LEARNER" ? subCount.find((s) => s.studentId === user.id) : null;
+                  const isPastDue = assignment.dueDate ? new Date() > new Date(assignment.dueDate) : false;
 
                   return (
                     <Card key={assignment.id} className="bg-zinc-900/50 border-zinc-850 hover:border-zinc-800/80 transition-all rounded-xl overflow-hidden shadow-sm">
@@ -232,21 +326,56 @@ export default function ClassroomDetail({
                             <Badge variant="secondary" className="bg-zinc-950 text-zinc-400 text-[10px] py-0 px-2 h-5 rounded-full">
                               โจทย์ {assignment.questionCount} ข้อ
                             </Badge>
+                            {assignment.dueDate && (
+                              <Badge
+                                variant={isPastDue ? (assignment.allowLate ? "outline" : "destructive") : "secondary"}
+                                className={`text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold ${
+                                  isPastDue
+                                    ? (assignment.allowLate ? "border-yellow-500/30 bg-yellow-500/5 text-yellow-500" : "bg-red-500/10 text-red-400 border border-red-500/20")
+                                    : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                }`}
+                              >
+                                {isPastDue
+                                  ? (assignment.allowLate ? "เลยกำหนดส่ง (ส่งเลทได้)" : "ปิดรับส่งแล้ว")
+                                  : "กำลังเปิดรับงาน"}
+                              </Badge>
+                            )}
                           </div>
                           
                           <p className="text-xs text-zinc-400 line-clamp-2">
                             {assignment.description || "ไม่มีรายละเอียดคำชี้แจงงาน"}
                           </p>
                           
-                          <div className="text-[10px] text-zinc-500 flex items-center gap-1">
-                            <Calendar className="size-3" />
-                            <span>สั่งเมื่อ: {new Date(assignment.createdAt).toLocaleDateString("th-TH", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit"
-                            })} น.</span>
+                          <div className="space-y-1">
+                            <div className="text-[10px] text-zinc-500 flex items-center gap-1.5">
+                              <Calendar className="size-3" />
+                              <span>สั่งเมื่อ: {new Date(assignment.createdAt).toLocaleDateString("th-TH", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                              })} น.</span>
+                            </div>
+
+                            {assignment.dueDate && (
+                              <div className="text-[10px] flex items-center gap-1.5 font-semibold">
+                                <Clock className={`size-3 ${isPastDue ? "text-red-400" : "text-zinc-400"}`} />
+                                <span className={isPastDue ? "text-red-400" : "text-zinc-300"}>
+                                  กำหนดส่ง: {new Date(assignment.dueDate).toLocaleDateString("th-TH", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                  })} น.
+                                </span>
+                                <span>•</span>
+                                <span className="text-[9px] text-zinc-550">
+                                  {assignment.allowLate ? "ส่งเลทได้" : "ห้ามส่งเลท"}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -272,8 +401,11 @@ export default function ClassroomDetail({
                                       <CheckCircle2 className="size-3.5" />
                                       <span>เสร็จสิ้น</span>
                                     </div>
-                                    <span className="text-[11px] text-zinc-400">
-                                      คะแนน: <strong className="text-zinc-200">{mySub.score}</strong>/{assignment.questionCount}
+                                    <span className="text-[11px] text-zinc-400 flex flex-col items-end">
+                                      <span>คะแนน: <strong className="text-zinc-200">{mySub.score}</strong>/{assignment.questionCount}</span>
+                                      {assignment.dueDate && new Date(mySub.createdAt) > new Date(assignment.dueDate) && (
+                                        <span className="text-[8px] text-red-400 font-bold block mt-0.5">ส่งล่าช้า (ส่งเลท)</span>
+                                      )}
                                     </span>
                                   </div>
                                   <Link href={`/classroom/${classroom.id}/assignment/${assignment.id}/submission/${mySub.id}`}>
@@ -282,11 +414,16 @@ export default function ClassroomDetail({
                                     </Button>
                                   </Link>
                                 </div>
+                              ) : isPastDue && !assignment.allowLate ? (
+                                <Button disabled className="h-8 bg-zinc-850 text-zinc-650 font-bold text-xs rounded-lg gap-1 px-3 cursor-not-allowed shadow-none border border-transparent">
+                                  <Play className="size-3 fill-zinc-650 text-zinc-650" />
+                                  <span>ปิดรับส่งแล้ว</span>
+                                </Button>
                               ) : (
                                 <Link href={`/classroom/${classroom.id}/assignment/${assignment.id}`}>
                                   <Button className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs rounded-lg gap-1 px-3 cursor-pointer shadow-sm">
                                     <Play className="size-3 fill-primary-foreground text-primary-foreground" />
-                                    <span>ทำแบบทดสอบ</span>
+                                    <span>ทำแบบทดสอบ{isPastDue ? " (ส่งเลท)" : ""}</span>
                                   </Button>
                                 </Link>
                               )}
@@ -345,12 +482,18 @@ export default function ClassroomDetail({
                             </td>
                             {assignments.map((asg) => {
                               const sub = getStudentSubmission(asg.id, enr.userId);
+                              const isSubLate = sub && asg.dueDate ? new Date(sub.createdAt) > new Date(asg.dueDate) : false;
                               return (
                                 <td key={asg.id} className="p-3.5 text-center font-mono font-bold">
                                   {sub ? (
-                                    <Badge className="bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 text-xs">
-                                      {sub.score}
-                                    </Badge>
+                                    <div className="flex flex-col items-center gap-0.5">
+                                      <Badge className="bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 text-xs">
+                                        {sub.score}
+                                      </Badge>
+                                      {isSubLate && (
+                                        <span className="text-[8px] text-red-400 font-bold block">ส่งเลท</span>
+                                      )}
+                                    </div>
                                   ) : (
                                     <span className="text-zinc-650 font-normal">-</span>
                                   )}
@@ -487,6 +630,34 @@ export default function ClassroomDetail({
                     </div>
                   </div>
 
+                  <div className="space-y-1.5">
+                    <Label htmlFor="dueDate" className="text-xs font-semibold text-zinc-400 uppercase">กำหนดส่ง (วันและเวลา)</Label>
+                    <Input
+                      id="dueDate"
+                      name="dueDate"
+                      type="datetime-local"
+                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100 scheme-dark"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-850">
+                    <div className="space-y-0.5 pr-2">
+                      <Label htmlFor="allowLate" className="text-xs font-bold text-zinc-300 cursor-pointer">อนุญาตให้ส่งช้ากว่ากำหนด (Late Submission)</Label>
+                      <span className="text-[9px] text-zinc-550 block">เปิดการใช้งานเพื่อให้ผู้เรียนเข้าทำแบบทดสอบล่าช้ากว่าที่กำหนดส่งได้</span>
+                    </div>
+                    <div className="relative inline-flex items-center cursor-pointer shrink-0">
+                      <input
+                        type="checkbox"
+                        id="allowLate"
+                        name="allowLate"
+                        value="true"
+                        defaultChecked
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary peer-checked:after:bg-primary-foreground peer-checked:after:border-primary-foreground"></div>
+                    </div>
+                  </div>
+
                   <div className="flex gap-2 justify-end pt-2">
                     <Button
                       type="button"
@@ -573,6 +744,146 @@ export default function ClassroomDetail({
                   </Button>
                 </div>
 
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* EDIT CLASSROOM MODAL */}
+        {showEditModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-800 pb-4">
+                <CardTitle className="text-base font-bold text-zinc-200 flex items-center gap-2">
+                  <Settings className="size-5 text-indigo-400" />
+                  <span>แก้ไขข้อมูลห้องเรียน</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <form onSubmit={handleEditClassroom} className="space-y-4">
+                  {error && (
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                      <ShieldAlert className="size-4 shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-1.5">
+                    <Label htmlFor="editName" className="text-xs font-semibold text-zinc-400 uppercase">ชื่อห้องเรียน</Label>
+                    <Input
+                      id="editName"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder="กรอกชื่อห้องเรียน เช่น วิทยาการคำนวณ ม.3/1"
+                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <Label htmlFor="editDescription" className="text-xs font-semibold text-zinc-400 uppercase">คำอธิบายห้องเรียน</Label>
+                    <textarea
+                      id="editDescription"
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      placeholder="กรอกคำอธิบาย เช่น รายวิชาคอมพิวเตอร์และรหัสสีตัวต้านทาน"
+                      rows={3}
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 justify-end pt-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setShowEditModal(false)}
+                      className="h-9 px-4 text-xs hover:bg-zinc-800"
+                    >
+                      ยกเลิก
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isPending}
+                      className="h-9 px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs cursor-pointer rounded-lg shadow-sm"
+                    >
+                      {isPending ? (
+                        <span className="flex items-center gap-1.5">
+                          <Loader2 className="size-3.5 animate-spin" />
+                          กำลังบันทึก...
+                        </span>
+                      ) : (
+                        "บันทึกการแก้ไข"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* DELETE CLASSROOM MODAL */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-zinc-900 border-red-950/30 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-red-950/20 pb-4">
+                <CardTitle className="text-base font-bold text-red-400 flex items-center gap-2">
+                  <Trash2 className="size-5" />
+                  <span>ลบห้องเรียนอย่างถาวร</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-4">
+                {error && (
+                  <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                    <ShieldAlert className="size-4 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <div className="p-3.5 bg-red-500/5 border border-red-500/10 rounded-xl space-y-2">
+                  <span className="text-xs font-bold text-red-400 block">⚠️ คำเตือนการดำเนินการลบ:</span>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">
+                    การลบห้องเรียน <strong>"{classroom.name}"</strong> จะเป็นการทำลายข้อมูลการมอบหมายแบบฝึกหัด รายการนักเรียน และประวัติการบันทึกคะแนนทั้งหมดออกจากระบบอย่างถาวร โดยไม่สามารถกู้คืนข้อมูลกลับมาได้
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="deleteConfirm" className="text-xs font-semibold text-zinc-350 block">
+                    กรุณาพิมพ์ยืนยันด้วยคำว่า <strong className="text-red-400 font-mono text-sm px-1 bg-red-500/5 rounded border border-red-500/10">DELETE</strong> ด้านล่างเพื่อยืนยัน:
+                  </Label>
+                  <Input
+                    id="deleteConfirm"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="พิมพ์ DELETE ที่นี่"
+                    className="bg-zinc-950/60 border-zinc-800 h-10 text-xs text-center font-mono font-bold tracking-wider focus:border-red-900"
+                  />
+                </div>
+
+                <div className="flex gap-2 justify-end pt-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setShowDeleteModal(false)}
+                    className="h-9 px-4 text-xs hover:bg-zinc-800"
+                  >
+                    ยกเลิก
+                  </Button>
+                  <Button
+                    onClick={handleDeleteClassroom}
+                    disabled={isPending || deleteConfirmText !== "DELETE"}
+                    className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-xs cursor-pointer rounded-lg shadow-sm disabled:bg-zinc-850 disabled:text-zinc-650 disabled:cursor-not-allowed border border-red-900/10"
+                  >
+                    {isPending ? (
+                      <span className="flex items-center gap-1.5">
+                        <Loader2 className="size-3.5 animate-spin" />
+                        กำลังลบ...
+                      </span>
+                    ) : (
+                      "ยืนยันการลบห้องเรียน"
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
