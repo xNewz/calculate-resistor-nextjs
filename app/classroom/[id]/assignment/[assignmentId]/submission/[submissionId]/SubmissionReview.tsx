@@ -89,7 +89,7 @@ export default function SubmissionReview({
     return { text: "ลองใหม่อีกครั้ง! ทบทวนตารางสีเพื่อทำคะแนนให้ดียิ่งขึ้น 📚", color: "text-red-400" };
   };
 
-  const verdict = getVerdict(submission.score, assignment.questionCount, assignment.assignmentType);
+  const verdict = getVerdict(submission.score, assignment.questionCount, assignment.assignmentType ?? "RESISTOR");
 
   const renderExplanation = (q: Question) => {
     if (assignment.assignmentType === "MULTIMETER" && q.multimeterData) {
