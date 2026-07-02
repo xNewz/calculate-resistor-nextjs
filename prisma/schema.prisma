@@ -58,6 +58,7 @@ model Assignment {
   title         String
   description   String?      @db.Text
   bandType      String       // "4" or "5"
+  assignmentType String      @default("RESISTOR") // "RESISTOR" or "MULTIMETER"
   questionCount Int
   dueDate       DateTime?
   allowLate     Boolean      @default(true)

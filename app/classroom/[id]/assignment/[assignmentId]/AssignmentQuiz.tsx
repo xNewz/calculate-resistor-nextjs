@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import ResistorPreview from "@/components/ResistorPreview";
+import MultimeterPreview from "@/components/MultimeterPreview";
+import { generateMultimeterQuestion, parseMultimeterAnswer, MultimeterQuestion } from "@/lib/multimeter";
 import {
   digits,
   multipliers,
@@ -28,11 +30,12 @@ import {
 } from "lucide-react";
 
 interface Question {
-  bands: 4 | 5;
-  colors: string[];
-  resistance: number;
+  bands?: 4 | 5;
+  colors?: string[];
+  resistance?: number;
   formatted: string;
-  tolerance: number;
+  tolerance?: number;
+  multimeterData?: MultimeterQuestion;
 }
 
 interface UserAttempt {
@@ -49,6 +52,7 @@ interface AssignmentQuizProps {
     title: string;
     description: string | null;
     bandType: string; // "4" or "5"
+    assignmentType?: string;
     questionCount: number;
   };
 }
@@ -87,8 +91,21 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
 
   // Generate questions list
   const generateQuestions = useCallback(() => {
-    const bands = parseInt(assignment.bandType, 10) as 4 | 5;
     const list: Question[] = [];
+    const type = assignment.assignmentType || "RESISTOR";
+
+    if (type === "MULTIMETER") {
+      for (let i = 0; i < assignment.questionCount; i++) {
+        const q = generateMultimeterQuestion();
+        list.push({
+          formatted: q.formatted,
+          multimeterData: q,
+        });
+      }
+      return list;
+    }
+
+    const bands = parseInt(assignment.bandType, 10) as 4 | 5;
 
     for (let i = 0; i < assignment.questionCount; i++) {
       if (bands === 4) {
@@ -155,11 +172,19 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
 
       let isCorrect = false;
       if (cleanAnswer && !isTimeoutState) {
-        const parsed = parseTextAnswer(cleanAnswer);
-        if (parsed !== null) {
-          const diff = Math.abs(parsed - currentQuestion.resistance);
-          const limit = 0.01 * currentQuestion.resistance;
-          isCorrect = diff <= limit;
+        if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
+          const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
+          if (parsed !== null) {
+            const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
+            isCorrect = diff <= 0.001; 
+          }
+        } else {
+          const parsed = parseTextAnswer(cleanAnswer);
+          if (parsed !== null && currentQuestion.resistance !== undefined) {
+            const diff = Math.abs(parsed - currentQuestion.resistance);
+            const limit = 0.01 * currentQuestion.resistance;
+            isCorrect = diff <= limit;
+          }
         }
       }
 
@@ -275,9 +300,19 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
                   คำชี้แจงกติกาแบบฝึกหัด:
                 </h4>
                 <ul className="list-disc pl-5 space-y-1.5">
-                  <li>คำถามจะสุ่มตามแถบสีที่ผู้สอนมอบหมาย ({assignment.bandType} แถบสี)</li>
-                  <li>มีเวลานับถอยหลังในตอบข้อละ 30 วินาที</li>
-                  <li>สามารถกรอกหน่วยย่อได้ เช่น 100, 1k (1000 โอห์ม), 1.5M (1.5 เมกะโอห์ม)</li>
+                  {assignment.assignmentType === "MULTIMETER" ? (
+                    <>
+                      <li>อ่านค่าจากหน้าปัดมัลติมิเตอร์แบบเข็ม ตามย่านวัดที่กำหนด</li>
+                      <li>มีเวลานับถอยหลังในตอบข้อละ 30 วินาที</li>
+                      <li>สามารถกรอกหน่วยย่อได้ เช่น 1k, 1M เป็นต้น (ไม่ต้องใส่ V หรือ Ω)</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>คำถามจะสุ่มตามแถบสีที่ผู้สอนมอบหมาย ({assignment.bandType} แถบสี)</li>
+                      <li>มีเวลานับถอยหลังในตอบข้อละ 30 วินาที</li>
+                      <li>สามารถกรอกหน่วยย่อได้ เช่น 100, 1k (1000 โอห์ม), 1.5M (1.5 เมกะโอห์ม)</li>
+                    </>
+                  )}
                   <li>หากเวลาหมด ระบบจะข้ามข้อโดยอัตโนมัติและถือเป็นคำตอบที่ผิด</li>
                   <li>เมื่อตอบครบทุกข้อ คะแนนจะถูกบันทึกเข้าระบบห้องเรียนเพื่อให้ผู้สอนตรวจ</li>
                 </ul>
@@ -328,7 +363,11 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
                 {/* Visual Resistor */}
                 <div className="py-4 min-h-[180px] flex flex-col justify-center relative">
                   <div className={isImageLoaded ? "block" : "hidden"}>
-                    <ResistorPreview colors={currentQuestion.colors} onLoad={() => setIsImageLoaded(true)} />
+                    {assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData ? (
+                      <MultimeterPreview range={currentQuestion.multimeterData.range} pointerValue={currentQuestion.multimeterData.pointerValue} onLoad={() => setIsImageLoaded(true)} />
+                    ) : (
+                      <ResistorPreview colors={currentQuestion.colors || []} onLoad={() => setIsImageLoaded(true)} />
+                    )}
                   </div>
                   {!isImageLoaded && (
                     <div className="flex flex-col items-center justify-center space-y-3">
@@ -342,7 +381,9 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
                 <div className="space-y-4 max-w-sm mx-auto">
                   <div className="space-y-2">
                     <Label htmlFor="answer-input" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block text-center">
-                      กรอกค่าความต้านทาน (หน่วย: โอห์ม Ω)
+                      {assignment.assignmentType === "MULTIMETER" 
+                        ? (currentQuestion.multimeterData?.range.type === "OHM" ? "อ่านค่าจากเข็ม (หน่วย: โอห์ม Ω)" : "อ่านค่าจากเข็ม (หน่วย: โวลต์ V)")
+                        : "กรอกค่าความต้านทาน (หน่วย: โอห์ม Ω)"}
                     </Label>
                     <Input
                       id="answer-input"

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import ResistorPreview from "@/components/ResistorPreview";
+import MultimeterPreview from "@/components/MultimeterPreview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,13 +24,15 @@ import {
   TOLERANCE_MAP,
   formatValue
 } from "@/lib/resistor";
+import { MultimeterQuestion } from "@/lib/multimeter";
 
 interface Question {
-  bands: 4 | 5;
-  colors: string[];
-  resistance: number;
+  bands?: 4 | 5;
+  colors?: string[];
+  resistance?: number;
   formatted: string;
-  tolerance: number;
+  tolerance?: number;
+  multimeterData?: MultimeterQuestion;
 }
 
 interface UserAttempt {
@@ -45,6 +48,7 @@ interface SubmissionReviewProps {
     id: string;
     title: string;
     questionCount: number;
+    assignmentType?: string;
   };
   submission: {
     id: string;
@@ -80,10 +84,36 @@ export default function SubmissionReview({
   const verdict = getVerdict(submission.score, assignment.questionCount);
 
   const renderExplanation = (q: Question) => {
+    if (assignment.assignmentType === "MULTIMETER" && q.multimeterData) {
+      const type = q.multimeterData.range.type;
+      return (
+        <div className="space-y-3 text-[11px] text-zinc-400 bg-zinc-950/40 p-4 rounded-xl border border-zinc-850 mt-3">
+          <h4 className="font-semibold text-zinc-200 text-xs flex items-center gap-1.5">
+            <HelpCircle className="size-3.5 text-indigo-400" />
+            <span>วิธีอ่านค่ามัลติมิเตอร์ (ย่านวัด {q.multimeterData.range.name}):</span>
+          </h4>
+          <p className="text-zinc-300">
+            เข็มชี้ที่เลข <strong className="text-white">{q.multimeterData.pointerValue}</strong> บนสเกล
+          </p>
+          {type === "OHM" ? (
+            <p className="text-zinc-300">
+              นำค่าที่อ่านได้คูณด้วยตัวคูณย่านวัด (x{q.multimeterData.range.multiplier}) <br/>
+              = {q.multimeterData.pointerValue} × {q.multimeterData.range.multiplier} = <strong className="text-emerald-400">{q.multimeterData.value} Ω</strong>
+            </p>
+          ) : (
+            <p className="text-zinc-300">
+              ย่านวัดตั้งไว้ที่ {q.multimeterData.range.name} (สเกลสูงสุด = {q.multimeterData.range.maxScale})<br/>
+              = <strong className="text-emerald-400">{q.multimeterData.value} {type}</strong>
+            </p>
+          )}
+        </div>
+      );
+    }
+
     const is5 = q.bands === 5;
-    const first = q.colors[0];
-    const second = q.colors[1];
-    const third = is5 ? q.colors[2] : null;
+    const first = q.colors![0];
+    const second = q.colors![1];
+    const third = is5 ? q.colors![2] : null;
     const mult = is5 ? q.colors[3] : q.colors[2];
     const tol = is5 ? q.colors[4] : q.colors[3];
 
@@ -248,9 +278,13 @@ export default function SubmissionReview({
                   <AccordionContent className="px-5 pb-5 border-t border-zinc-850/60 pt-4">
                     <div className="space-y-5">
                       
-                      {/* Interactive Resistor Visual */}
+                      {/* Interactive Visual */}
                       <div>
-                        <ResistorPreview colors={q.colors} />
+                        {assignment.assignmentType === "MULTIMETER" && q.multimeterData ? (
+                          <MultimeterPreview range={q.multimeterData.range} pointerValue={q.multimeterData.pointerValue} />
+                        ) : (
+                          <ResistorPreview colors={q.colors!} />
+                        )}
                       </div>
 
                       {/* Score Summary Info */}

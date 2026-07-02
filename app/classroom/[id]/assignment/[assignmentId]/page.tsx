@@ -73,6 +73,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
         title: assignment.title,
         description: assignment.description,
         bandType: assignment.bandType,
+        assignmentType: assignment.assignmentType,
         questionCount: assignment.questionCount,
       }}
     />

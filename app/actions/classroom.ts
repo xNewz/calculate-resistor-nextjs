@@ -149,6 +149,7 @@ export async function createAssignmentAction(
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
   const bandType = formData.get("bandType") as string;
+  const assignmentType = formData.get("assignmentType") as string || "RESISTOR";
   const questionCountStr = formData.get("questionCount") as string;
   const classroomId = formData.get("classroomId") as string;
   const dueDateStr = formData.get("dueDate") as string;
@@ -203,6 +204,7 @@ export async function createAssignmentAction(
         title,
         description: description || null,
         bandType,
+        assignmentType,
         questionCount,
         dueDate,
         allowLate,
@@ -421,6 +423,7 @@ export async function updateAssignmentAction(
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
   const bandType = formData.get("bandType") as string;
+  const assignmentType = formData.get("assignmentType") as string || "RESISTOR";
   const questionCountStr = formData.get("questionCount") as string;
   const dueDateStr = formData.get("dueDate") as string;
   const allowLateStr = formData.get("allowLate") as string;
@@ -462,6 +465,7 @@ export async function updateAssignmentAction(
         title,
         description: description || null,
         bandType,
+        assignmentType,
         questionCount,
         dueDate,
         allowLate,

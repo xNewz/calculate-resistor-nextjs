@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import ResistorPreview from "@/components/ResistorPreview";
+import MultimeterPreview from "@/components/MultimeterPreview";
+import { generateMultimeterQuestion, parseMultimeterAnswer, MultimeterQuestion } from "@/lib/multimeter";
 import {
   digits,
   multipliers,
@@ -48,11 +50,12 @@ import {
 import Link from "next/link";
 
 interface Question {
-  bands: 4 | 5;
-  colors: string[];
-  resistance: number;
+  bands?: 4 | 5;
+  colors?: string[];
+  resistance?: number;
   formatted: string;
-  tolerance: number;
+  tolerance?: number;
+  multimeterData?: MultimeterQuestion;
 }
 
 interface UserAttempt {
@@ -70,9 +73,17 @@ function formatMultiplierValue(value: number): string {
   return `${value}`;
 }
 
-type QuizMode = "mixed" | "4-band" | "5-band";
+type QuizMode = "mixed" | "4-band" | "5-band" | "multimeter";
 
 const generateQuestion = (mode: QuizMode): Question => {
+  if (mode === "multimeter") {
+    const q = generateMultimeterQuestion();
+    return {
+      formatted: q.formatted,
+      multimeterData: q
+    };
+  }
+
   let bands: 4 | 5 = 4;
   if (mode === "4-band") bands = 4;
   else if (mode === "5-band") bands = 5;
@@ -180,11 +191,19 @@ export default function QuizPage() {
 
     let isCorrect = false;
     if (cleanAnswer && !isTimeoutState) {
-      const parsed = parseTextAnswer(cleanAnswer);
-      if (parsed !== null) {
-        const diff = Math.abs(parsed - currentQuestion.resistance);
-        const limit = 0.01 * currentQuestion.resistance;
-        isCorrect = diff <= limit;
+      if (quizMode === "multimeter" && currentQuestion.multimeterData) {
+        const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
+        if (parsed !== null) {
+          const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
+          isCorrect = diff <= 0.001;
+        }
+      } else {
+        const parsed = parseTextAnswer(cleanAnswer);
+        if (parsed !== null && currentQuestion.resistance !== undefined) {
+          const diff = Math.abs(parsed - currentQuestion.resistance);
+          const limit = 0.01 * currentQuestion.resistance;
+          isCorrect = diff <= limit;
+        }
       }
     }
 
@@ -255,12 +274,42 @@ export default function QuizPage() {
   };
 
   const getExplanation = (q: Question) => {
+    if (q.multimeterData) {
+      return (
+        <div className="space-y-3 text-xs text-muted-foreground bg-muted/30 p-4 rounded-lg border mt-2">
+          <h4 className="font-semibold text-foreground mb-1 text-sm flex items-center gap-1.5">
+            <HelpCircle className="size-4" />
+            <span>วิธีอ่านค่ามัลติมิเตอร์ ({q.multimeterData.range.name}):</span>
+          </h4>
+          <ul className="space-y-2 list-none pl-0">
+            <li className="flex items-center gap-2 flex-wrap">
+              <span className="text-muted-foreground w-28">ย่านวัดที่ตั้ง (Range):</span>
+              <Badge variant="secondary">{q.multimeterData.range.name}</Badge>
+            </li>
+            <li className="flex items-center gap-2 flex-wrap">
+              <span className="text-muted-foreground w-28">เข็มชี้ที่เลข (สเกล):</span>
+              <span className="font-semibold text-foreground">{q.multimeterData.pointerValue}</span>
+            </li>
+          </ul>
+          <div className="pt-2 border-t font-mono text-muted-foreground flex flex-wrap gap-1.5 items-center">
+            <span className="font-semibold text-foreground">ผลลัพธ์:</span>
+            <span>
+              {q.multimeterData.range.type === "OHM" 
+                ? `${q.multimeterData.pointerValue} x ${q.multimeterData.range.maxScale} = ${q.multimeterData.value} Ω`
+                : `${q.multimeterData.pointerValue} V`}
+              {" "}({q.formatted})
+            </span>
+          </div>
+        </div>
+      );
+    }
+
     const is5 = q.bands === 5;
-    const first = q.colors[0];
-    const second = q.colors[1];
-    const third = is5 ? q.colors[2] : null;
-    const mult = is5 ? q.colors[3] : q.colors[2];
-    const tol = is5 ? q.colors[4] : q.colors[3];
+    const first = q.colors![0];
+    const second = q.colors![1];
+    const third = is5 ? q.colors![2] : null;
+    const mult = is5 ? q.colors![3] : q.colors![2];
+    const tol = is5 ? q.colors![4] : q.colors![3];
 
     const d1 = DIGIT_MAP[first] ?? 0;
     const d2 = DIGIT_MAP[second] ?? 0;
@@ -317,9 +366,9 @@ export default function QuizPage() {
         <div className="pt-2 border-t font-mono text-muted-foreground flex flex-wrap gap-1.5 items-center">
           <span className="font-semibold text-foreground">สมการ:</span>
           {is5 ? (
-            <span>({d1}{d2}{d3}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance)})</span>
+            <span>({d1}{d2}{d3}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance || 0)})</span>
           ) : (
-            <span>({d1}{d2}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance)})</span>
+            <span>({d1}{d2}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance || 0)})</span>
           )}
         </div>
       </div>
@@ -386,27 +435,34 @@ export default function QuizPage() {
 
                 <div className="space-y-3 pt-2">
                   <Label className="text-foreground">เลือกรูปแบบการทดสอบ:</Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <Button
                       variant={quizMode === "4-band" ? "default" : "outline"}
                       onClick={() => setQuizMode("4-band")}
-                      className="h-11"
+                      className="h-11 text-xs"
                     >
                       4 แถบสี
                     </Button>
                     <Button
                       variant={quizMode === "5-band" ? "default" : "outline"}
                       onClick={() => setQuizMode("5-band")}
-                      className="h-11"
+                      className="h-11 text-xs"
                     >
                       5 แถบสี
                     </Button>
                     <Button
                       variant={quizMode === "mixed" ? "default" : "outline"}
                       onClick={() => setQuizMode("mixed")}
-                      className="h-11"
+                      className="h-11 text-xs"
                     >
-                      สุ่ม (4 และ 5 แถบสี)
+                      สุ่ม (4 และ 5)
+                    </Button>
+                    <Button
+                      variant={quizMode === "multimeter" ? "default" : "outline"}
+                      onClick={() => setQuizMode("multimeter")}
+                      className={`h-11 text-xs ${quizMode !== "multimeter" ? "bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500 border-indigo-500/20" : ""}`}
+                    >
+                      สเกลมัลติมิเตอร์
                     </Button>
                   </div>
                 </div>
@@ -441,7 +497,7 @@ export default function QuizPage() {
 
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                   <Badge variant="outline">
-                    {currentQuestion.bands}-Band
+                    {currentQuestion.multimeterData ? "มัลติมิเตอร์" : `${currentQuestion.bands}-Band`}
                   </Badge>
                   <div className="text-xs text-muted-foreground">
                     คะแนนปัจจุบัน: <span className="font-semibold text-foreground">{score}</span>
@@ -476,7 +532,11 @@ export default function QuizPage() {
                   {/* Visual Preview */}
                   <div className="py-2 min-h-[180px] flex flex-col justify-center relative">
                     <div className={isImageLoaded ? "block" : "hidden"}>
-                      <ResistorPreview colors={currentQuestion.colors} onLoad={() => setIsImageLoaded(true)} />
+                      {currentQuestion.multimeterData ? (
+                        <MultimeterPreview range={currentQuestion.multimeterData.range} pointerValue={currentQuestion.multimeterData.pointerValue} onLoad={() => setIsImageLoaded(true)} />
+                      ) : (
+                        <ResistorPreview colors={currentQuestion.colors || []} onLoad={() => setIsImageLoaded(true)} />
+                      )}
                     </div>
                     {!isImageLoaded && (
                       <div className="flex flex-col items-center justify-center space-y-3">
@@ -489,12 +549,16 @@ export default function QuizPage() {
                   {/* Form Input Section */}
                   <div className="max-w-md mx-auto space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="answer-input">ค่าความต้านทาน (หน่วยโอห์ม):</Label>
+                      <Label htmlFor="answer-input">
+                        {currentQuestion.multimeterData 
+                          ? (currentQuestion.multimeterData.range.type === "OHM" ? "ค่าความต้านทาน (หน่วยโอห์ม Ω):" : "ค่าแรงดัน (หน่วยโวลต์ V):")
+                          : "ค่าความต้านทาน (หน่วยโอห์ม Ω):"}
+                      </Label>
                       <Input
                         id="answer-input"
                         ref={inputRef}
                         type="text"
-                        placeholder="ตัวอย่าง: 150, 1.5k, 2.2M, 10"
+                        placeholder={currentQuestion.multimeterData ? "พิมพ์ตัวเลข เช่น 1k, 50..." : "ตัวอย่าง: 150, 1.5k, 2.2M, 10"}
                         value={userAnswer}
                         onChange={(e) => setUserAnswer(e.target.value)}
                         className="h-10 text-base"
@@ -591,7 +655,7 @@ export default function QuizPage() {
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-xs text-muted-foreground">
                                   <span>ตอบ: <span className="font-mono text-foreground font-semibold">{attempt.userAnswer}</span></span>
                                   <span>•</span>
-                                  <span>เฉลย: <span className="font-mono text-foreground font-semibold">{formatValue(attempt.question.resistance)}</span></span>
+                                  <span>เฉลย: <span className="font-mono text-foreground font-semibold">{formatValue(attempt.question.resistance || 0)}</span></span>
                                   {isTimeout && (
                                     <Badge variant="destructive" className="h-4.5 rounded py-0 px-1 text-[9px] font-medium leading-none">
                                       หมดเวลา
@@ -606,26 +670,28 @@ export default function QuizPage() {
                             </AccordionTrigger>
                           </div>
                           <AccordionContent className="pb-4 border-t pt-2">
-                            {/* Color bands list */}
-                            <div className="flex items-center gap-1.5 mb-3 mt-1">
-                              <span className="text-[10px] text-muted-foreground mr-1 uppercase tracking-wider">สีแถบตัวต้านทาน:</span>
-                              {attempt.question.colors.map((color, colorIdx) => {
-                                const info = COLOR_MAP[color];
-                                return (
-                                  <Tooltip key={colorIdx}>
-                                    <TooltipTrigger className="cursor-pointer bg-transparent border-0 p-0 flex items-center justify-center">
-                                      <div
-                                        className="size-3 rounded-full border border-white/20 shadow-sm"
-                                        style={{ backgroundColor: info?.hex || "#000" }}
-                                      />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="bg-popover text-popover-foreground border text-[10px] py-1 px-2">
-                                      {colorIdx + 1}. {info?.nameEn} ({info?.nameTh})
-                                    </TooltipContent>
-                                  </Tooltip>
-                                );
-                              })}
-                            </div>
+                            {/* Color bands list or Range info */}
+                            {attempt.question.colors ? (
+                              <div className="flex items-center gap-1.5 mb-3 mt-1">
+                                <span className="text-[10px] text-muted-foreground mr-1 uppercase tracking-wider">สีแถบตัวต้านทาน:</span>
+                                {attempt.question.colors.map((color, colorIdx) => {
+                                  const info = COLOR_MAP[color];
+                                  return (
+                                    <Tooltip key={colorIdx}>
+                                      <TooltipTrigger className="cursor-pointer bg-transparent border-0 p-0 flex items-center justify-center">
+                                        <div
+                                          className="size-3 rounded-full border border-white/20 shadow-sm"
+                                          style={{ backgroundColor: info?.hex || "#000" }}
+                                        />
+                                      </TooltipTrigger>
+                                      <TooltipContent className="bg-popover text-popover-foreground border text-[10px] py-1 px-2">
+                                        {colorIdx + 1}. {info?.nameEn} ({info?.nameTh})
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  );
+                                })}
+                              </div>
+                            ) : null}
                             {getExplanation(attempt.question)}
                           </AccordionContent>
                         </AccordionItem>

@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import ResistorPreview from "@/components/ResistorPreview";
+import MultimeterPreview from "@/components/MultimeterPreview";
+import { generateMultimeterQuestion, parseMultimeterAnswer, MultimeterQuestion } from "@/lib/multimeter";
 import {
   digits, multipliers, tolerances,
   calculate4Band, calculate5Band,
@@ -18,11 +20,12 @@ import {
 } from "lucide-react";
 
 interface Question {
-  bands: 4 | 5;
-  colors: string[];
-  resistance: number;
+  bands?: 4 | 5;
+  colors?: string[];
+  resistance?: number;
   formatted: string;
-  tolerance: number;
+  tolerance?: number;
+  multimeterData?: MultimeterQuestion;
 }
 
 interface UserAttempt {
@@ -39,6 +42,7 @@ interface ExamQuizProps {
     title: string;
     description: string | null;
     bandType: string;
+    assignmentType?: string;
     questionCount: number;
     timeLimit: number | null;
   };
@@ -86,8 +90,18 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
   // Generate questions
   const generateQuestions = useCallback(() => {
-    const bands = parseInt(assignment.bandType, 10) as 4 | 5;
     const list: Question[] = [];
+    const type = assignment.assignmentType || "RESISTOR";
+
+    if (type === "MULTIMETER") {
+      for (let i = 0; i < assignment.questionCount; i++) {
+        const q = generateMultimeterQuestion();
+        list.push({ formatted: q.formatted, multimeterData: q });
+      }
+      return list;
+    }
+
+    const bands = parseInt(assignment.bandType, 10) as 4 | 5;
     for (let i = 0; i < assignment.questionCount; i++) {
       if (bands === 4) {
         const first = digits[Math.floor(Math.random() * (digits.length - 1)) + 1];
@@ -268,11 +282,19 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
     let isCorrect = false;
     if (cleanAnswer) {
-      const parsed = parseTextAnswer(cleanAnswer);
-      if (parsed !== null) {
-        const diff = Math.abs(parsed - currentQuestion.resistance);
-        const limit = 0.01 * currentQuestion.resistance;
-        isCorrect = diff <= limit;
+      if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
+        const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
+        if (parsed !== null) {
+          const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
+          isCorrect = diff <= 0.001; 
+        }
+      } else {
+        const parsed = parseTextAnswer(cleanAnswer);
+        if (parsed !== null && currentQuestion.resistance !== undefined) {
+          const diff = Math.abs(parsed - currentQuestion.resistance);
+          const limit = 0.01 * currentQuestion.resistance;
+          isCorrect = diff <= limit;
+        }
       }
     }
 
@@ -433,17 +455,29 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                 
                 <div className="w-full flex justify-center mb-10 mt-6 relative h-32 items-center">
                   <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full scale-150 -z-10" />
-                  <ResistorPreview 
-                    colors={currentQuestion.colors}
-                    onLoad={() => setIsImageLoaded(true)}
-                  />
+                  {assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData ? (
+                    <MultimeterPreview 
+                      range={currentQuestion.multimeterData.range} 
+                      pointerValue={currentQuestion.multimeterData.pointerValue} 
+                      onLoad={() => setIsImageLoaded(true)} 
+                    />
+                  ) : (
+                    <ResistorPreview 
+                      colors={currentQuestion.colors || []}
+                      onLoad={() => setIsImageLoaded(true)}
+                    />
+                  )}
                 </div>
 
                 <div className="w-full max-w-sm space-y-4 transition-all duration-500">
                   <div className="space-y-1.5">
                     <Label htmlFor="answer" className="text-sm font-bold text-zinc-300 flex items-center justify-between">
                       คำตอบของคุณ
-                      <span className="text-xs font-normal text-zinc-500">ใส่ตัวเลข เช่น 4.7k, 100</span>
+                      <span className="text-xs font-normal text-zinc-500">
+                        {assignment.assignmentType === "MULTIMETER" 
+                          ? (currentQuestion.multimeterData?.range.type === "OHM" ? "หน่วย: โอห์ม (Ω)" : "หน่วย: โวลต์ (V)") 
+                          : "ใส่ตัวเลข เช่น 4.7k, 100"}
+                      </span>
                     </Label>
                     <div className="relative group">
                       <Input
@@ -458,7 +492,11 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                         autoComplete="off"
                       />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 font-bold text-zinc-500 text-lg">
-                        <span className="font-serif italic">Ω</span>
+                        <span className="font-serif italic">
+                          {assignment.assignmentType === "MULTIMETER" 
+                            ? (currentQuestion.multimeterData?.range.type === "OHM" ? "Ω" : "V") 
+                            : "Ω"}
+                        </span>
                       </div>
                     </div>
                   </div>

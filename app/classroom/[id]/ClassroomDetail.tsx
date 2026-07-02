@@ -86,10 +86,12 @@ export default function ClassroomDetail({
   const [activeTab, setActiveTab] = useState(user.role === "TEACHER" || user.role === "ADMIN" ? "dashboard" : "assignments");
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [isExamMode, setIsExamMode] = useState(false);
+  const [assignmentType, setAssignmentType] = useState("RESISTOR");
 
   // Assignment Edit & Delete states
   const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
+  const [editAssignmentType, setEditAssignmentType] = useState("RESISTOR");
   const [showDeleteAssignmentModal, setShowDeleteAssignmentModal] = useState(false);
   const [deletingAssignment, setDeletingAssignment] = useState<any>(null);
 
@@ -621,7 +623,7 @@ export default function ClassroomDetail({
                               </Badge>
                             )}
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
-                              {assignment.bandType} แถบสี
+                              {assignment.assignmentType === "MULTIMETER" ? "มัลติมิเตอร์" : `${assignment.bandType} แถบสี`}
                             </Badge>
                             <Badge variant="secondary" className="bg-zinc-950 text-zinc-400 text-[10px] py-0 px-2 h-5 rounded-full">
                               โจทย์ {assignment.questionCount} ข้อ
@@ -709,6 +711,7 @@ export default function ClassroomDetail({
                                       className="size-7 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 cursor-pointer"
                                       onClick={() => {
                                         setEditingAssignment(assignment);
+                                        setEditAssignmentType(assignment.assignmentType || "RESISTOR");
                                         setShowEditAssignmentModal(true);
                                       }}
                                       title="แก้ไข"
@@ -969,18 +972,36 @@ export default function ClassroomDetail({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="bandType" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบสีตัวต้านทาน</Label>
+                      <Label htmlFor="assignmentType" className="text-xs font-semibold text-zinc-400 uppercase">ประเภทแบบฝึกหัด</Label>
                       <select
-                        id="bandType"
-                        name="bandType"
+                        id="assignmentType"
+                        name="assignmentType"
+                        value={assignmentType}
+                        onChange={(e) => setAssignmentType(e.target.value)}
                         className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
                       >
-                        <option value="4">4 แถบสี (4-Band)</option>
-                        <option value="5">5 แถบสี (5-Band)</option>
+                        <option value="RESISTOR">ตัวต้านทาน</option>
+                        <option value="MULTIMETER">มัลติมิเตอร์</option>
                       </select>
                     </div>
 
-                    <div className="space-y-1.5">
+                    {assignmentType === "RESISTOR" ? (
+                      <div className="space-y-1.5">
+                        <Label htmlFor="bandType" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบสีตัวต้านทาน</Label>
+                        <select
+                          id="bandType"
+                          name="bandType"
+                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                        >
+                          <option value="4">4 แถบสี (4-Band)</option>
+                          <option value="5">5 แถบสี (5-Band)</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <input type="hidden" name="bandType" value="4" />
+                    )}
+
+                    <div className="space-y-1.5 col-span-2 sm:col-span-1">
                       <Label htmlFor="questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
                       <select
                         id="questionCount"
@@ -1348,18 +1369,37 @@ export default function ClassroomDetail({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="edit-bandType" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบสี</Label>
+                      <Label htmlFor="edit-assignmentType" className="text-xs font-semibold text-zinc-400 uppercase">ประเภทแบบฝึกหัด</Label>
                       <select
-                        id="edit-bandType"
-                        name="bandType"
-                        defaultValue={editingAssignment.bandType}
+                        id="edit-assignmentType"
+                        name="assignmentType"
+                        value={editAssignmentType}
+                        onChange={(e) => setEditAssignmentType(e.target.value)}
                         className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
                       >
-                        <option value="4">4 แถบสี (4-Band)</option>
-                        <option value="5">5 แถบสี (5-Band)</option>
+                        <option value="RESISTOR">ตัวต้านทาน</option>
+                        <option value="MULTIMETER">มัลติมิเตอร์</option>
                       </select>
                     </div>
-                    <div className="space-y-1.5">
+
+                    {editAssignmentType === "RESISTOR" ? (
+                      <div className="space-y-1.5">
+                        <Label htmlFor="edit-bandType" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบสี</Label>
+                        <select
+                          id="edit-bandType"
+                          name="bandType"
+                          defaultValue={editingAssignment.bandType}
+                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
+                        >
+                          <option value="4">4 แถบสี (4-Band)</option>
+                          <option value="5">5 แถบสี (5-Band)</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <input type="hidden" name="bandType" value={editingAssignment.bandType || "4"} />
+                    )}
+
+                    <div className="space-y-1.5 col-span-2 sm:col-span-1">
                       <Label htmlFor="edit-questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
                       <select
                         id="edit-questionCount"

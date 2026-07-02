@@ -36,6 +36,11 @@ const FEATURES = [
     desc: "ฝึกอ่านค่าความต้านทานจากแถบสี ทั้งแบบ 4 แถบ และ 5 แถบ อย่างเป็นระบบ",
   },
   {
+    icon: <Zap className="size-5 text-sky-400" />,
+    title: "ฝึกอ่านสเกลมัลติมิเตอร์",
+    desc: "แบบจำลองหน้าปัดมัลติมิเตอร์แบบเข็ม อ่านค่าแรงดันและความต้านทานได้เสมือนจริง",
+  },
+  {
     icon: <Trophy className="size-5 text-amber-400" />,
     title: "ทดสอบผ่านเกม Quiz",
     desc: "ฝึกทักษะด้วยแบบทดสอบแบบ interactive ที่สนุกและท้าทาย วัดความเข้าใจของคุณได้ทันที",
@@ -43,12 +48,7 @@ const FEATURES = [
   {
     icon: <GraduationCap className="size-5 text-emerald-400" />,
     title: "ระบบห้องเรียนออนไลน์",
-    desc: "ผู้สอนสามารถสร้างห้องเรียน มอบหมายแบบฝึกหัด และติดตามผลการเรียนรู้ของนักเรียนได้",
-  },
-  {
-    icon: <Users className="size-5 text-sky-400" />,
-    title: "ติดตามพัฒนาการได้",
-    desc: "ดูกราฟสถิติคะแนนของผู้เรียนแต่ละคน รู้ทันทีว่าใครพัฒนาขึ้น หรือต้องการความช่วยเหลือ",
+    desc: "ผู้สอนสามารถสร้างห้องเรียน มอบหมายแบบฝึกหัด และติดตามสถิติคะแนนได้",
   },
 ];
 
@@ -74,13 +74,13 @@ export default function HomePage() {
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight max-w-3xl">
           เรียนรู้
           <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-sky-400 bg-clip-text text-transparent">
-            {" "}รหัสสีตัวต้านทาน
+            {" "}ตัวต้านทานและมัลติมิเตอร์
           </span>
           <br />
           ได้ง่ายกว่าเดิม
         </h1>
         <p className="mt-5 text-zinc-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-          Practice-Lab คือแพลตฟอร์มฝึกทักษะการอ่านค่าความต้านทานจากรหัสแถบสี
+          Practice-Lab คือแพลตฟอร์มฝึกทักษะการอ่านรหัสสีตัวต้านทานและการอ่านสเกลมัลติมิเตอร์แบบเข็ม
           ผ่านระบบห้องเรียนออนไลน์และเกมทดสอบที่สนุก
         </p>
 
@@ -91,9 +91,14 @@ export default function HomePage() {
               <ArrowRight className="size-4" />
             </Button>
           </Link>
-          <Link href="/login">
+          <Link href="/quiz">
             <Button variant="outline" className="h-11 px-7 border-zinc-700 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 text-sm rounded-xl cursor-pointer">
-              เข้าสู่ระบบ
+              ลองทำแบบฝึกหัด
+            </Button>
+          </Link>
+          <Link href="/learn/multimeter">
+            <Button variant="outline" className="h-11 px-7 border-zinc-700 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 text-sm rounded-xl cursor-pointer">
+              บทเรียนมัลติมิเตอร์
             </Button>
           </Link>
         </div>

@@ -80,6 +80,7 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
         id: submission.assignment.id,
         title: submission.assignment.title,
         questionCount: submission.assignment.questionCount,
+        assignmentType: submission.assignment.assignmentType,
       }}
       submission={{
         id: submission.id,
