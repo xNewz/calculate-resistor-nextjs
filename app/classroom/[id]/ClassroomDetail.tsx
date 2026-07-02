@@ -10,6 +10,7 @@ import {
   updateAssignmentAction, 
   deleteAssignmentAction 
 } from "@/app/actions/classroom";
+import { COLOR_MAP } from "@/lib/resistor";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -540,24 +541,15 @@ export default function ClassroomDetail({
                               </div>
                               <div className="flex gap-1">
                                 {mistake.colors.map((color, cIdx) => {
-                                  // Map english color to tailwind roughly for small badge
-                                  const colorMap: Record<string, string> = {
-                                    black: "bg-black text-white border-zinc-800",
-                                    brown: "bg-[#8B4513] text-white",
-                                    red: "bg-red-500 text-white",
-                                    orange: "bg-orange-500 text-white",
-                                    yellow: "bg-yellow-400 text-black",
-                                    green: "bg-green-500 text-white",
-                                    blue: "bg-blue-500 text-white",
-                                    violet: "bg-[#8A2BE2] text-white",
-                                    gray: "bg-gray-500 text-white",
-                                    white: "bg-white text-black border-zinc-300",
-                                    gold: "bg-[#FFD700] text-black",
-                                    silver: "bg-[#C0C0C0] text-black"
-                                  };
-                                  const styles = colorMap[color.toLowerCase()] || "bg-zinc-800 text-zinc-400";
+                                  const hex = COLOR_MAP[color.toLowerCase()]?.hex || "#3f3f46";
+                                  const thName = COLOR_MAP[color.toLowerCase()]?.nameTh || color;
                                   return (
-                                    <div key={cIdx} className={`w-3 h-3 rounded-full border border-zinc-900 ${styles}`} title={color} />
+                                    <div 
+                                      key={cIdx} 
+                                      className="w-3.5 h-3.5 rounded-full border border-zinc-900 shadow-sm" 
+                                      style={{ backgroundColor: hex }}
+                                      title={thName} 
+                                    />
                                   );
                                 })}
                               </div>
