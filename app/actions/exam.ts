@@ -36,10 +36,21 @@ export async function getExamViolationsAction(assignmentId: string) {
       orderBy: { createdAt: "desc" },
       take: 50, // Limit to last 50 for performance
     });
+    // Fetch submissions
+    const submissions = await prisma.submission.findMany({
+      where: { assignmentId },
+      include: {
+        student: {
+          select: { name: true, email: true }
+        }
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
 
-    return { success: true, data: violations };
+    return { success: true, data: { violations, submissions } };
   } catch (error) {
-    console.error("Error fetching exam violations:", error);
+    console.error("Error fetching exam monitor data:", error);
     return { success: false, error: "Internal Server Error" };
   }
 }
