@@ -378,3 +378,99 @@ export async function deleteClassroomAction(
 }
 
 
+export async function updateAssignmentAction(
+  assignmentId: string,
+  formData: FormData
+): Promise<ActionResponse> {
+  const session = await getSession();
+  if (!session || session.role !== "TEACHER") {
+    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้ (เฉพาะผู้สอนเท่านั้น)" };
+  }
+
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const bandType = formData.get("bandType") as string;
+  const questionCountStr = formData.get("questionCount") as string;
+  const dueDateStr = formData.get("dueDate") as string;
+  const allowLateStr = formData.get("allowLate") as string;
+
+  if (!title || title.trim().length < 2) {
+    return { success: false, error: "กรุณากรอกหัวข้อแบบฝึกหัดอย่างน้อย 2 ตัวอักษร" };
+  }
+  if (bandType !== "4" && bandType !== "5") {
+    return { success: false, error: "รูปแบบแถบสีไม่ถูกต้อง" };
+  }
+  const questionCount = parseInt(questionCountStr, 10);
+  if (isNaN(questionCount) || questionCount < 1 || questionCount > 50) {
+    return { success: false, error: "จำนวนข้อไม่ถูกต้อง (กำหนดได้ 1-50 ข้อ)" };
+  }
+
+  let dueDate: Date | null = null;
+  if (dueDateStr && dueDateStr.trim() !== "") {
+    dueDate = new Date(dueDateStr);
+    if (isNaN(dueDate.getTime())) {
+      return { success: false, error: "วันกำหนดส่งไม่ถูกต้อง" };
+    }
+  }
+
+  const allowLate = allowLateStr === "true" || allowLateStr === "on";
+
+  try {
+    const existing = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: { classroom: true },
+    });
+
+    if (!existing || existing.classroom.teacherId !== session.userId) {
+      return { success: false, error: "ไม่พบแบบฝึกหัด หรือไม่มีสิทธิ์ในการดำเนินการ" };
+    }
+
+    const updated = await prisma.assignment.update({
+      where: { id: assignmentId },
+      data: {
+        title,
+        description: description || null,
+        bandType,
+        questionCount,
+        dueDate,
+        allowLate,
+      },
+    });
+
+    revalidatePath(`/classroom/${existing.classroomId}`);
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Update assignment error:", error);
+    return { success: false, error: "ไม่สามารถอัปเดตแบบฝึกหัดได้" };
+  }
+}
+
+export async function deleteAssignmentAction(
+  assignmentId: string
+): Promise<ActionResponse> {
+  const session = await getSession();
+  if (!session || session.role !== "TEACHER") {
+    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้ (เฉพาะผู้สอนเท่านั้น)" };
+  }
+
+  try {
+    const existing = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: { classroom: true },
+    });
+
+    if (!existing || existing.classroom.teacherId !== session.userId) {
+      return { success: false, error: "ไม่พบแบบฝึกหัด หรือไม่มีสิทธิ์ในการดำเนินการ" };
+    }
+
+    await prisma.assignment.delete({
+      where: { id: assignmentId },
+    });
+
+    revalidatePath(`/classroom/${existing.classroomId}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Delete assignment error:", error);
+    return { success: false, error: "ไม่สามารถลบแบบฝึกหัดได้" };
+  }
+}

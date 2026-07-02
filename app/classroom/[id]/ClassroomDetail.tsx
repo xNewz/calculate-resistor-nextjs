@@ -3,7 +3,13 @@
 import React, { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createAssignmentAction, updateClassroomAction, deleteClassroomAction } from "@/app/actions/classroom";
+import { 
+  createAssignmentAction, 
+  updateClassroomAction, 
+  deleteClassroomAction, 
+  updateAssignmentAction, 
+  deleteAssignmentAction 
+} from "@/app/actions/classroom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -64,6 +70,13 @@ export default function ClassroomDetail({
   
   const [activeTab, setActiveTab] = useState("assignments");
   const [showAssignModal, setShowAssignModal] = useState(false);
+  
+  // Assignment Edit & Delete states
+  const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
+  const [editingAssignment, setEditingAssignment] = useState<any>(null);
+  const [showDeleteAssignmentModal, setShowDeleteAssignmentModal] = useState(false);
+  const [deletingAssignment, setDeletingAssignment] = useState<any>(null);
+
   const [showQrModal, setShowQrModal] = useState(false);
   
   const [copiedCode, setCopiedCode] = useState(false);
@@ -150,6 +163,41 @@ export default function ClassroomDetail({
         router.refresh();
       } else {
         setError(res.error || "ไม่สามารถมอบหมายงานได้");
+      }
+    });
+  };
+
+  // Handle Edit Assignment
+  const handleEditAssignment = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    if (!editingAssignment) return;
+
+    const formData = new FormData(e.currentTarget);
+    startTransition(async () => {
+      const res = await updateAssignmentAction(editingAssignment.id, formData);
+      if (res.success) {
+        setShowEditAssignmentModal(false);
+        setEditingAssignment(null);
+        router.refresh();
+      } else {
+        setError(res.error || "ไม่สามารถแก้ไขแบบฝึกหัดได้");
+      }
+    });
+  };
+
+  // Handle Delete Assignment
+  const handleDeleteAssignment = () => {
+    if (!deletingAssignment) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await deleteAssignmentAction(deletingAssignment.id);
+      if (res.success) {
+        setShowDeleteAssignmentModal(false);
+        setDeletingAssignment(null);
+        router.refresh();
+      } else {
+        setError(res.error || "ไม่สามารถลบแบบฝึกหัดได้");
       }
     });
   };
@@ -386,15 +434,43 @@ export default function ClassroomDetail({
                         {/* Action buttons based on Role */}
                         <div className="shrink-0 flex items-center gap-3 justify-end sm:justify-start border-t sm:border-t-0 border-zinc-850/80 pt-3 sm:pt-0">
                           {user.role === "TEACHER" ? (
-                            <div className="text-right">
-                              <span className="text-xs font-semibold block text-zinc-400">
-                                ส่งแล้ว {subCount.length} จาก {enrollments.length} คน
-                              </span>
-                              <span className="text-[10px] text-zinc-500">
-                                เฉลี่ยคะแนน: {subCount.length > 0
-                                  ? (subCount.reduce((acc, s) => acc + s.score, 0) / subCount.length).toFixed(1)
-                                  : "0"}/{assignment.questionCount}
-                              </span>
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <span className="text-xs font-semibold block text-zinc-400">
+                                  ส่งแล้ว {subCount.length} จาก {enrollments.length} คน
+                                </span>
+                                <span className="text-[10px] text-zinc-500">
+                                  เฉลี่ยคะแนน: {subCount.length > 0
+                                    ? (subCount.reduce((acc, s) => acc + s.score, 0) / subCount.length).toFixed(1)
+                                    : "0"}/{assignment.questionCount}
+                                </span>
+                              </div>
+                              <div className="flex gap-1.5 border-l border-zinc-800 pl-4">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="size-7 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 cursor-pointer"
+                                  onClick={() => {
+                                    setEditingAssignment(assignment);
+                                    setShowEditAssignmentModal(true);
+                                  }}
+                                  title="แก้ไข"
+                                >
+                                  <Settings className="size-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="size-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
+                                  onClick={() => {
+                                    setDeletingAssignment(assignment);
+                                    setShowDeleteAssignmentModal(true);
+                                  }}
+                                  title="ลบ"
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </Button>
+                              </div>
                             </div>
                           ) : (
                             <>
@@ -921,6 +997,145 @@ export default function ClassroomDetail({
             assignments={assignments}
             submissions={submissions.filter(s => s.userId === selectedStatsStudent.id)}
           />
+        )}
+
+        {/* EDIT ASSIGNMENT MODAL */}
+        {showEditAssignmentModal && editingAssignment && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-800 pb-4">
+                <CardTitle className="text-base font-bold text-indigo-400 flex items-center gap-2">
+                  <Settings className="size-5" />
+                  <span>แก้ไขแบบฝึกหัด</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <form onSubmit={handleEditAssignment} className="space-y-4">
+                  {error && (
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                      <ShieldAlert className="size-4 shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="edit-title" className="text-xs font-semibold text-zinc-400 uppercase">หัวข้อแบบฝึกหัด</Label>
+                    <Input
+                      id="edit-title"
+                      name="title"
+                      defaultValue={editingAssignment.title}
+                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <Label htmlFor="edit-description" className="text-xs font-semibold text-zinc-400 uppercase">คำชี้แจง / รายละเอียด</Label>
+                    <textarea
+                      id="edit-description"
+                      name="description"
+                      defaultValue={editingAssignment.description || ""}
+                      rows={2}
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-750/50"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-bandType" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบสี</Label>
+                      <select
+                        id="edit-bandType"
+                        name="bandType"
+                        defaultValue={editingAssignment.bandType}
+                        className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
+                      >
+                        <option value="4">4 แถบสี (4-Band)</option>
+                        <option value="5">5 แถบสี (5-Band)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
+                      <select
+                        id="edit-questionCount"
+                        name="questionCount"
+                        defaultValue={editingAssignment.questionCount}
+                        className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
+                      >
+                        <option value="5">5 ข้อ</option>
+                        <option value="10">10 ข้อ</option>
+                        <option value="15">15 ข้อ</option>
+                        <option value="20">20 ข้อ</option>
+                        <option value="30">30 ข้อ</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="edit-dueDate" className="text-xs font-semibold text-zinc-400 uppercase">กำหนดส่ง</Label>
+                    <Input
+                      id="edit-dueDate"
+                      name="dueDate"
+                      type="datetime-local"
+                      defaultValue={editingAssignment.dueDate ? new Date(new Date(editingAssignment.dueDate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
+                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100 scheme-dark"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-850">
+                    <div className="space-y-0.5 pr-2">
+                      <Label htmlFor="edit-allowLate" className="text-xs font-bold text-zinc-300">อนุญาตให้ส่งช้าได้</Label>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        id="edit-allowLate"
+                        name="allowLate"
+                        value="true"
+                        defaultChecked={editingAssignment.allowLate}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex gap-2 justify-end pt-2">
+                    <Button type="button" variant="ghost" onClick={() => setShowEditAssignmentModal(false)} className="h-9 px-4 text-xs">
+                      ยกเลิก
+                    </Button>
+                    <Button type="submit" disabled={isPending} className="h-9 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg">
+                      {isPending ? <Loader2 className="size-3.5 animate-spin" /> : "บันทึกข้อมูล"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* DELETE ASSIGNMENT MODAL */}
+        {showDeleteAssignmentModal && deletingAssignment && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-sm bg-zinc-900 border border-red-900/50 shadow-2xl rounded-2xl">
+              <CardHeader className="text-center pb-2">
+                <div className="mx-auto size-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
+                  <ShieldAlert className="size-6 text-red-500" />
+                </div>
+                <CardTitle className="text-lg font-bold text-zinc-100">ยืนยันการลบแบบฝึกหัด?</CardTitle>
+                <CardDescription className="text-xs text-zinc-400">
+                  คุณกำลังจะลบ <strong>{deletingAssignment.title}</strong><br/>
+                  คะแนนและการส่งงานทั้งหมดที่เกี่ยวข้องจะถูกลบทิ้งอย่างถาวร
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4">
+                {error && <div className="text-red-400 text-xs mb-4 text-center">{error}</div>}
+                <div className="flex gap-2 justify-center">
+                  <Button type="button" variant="ghost" onClick={() => setShowDeleteAssignmentModal(false)} className="h-9 text-xs">ยกเลิก</Button>
+                  <Button onClick={handleDeleteAssignment} disabled={isPending} className="h-9 bg-red-600 hover:bg-red-700 text-white text-xs">
+                    {isPending ? <Loader2 className="size-3.5 animate-spin" /> : "ลบทิ้งถาวร"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
       </div>
