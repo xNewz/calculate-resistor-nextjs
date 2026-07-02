@@ -139,6 +139,12 @@ export async function loginAction(
       role: user.role,
     });
 
+    // Update last active
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastActive: new Date() },
+    });
+
     // Save cookie
     const cookieStore = await cookies();
     cookieStore.set("auth_token", token, {

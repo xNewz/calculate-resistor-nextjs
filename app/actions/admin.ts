@@ -25,6 +25,7 @@ export async function getUsersAction() {
         name: true,
         role: true,
         createdAt: true,
+        lastActive: true,
         _count: {
           select: {
             classroomsCreated: true,

@@ -26,6 +26,7 @@ interface UserRecord {
   name: string;
   role: UserRole;
   createdAt: string | Date;
+  lastActive?: string | Date;
   _count: { classroomsCreated: number; enrollments: number };
 }
 
@@ -49,6 +50,22 @@ const ROLE_CONFIG: Record<UserRole, { label: string; color: string; badgeClass: 
     icon: <UserIcon className="size-3" />,
   },
 };
+
+function getOnlineStatus(lastActive: string | Date | undefined) {
+  if (!lastActive) return { isOnline: false, text: "ออฟไลน์" };
+  const last = new Date(lastActive).getTime();
+  const now = new Date().getTime();
+  const diffMins = Math.floor((now - last) / (1000 * 60));
+  
+  if (diffMins < 5) return { isOnline: true, text: "ออนไลน์" };
+  if (diffMins < 60) return { isOnline: false, text: `ใช้งาน ${diffMins} นาทีที่แล้ว` };
+  
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return { isOnline: false, text: `ใช้งาน ${diffHours} ชม.ที่แล้ว` };
+  
+  const diffDays = Math.floor(diffHours / 24);
+  return { isOnline: false, text: `ใช้งาน ${diffDays} วันที่แล้ว` };
+}
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -270,7 +287,13 @@ export default function AdminUsersPage() {
                           </div>
                           <div>
                             <div className="font-semibold text-zinc-200 text-sm">{user.name}</div>
-                            <div className="text-[11px] text-zinc-500">{user.email}</div>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-[11px] text-zinc-500">{user.email}</span>
+                              <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md bg-zinc-900/50 border border-zinc-800">
+                                <span className={`size-1.5 rounded-full ${getOnlineStatus(user.lastActive).isOnline ? "bg-emerald-400 animate-pulse" : "bg-zinc-600"}`}></span>
+                                <span className="text-[9px] text-zinc-400">{getOnlineStatus(user.lastActive).text}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </td>
