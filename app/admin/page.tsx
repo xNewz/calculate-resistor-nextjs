@@ -215,7 +215,7 @@ export default function AdminDashboardPage() {
                     <Tooltip 
                       contentStyle={{ backgroundColor: "#09090b", borderColor: "#27272a", borderRadius: "8px", fontSize: "12px", fontWeight: "bold" }}
                       itemStyle={{ color: "#f4f4f5" }}
-                      formatter={(value: number) => [`${value} บัญชี`, "จำนวน"]}
+                      formatter={(value: any) => [`${value} บัญชี`, "จำนวน"]}
                     />
                     <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: "12px", color: "#a1a1aa" }} />
                   </PieChart>
