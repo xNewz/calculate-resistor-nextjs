@@ -36,7 +36,9 @@ export default async function ClassroomDetailPage({ params }: ClassroomPageProps
   }
 
   // Authorization Check
-  if (user.role === "TEACHER") {
+  if (user.role === "ADMIN") {
+    // Admin has access to all classrooms
+  } else if (user.role === "TEACHER") {
     if (classroom.teacherId !== user.id) {
       redirect("/classroom");
     }

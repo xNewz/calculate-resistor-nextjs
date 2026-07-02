@@ -313,8 +313,8 @@ export async function updateClassroomAction(
   description: string | null
 ): Promise<ActionResponse> {
   const session = await getSession();
-  if (!session || session.role !== "TEACHER") {
-    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้ (เฉพาะผู้สอนเท่านั้น)" };
+  if (!session || (session.role !== "TEACHER" && session.role !== "ADMIN")) {
+    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้" };
   }
 
   if (!name || name.trim().length < 2) {
@@ -322,11 +322,11 @@ export async function updateClassroomAction(
   }
 
   try {
-    // Verify owner
+    // Verify owner if not ADMIN
     const existing = await prisma.classroom.findFirst({
       where: {
         id: classroomId,
-        teacherId: session.userId,
+        ...(session.role !== "ADMIN" && { teacherId: session.userId }),
       },
     });
 
@@ -359,8 +359,8 @@ export async function deleteClassroomAction(
   confirmText: string
 ): Promise<ActionResponse> {
   const session = await getSession();
-  if (!session || session.role !== "TEACHER") {
-    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้ (เฉพาะผู้สอนเท่านั้น)" };
+  if (!session || (session.role !== "TEACHER" && session.role !== "ADMIN")) {
+    return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้" };
   }
 
   if (confirmText !== "DELETE") {
@@ -368,11 +368,11 @@ export async function deleteClassroomAction(
   }
 
   try {
-    // Verify owner
+    // Verify owner if not ADMIN
     const existing = await prisma.classroom.findFirst({
       where: {
         id: classroomId,
-        teacherId: session.userId,
+        ...(session.role !== "ADMIN" && { teacherId: session.userId }),
       },
     });
 

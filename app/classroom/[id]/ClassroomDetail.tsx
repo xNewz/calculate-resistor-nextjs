@@ -83,7 +83,7 @@ export default function ClassroomDetail({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   
-  const [activeTab, setActiveTab] = useState(user.role === "TEACHER" ? "dashboard" : "assignments");
+  const [activeTab, setActiveTab] = useState(user.role === "TEACHER" || user.role === "ADMIN" ? "dashboard" : "assignments");
   const [showAssignModal, setShowAssignModal] = useState(false);
   
   // Assignment Edit & Delete states
@@ -227,7 +227,7 @@ export default function ClassroomDetail({
 
   // --- Dashboard Data Computations (Teacher Only) ---
   const { dashboardData, commonMistakes, overallAvgPercent, overallSubmissionRate } = React.useMemo(() => {
-    if (user.role !== "TEACHER") return { dashboardData: [], commonMistakes: [], overallAvgPercent: 0, overallSubmissionRate: 0 };
+    if (user.role !== "TEACHER" && user.role !== "ADMIN") return { dashboardData: [], commonMistakes: [], overallAvgPercent: 0, overallSubmissionRate: 0 };
 
     // 1. Chart Data & Overalls
     let totalScore = 0;
@@ -353,7 +353,7 @@ export default function ClassroomDetail({
                 <span>แสดง QR Code</span>
               </Button>
 
-              {user.role === "TEACHER" && (
+              {(user.role === "TEACHER" || user.role === "ADMIN") && (
                 <div className="relative">
                   <Button
                     onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
@@ -407,8 +407,8 @@ export default function ClassroomDetail({
 
         {/* Tab Controls */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className={`bg-zinc-950 border border-zinc-850 p-1 rounded-xl h-11 w-full ${user.role === "TEACHER" ? "sm:w-[450px]" : "sm:w-[320px]"}`}>
-            {user.role === "TEACHER" && (
+          <TabsList className={`bg-zinc-950 border border-zinc-850 p-1 rounded-xl h-11 w-full ${user.role === "TEACHER" || user.role === "ADMIN" ? "sm:w-[450px]" : "sm:w-[320px]"}`}>
+            {(user.role === "TEACHER" || user.role === "ADMIN") && (
               <TabsTrigger value="dashboard" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
                 <PieChart className="size-3.5" />
                 <span>ภาพรวม (Dashboard)</span>
@@ -420,12 +420,12 @@ export default function ClassroomDetail({
             </TabsTrigger>
             <TabsTrigger value="members" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
               <Users className="size-3.5" />
-              <span>{user.role === "TEACHER" ? "สมุดคะแนน" : "รายชื่อเพื่อน"}</span>
+              <span>{user.role === "TEACHER" || user.role === "ADMIN" ? "สมุดคะแนน" : "รายชื่อเพื่อน"}</span>
             </TabsTrigger>
           </TabsList>
 
           {/* TAB: DASHBOARD (Teacher Only) */}
-          {user.role === "TEACHER" && (
+          {(user.role === "TEACHER" || user.role === "ADMIN") && (
             <TabsContent value="dashboard" className="space-y-4 outline-none">
               
               {/* Top Stats Cards */}
