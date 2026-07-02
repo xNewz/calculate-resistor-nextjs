@@ -1024,6 +1024,43 @@ export default function ClassroomDetail({
                     </label>
                   </div>
 
+                  <div className="flex flex-col gap-3 p-3.5 rounded-xl bg-red-950/20 border border-red-500/20">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5 pr-2">
+                        <Label htmlFor="isExam" className="text-xs font-bold text-red-400 cursor-pointer flex items-center gap-1.5">
+                          <ShieldAlert className="size-3.5" /> โหมดสอบ (Exam Mode)
+                        </Label>
+                        <span className="text-[9px] text-zinc-400 block">เปิดการป้องกันการโกง บังคับเต็มจอ และห้ามเปิดแท็บอื่น</span>
+                      </div>
+                      <label htmlFor="isExam" className="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                          type="checkbox"
+                          id="isExam"
+                          name="isExam"
+                          value="true"
+                          checked={isExamMode}
+                          onChange={(e) => setIsExamMode(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600 peer-checked:after:bg-white peer-checked:after:border-white"></div>
+                      </label>
+                    </div>
+
+                    {isExamMode && (
+                      <div className="space-y-1.5 pt-2 border-t border-red-500/20">
+                        <Label htmlFor="timeLimit" className="text-xs font-semibold text-zinc-400 uppercase">เวลาสอบ (นาที)</Label>
+                        <Input
+                          id="timeLimit"
+                          name="timeLimit"
+                          type="number"
+                          placeholder="เช่น 15 (ปล่อยว่างหากไม่จำกัดเวลา)"
+                          min={1}
+                          className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100"
+                        />
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex gap-2 justify-end pt-2">
                     <Button
                       type="button"
