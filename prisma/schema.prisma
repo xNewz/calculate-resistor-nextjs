@@ -25,6 +25,7 @@ model User {
   classroomsCreated Classroom[]  @relation("TeacherClassrooms")
   enrollments       Enrollment[]
   submissions       Submission[]
+  systemLogs        SystemLog[]
 }
 
 model Classroom {
@@ -76,4 +77,14 @@ model Submission {
   answers      Json       // Store details of each question and student answer
   createdAt    DateTime   @default(now())
   completedAt  DateTime   @default(now())
+}
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  action    String   // e.g. "CREATE_CLASSROOM", "SUBMIT_QUIZ"
+  status    String   // "SUCCESS" or "ERROR"
+  details   String   @db.Text
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
 }

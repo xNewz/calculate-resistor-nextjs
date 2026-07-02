@@ -22,7 +22,8 @@ import {
   UserCog,
   ShieldAlert,
   Activity,
-  BarChart
+  BarChart,
+  ScrollText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSessionAction, logoutAction, updateProfileAction, pingAction } from "@/app/actions/auth";
@@ -190,6 +191,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       label: "จัดการผู้ใช้งาน",
       icon: ShieldAlert,
       description: "Admin Panel"
+    }] : []),
+    ...(user?.role === "ADMIN" ? [{
+      href: "/admin/logs",
+      label: "บันทึกระบบ (Logs)",
+      icon: ScrollText,
+      description: "System Logs"
     }] : [])
   ];
 

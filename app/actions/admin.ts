@@ -173,3 +173,19 @@ export async function getAdminDashboardStatsAction() {
     return { success: false, error: error.message || "Failed to fetch dashboard stats" };
   }
 }
+
+export async function getSystemLogsAction() {
+  try {
+    await checkAdmin();
+    const logs = await prisma.systemLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 200,
+      include: {
+        user: { select: { name: true, email: true, role: true } }
+      }
+    });
+    return { success: true, logs };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Failed to fetch system logs" };
+  }
+}

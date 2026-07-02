@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { logSystemEvent } from "@/lib/logger";
 
 export type ActionResponse = {
   success: boolean;
@@ -60,10 +61,13 @@ export async function createClassroomAction(
       },
     });
 
+    await logSystemEvent("CREATE_CLASSROOM", "SUCCESS", `สร้างห้องเรียน "${name}" (รหัส: ${code}) สำเร็จ`, session.userId);
+
     revalidatePath("/classroom");
     return { success: true, data: classroom };
   } catch (error) {
     console.error("Create classroom error:", error);
+    await logSystemEvent("CREATE_CLASSROOM", "ERROR", `เกิดข้อผิดพลาดในการสร้างห้องเรียน: ${error instanceof Error ? error.message : "Unknown error"}`, session.userId);
     return { success: false, error: "ไม่สามารถสร้างห้องเรียนได้เนื่องจากข้อผิดพลาดภายในระบบ" };
   }
 }
@@ -119,10 +123,13 @@ export async function joinClassroomAction(
       },
     });
 
+    await logSystemEvent("JOIN_CLASSROOM", "SUCCESS", `เข้าร่วมห้องเรียน "${classroom.name}" สำเร็จ`, session.userId);
+
     revalidatePath("/classroom");
     return { success: true, data: classroom };
   } catch (error) {
     console.error("Join classroom error:", error);
+    await logSystemEvent("JOIN_CLASSROOM", "ERROR", `เกิดข้อผิดพลาดขณะเข้าร่วมห้องเรียน: ${error instanceof Error ? error.message : "Unknown error"}`, session.userId);
     return { success: false, error: "ไม่สามารถเข้าร่วมห้องเรียนได้เนื่องจากข้อผิดพลาดภายในระบบ" };
   }
 }
@@ -193,10 +200,13 @@ export async function createAssignmentAction(
       },
     });
 
+    await logSystemEvent("CREATE_ASSIGNMENT", "SUCCESS", `สร้างแบบฝึกหัด "${title}" ในห้องเรียนสำเร็จ`, session.userId);
+
     revalidatePath(`/classroom/${classroomId}`);
     return { success: true, data: assignment };
   } catch (error) {
     console.error("Create assignment error:", error);
+    await logSystemEvent("CREATE_ASSIGNMENT", "ERROR", `เกิดข้อผิดพลาดในการสร้างแบบฝึกหัด: ${error instanceof Error ? error.message : "Unknown error"}`, session.userId);
     return { success: false, error: "ไม่สามารถสั่งแบบฝึกหัดได้เนื่องจากข้อผิดพลาดของระบบ" };
   }
 }
@@ -227,6 +237,7 @@ export async function submitQuizAction(
 
     // Verify due date and late submission allowance
     if (assignment.dueDate && new Date() > assignment.dueDate && !assignment.allowLate) {
+      await logSystemEvent("SUBMIT_QUIZ", "ERROR", `พยายามส่งแบบฝึกหัด "${assignment.title}" ล่าช้าแต่ระบบปิดรับแล้ว`, session.userId);
       return { success: false, error: "เลยกำหนดส่งแล้วและผู้สอนปิดรับการส่งล่าช้า" };
     }
 
@@ -241,6 +252,7 @@ export async function submitQuizAction(
     });
 
     if (!enrollment) {
+      await logSystemEvent("SUBMIT_QUIZ", "ERROR", `พยายามส่งแบบฝึกหัด "${assignment.title}" โดยไม่ได้อยู่ในห้องเรียนนี้`, session.userId);
       return { success: false, error: "คุณไม่ได้อยู่ในห้องเรียนนี้" };
     }
 
@@ -254,10 +266,13 @@ export async function submitQuizAction(
       },
     });
 
+    await logSystemEvent("SUBMIT_QUIZ", "SUCCESS", `ส่งแบบฝึกหัด "${assignment.title}" สำเร็จ ได้คะแนน ${score}/${assignment.questionCount}`, session.userId);
+
     revalidatePath(`/classroom/${assignment.classroomId}`);
     return { success: true, data: submission };
   } catch (error) {
     console.error("Submit quiz error:", error);
+    await logSystemEvent("SUBMIT_QUIZ", "ERROR", `เกิดข้อผิดพลาดในการบันทึกคำตอบแบบฝึกหัด: ${error instanceof Error ? error.message : "Unknown error"}`, session.userId);
     return { success: false, error: "ไม่สามารถบันทึกคำตอบได้เนื่องจากข้อผิดพลาดของระบบ" };
   }
 }
