@@ -43,6 +43,7 @@ import {
   Home,
   Check,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -130,6 +131,7 @@ export default function QuizPage() {
   const [userAnswer, setUserAnswer] = useState("");
   const [attempts, setAttempts] = useState<UserAttempt[]>([]);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
@@ -159,6 +161,11 @@ export default function QuizPage() {
 
   // Guard against undefined questions during state transitions
   const currentQuestion = questions[currentIndex];
+
+  // Reset image load state on question change
+  useEffect(() => {
+    setIsImageLoaded(false);
+  }, [currentIndex]);
 
   // Handle saving the user's attempt and moving to next question or ending game
   const saveAttemptAndProceed = useCallback((answer: string, isTimeoutState = false) => {
@@ -214,7 +221,7 @@ export default function QuizPage() {
 
   // Countdown timer effect
   useEffect(() => {
-    if (gameState !== "playing") return;
+    if (gameState !== "playing" || !isImageLoaded) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -228,7 +235,7 @@ export default function QuizPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, currentIndex, handleTimeout]);
+  }, [gameState, currentIndex, handleTimeout, isImageLoaded]);
 
   const startQuiz = () => {
     const newQuestions = Array.from({ length: 10 }, () => generateQuestion(quizMode));
@@ -238,6 +245,7 @@ export default function QuizPage() {
     setAttempts([]);
     setScore(0);
     setTimeLeft(30);
+    setIsImageLoaded(false);
     processingRef.current = false;
     setGameState("playing");
   };
@@ -466,8 +474,16 @@ export default function QuizPage() {
               <Card className="border-border">
                 <CardContent className="space-y-6 pt-6">
                   {/* Visual Preview */}
-                  <div className="py-2">
-                    <ResistorPreview colors={currentQuestion.colors} />
+                  <div className="py-2 min-h-[180px] flex flex-col justify-center relative">
+                    <div className={isImageLoaded ? "block" : "hidden"}>
+                      <ResistorPreview colors={currentQuestion.colors} onLoad={() => setIsImageLoaded(true)} />
+                    </div>
+                    {!isImageLoaded && (
+                      <div className="flex flex-col items-center justify-center space-y-3">
+                        <Loader2 className="size-8 text-primary animate-spin" />
+                        <div className="text-center text-xs text-muted-foreground animate-pulse">กำลังโหลดรูปภาพตัวต้านทาน...</div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Form Input Section */}

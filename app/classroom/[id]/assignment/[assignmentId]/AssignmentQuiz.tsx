@@ -78,6 +78,7 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
   const [userAnswer, setUserAnswer] = useState("");
   const [attempts, setAttempts] = useState<UserAttempt[]>([]);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   
   const [error, setError] = useState<string | null>(null);
 
@@ -128,6 +129,12 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
       inputRef.current.focus();
     }
   }, [gameState, currentIndex]);
+
+  const currentQuestion = questions[currentIndex];
+
+  useEffect(() => {
+    setIsImageLoaded(false);
+  }, [currentIndex]);
 
   // Reset processing ref on index/state transitions
   useEffect(() => {
@@ -194,7 +201,7 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
 
   // Timer countdown
   useEffect(() => {
-    if (gameState !== "playing") return;
+    if (gameState !== "playing" || !isImageLoaded) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -208,7 +215,7 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, currentIndex, saveAttemptAndProceed]);
+  }, [gameState, currentIndex, saveAttemptAndProceed, isImageLoaded]);
 
   const startQuiz = () => {
     setQuestions(generateQuestions());
@@ -217,6 +224,7 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
     setAttempts([]);
     setTimeLeft(30);
     setError(null);
+    setIsImageLoaded(false);
     processingRef.current = false;
     setGameState("playing");
   };
@@ -230,8 +238,6 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
       handleNext();
     }
   };
-
-  const currentQuestion = questions[currentIndex];
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 flex items-center justify-center p-4">
@@ -320,8 +326,16 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
               <CardContent className="pt-6 space-y-8">
                 
                 {/* Visual Resistor */}
-                <div className="py-4">
-                  <ResistorPreview colors={currentQuestion.colors} />
+                <div className="py-4 min-h-[180px] flex flex-col justify-center relative">
+                  <div className={isImageLoaded ? "block" : "hidden"}>
+                    <ResistorPreview colors={currentQuestion.colors} onLoad={() => setIsImageLoaded(true)} />
+                  </div>
+                  {!isImageLoaded && (
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <Loader2 className="size-8 text-indigo-400 animate-spin" />
+                      <div className="text-center text-xs text-zinc-500 animate-pulse">กำลังโหลดรูปภาพตัวต้านทาน...</div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Input form */}
