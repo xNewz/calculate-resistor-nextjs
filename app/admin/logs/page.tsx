@@ -132,7 +132,7 @@ export default function SystemLogsPage() {
             />
           </div>
           <div className="w-full sm:w-48 shrink-0">
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val || "ALL")}>
               <SelectTrigger className="bg-zinc-900/60 border-zinc-800 h-10 text-sm">
                 <SelectValue placeholder="ทุกสถานะ" />
               </SelectTrigger>
