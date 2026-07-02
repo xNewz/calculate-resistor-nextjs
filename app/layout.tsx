@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "เครื่องคำนวณรหัสสีตัวต้านทาน | Resistor Color Code Calculator",
-  description: "คำนวณค่าความต้านทานและค่าความคลาดเคลื่อนจากรหัสสีตัวต้านทานแบบ 4 แถบสี และ 5 แถบสี ด้วยระบบที่สวยงามและใช้งานง่าย",
+  title: "Practice-Lab",
+  description: "The Practice Lab",
 };
 
 import AppLayout from "@/components/AppLayout";
