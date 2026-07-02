@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { MultimeterRange } from "@/lib/multimeter";
 import { cn } from "@/lib/utils";
 
@@ -12,15 +12,20 @@ interface MultimeterPreviewProps {
 
 export default function MultimeterPreview({ range, pointerValue, onLoad }: MultimeterPreviewProps) {
   const [mounted, setMounted] = useState(false);
+  const onLoadRef = useRef(onLoad);
+
+  useEffect(() => {
+    onLoadRef.current = onLoad;
+  }, [onLoad]);
 
   useEffect(() => {
     setMounted(true);
-    if (onLoad) {
+    if (onLoadRef.current) {
       // Simulate loading for animation/ux if image doesn't fire load event quickly
-      const t = setTimeout(() => onLoad(), 800);
+      const t = setTimeout(() => onLoadRef.current?.(), 800);
       return () => clearTimeout(t);
     }
-  }, [onLoad]);
+  }, [pointerValue, range]);
 
   const minA = -53;
   const maxA = 53;

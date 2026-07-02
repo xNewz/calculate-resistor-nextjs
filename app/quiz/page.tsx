@@ -143,6 +143,9 @@ export default function QuizPage() {
   const [attempts, setAttempts] = useState<UserAttempt[]>([]);
   const [timeLeft, setTimeLeft] = useState(30);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const handleImageLoad = useCallback(() => {
+    setIsImageLoaded(true);
+  }, []);
 
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
@@ -533,9 +536,9 @@ export default function QuizPage() {
                   <div className="py-2 min-h-[180px] flex flex-col justify-center relative">
                     <div className={isImageLoaded ? "block" : "hidden"}>
                       {currentQuestion.multimeterData ? (
-                        <MultimeterPreview range={currentQuestion.multimeterData.range} pointerValue={currentQuestion.multimeterData.pointerValue} onLoad={() => setIsImageLoaded(true)} />
+                        <MultimeterPreview range={currentQuestion.multimeterData.range} pointerValue={currentQuestion.multimeterData.pointerValue} onLoad={handleImageLoad} />
                       ) : (
-                        <ResistorPreview colors={currentQuestion.colors || []} onLoad={() => setIsImageLoaded(true)} />
+                        <ResistorPreview colors={currentQuestion.colors || []} onLoad={handleImageLoad} />
                       )}
                     </div>
                     {!isImageLoaded && (

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { COLOR_MAP } from "@/lib/resistor";
 
 function getBandStyle(color: string): React.CSSProperties {
@@ -21,9 +21,14 @@ export default function ResistorPreview({ colors, onLoad }: { colors: string[], 
     : ["34%", "42%", "50%", "62%"];
 
   const bgImage = is5Band ? "/5band.png" : "/4band.png";
+  const onLoadRef = useRef(onLoad);
 
   useEffect(() => {
-    if (!onLoad) return;
+    onLoadRef.current = onLoad;
+  }, [onLoad]);
+
+  useEffect(() => {
+    if (!onLoadRef.current) return;
     
     let loadedCount = 0;
     const imagesToLoad = [bgImage, ...colors.map(c => `/tab_color/${c}.png`)];
@@ -31,7 +36,7 @@ export default function ResistorPreview({ colors, onLoad }: { colors: string[], 
     const handleLoad = () => {
       loadedCount++;
       if (loadedCount === imagesToLoad.length) {
-        onLoad();
+        onLoadRef.current?.();
       }
     };
     
@@ -41,7 +46,7 @@ export default function ResistorPreview({ colors, onLoad }: { colors: string[], 
       img.onload = handleLoad;
       img.onerror = handleLoad;
     });
-  }, [colors, bgImage, onLoad]);
+  }, [colors, bgImage]);
 
   return (
     <div className="relative mx-auto w-full max-w-[800px] select-none">

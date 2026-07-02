@@ -83,6 +83,9 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
   const [attempts, setAttempts] = useState<UserAttempt[]>([]);
   const [timeLeft, setTimeLeft] = useState(30);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const handleImageLoad = useCallback(() => {
+    setIsImageLoaded(true);
+  }, []);
   
   const [error, setError] = useState<string | null>(null);
 
@@ -364,9 +367,9 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
                 <div className="py-4 min-h-[180px] flex flex-col justify-center relative">
                   <div className={isImageLoaded ? "block" : "hidden"}>
                     {assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData ? (
-                      <MultimeterPreview range={currentQuestion.multimeterData.range} pointerValue={currentQuestion.multimeterData.pointerValue} onLoad={() => setIsImageLoaded(true)} />
+                      <MultimeterPreview range={currentQuestion.multimeterData.range} pointerValue={currentQuestion.multimeterData.pointerValue} onLoad={handleImageLoad} />
                     ) : (
-                      <ResistorPreview colors={currentQuestion.colors || []} onLoad={() => setIsImageLoaded(true)} />
+                      <ResistorPreview colors={currentQuestion.colors || []} onLoad={handleImageLoad} />
                     )}
                   </div>
                   {!isImageLoaded && (
