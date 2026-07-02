@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,6 +53,48 @@ const FEATURES = [
   },
 ];
 
+function TypewriterText({ texts, speed = 60, delay = 3000 }: { texts: string[]; speed?: number; delay?: number }) {
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const currentText = texts[currentIndex] || "";
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (isDeleting) {
+      timer = setTimeout(() => {
+        setDisplayText((prev) => prev.slice(0, -1));
+      }, speed / 2);
+    } else {
+      timer = setTimeout(() => {
+        setDisplayText((prev) => currentText.slice(0, prev.length + 1));
+      }, speed);
+    }
+
+    if (!isDeleting && displayText === currentText) {
+      clearTimeout(timer);
+      timer = setTimeout(() => setIsDeleting(true), delay);
+    } else if (isDeleting && displayText === "") {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % texts.length);
+        setIsDeleting(false);
+      }, 500);
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, currentText, speed, delay, texts.length]);
+
+  return (
+    <span className="font-mono">
+      {displayText}
+      <span className="inline-block w-[1.5px] h-3 bg-indigo-400 animate-pulse ml-0.5" />
+    </span>
+  );
+}
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 overflow-x-hidden">
@@ -65,10 +108,14 @@ export default function HomePage() {
         </div>
 
         {/* Badge */}
-        {/* <div className="mb-6 inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold px-4 py-1.5 rounded-full">
-          <Zap className="size-3.5 fill-indigo-400" />
-          ระบบฝึกทักษะอิเล็กทรอนิกส์ออนไลน์
-        </div> */}
+        <div className="mb-6 inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold px-4 py-1.5 rounded-full min-h-[30px]">
+          <Zap className="size-3.5 fill-indigo-400 shrink-0" />
+          <TypewriterText texts={[
+            "Learning Resistors and Multimeters Made Easy",
+            "Instructional for Improvement Resistor and Multimeter Reading Skills",
+            "Perfect for Electronics Classrooms & Learners"
+          ]} />
+        </div>
 
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight max-w-3xl">
