@@ -3,12 +3,12 @@
 import React, { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  createAssignmentAction, 
-  updateClassroomAction, 
-  deleteClassroomAction, 
-  updateAssignmentAction, 
-  deleteAssignmentAction 
+import {
+  createAssignmentAction,
+  updateClassroomAction,
+  deleteClassroomAction,
+  updateAssignmentAction,
+  deleteAssignmentAction
 } from "@/app/actions/classroom";
 import { COLOR_MAP } from "@/lib/resistor";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,10 +82,10 @@ export default function ClassroomDetail({
 }: ClassroomDetailProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  
+
   const [activeTab, setActiveTab] = useState(user.role === "TEACHER" || user.role === "ADMIN" ? "dashboard" : "assignments");
   const [showAssignModal, setShowAssignModal] = useState(false);
-  
+
   // Assignment Edit & Delete states
   const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
@@ -93,11 +93,11 @@ export default function ClassroomDetail({
   const [deletingAssignment, setDeletingAssignment] = useState<any>(null);
 
   const [showQrModal, setShowQrModal] = useState(false);
-  
+
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [joinUrl, setJoinUrl] = useState("");
-  
+
   const [error, setError] = useState<string | null>(null);
 
   const [showEditModal, setShowEditModal] = useState(false);
@@ -239,7 +239,7 @@ export default function ClassroomDetail({
       const subs = submissions.filter(s => s.assignmentId === asg.id);
       let avgPercent = 0;
       totalActualSubmissions += subs.length;
-      
+
       if (subs.length > 0) {
         const asgTotalRaw = subs.reduce((sum, s) => sum + s.score, 0);
         totalScore += asgTotalRaw;
@@ -260,7 +260,7 @@ export default function ClassroomDetail({
 
     // 2. Common Mistakes Analysis
     const mistakeCounts: Record<string, { count: number, formatted: string, colors: string[] }> = {};
-    
+
     submissions.forEach(sub => {
       if (!sub.answers) return;
       try {
@@ -293,8 +293,8 @@ export default function ClassroomDetail({
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // top 5
 
-    return { 
-      dashboardData: chartData, 
+    return {
+      dashboardData: chartData,
       commonMistakes: sortedMistakes,
       overallAvgPercent: oAvg,
       overallSubmissionRate: oRate
@@ -304,7 +304,7 @@ export default function ClassroomDetail({
   return (
     <div className="min-h-screen lg:min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        
+
         {/* Breadcrumbs */}
         <div className="flex items-center gap-1.5 text-xs text-zinc-500">
           <Link href="/classroom" className="hover:text-zinc-300">ห้องเรียน</Link>
@@ -315,7 +315,7 @@ export default function ClassroomDetail({
         {/* Classroom Header Banner */}
         <div className="relative bg-zinc-900/60 p-6 sm:p-8 rounded-2xl border border-zinc-850 backdrop-blur-md">
           <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 size-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
-          
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight font-heading">
@@ -342,7 +342,7 @@ export default function ClassroomDetail({
                 {copiedCode ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
                 <span>คัดลอกรหัส</span>
               </Button>
-              
+
               <Button
                 onClick={() => setShowQrModal(true)}
                 variant="outline"
@@ -368,7 +368,7 @@ export default function ClassroomDetail({
                     <>
                       {/* Overlay to handle click outside */}
                       <div className="fixed inset-0 z-10" onClick={() => setShowSettingsDropdown(false)}></div>
-                      
+
                       <div className="absolute right-0 mt-2 w-44 rounded-xl border border-zinc-800 bg-zinc-950 p-1.5 shadow-2xl z-20 animate-[slideDown_0.15s_ease-out]">
                         <button
                           type="button"
@@ -427,7 +427,7 @@ export default function ClassroomDetail({
           {/* TAB: DASHBOARD (Teacher Only) */}
           {(user.role === "TEACHER" || user.role === "ADMIN") && (
             <TabsContent value="dashboard" className="space-y-4 outline-none">
-              
+
               {/* Top Stats Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card className="bg-zinc-900/60 border-zinc-850 p-4 flex flex-col justify-center rounded-xl shadow-sm">
@@ -466,7 +466,7 @@ export default function ClassroomDetail({
 
               {/* Main Charts & Analysis Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
+
                 {/* Left: Bar Chart */}
                 <Card className="lg:col-span-2 bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden flex flex-col shadow-sm">
                   <CardHeader className="border-b border-zinc-850 pb-4">
@@ -486,7 +486,7 @@ export default function ClassroomDetail({
                           <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
                           <XAxis dataKey="name" stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} />
                           <YAxis stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(val) => `${val}%`} />
-                          <RechartsTooltip 
+                          <RechartsTooltip
                             cursor={{ fill: '#27272a', opacity: 0.4 }}
                             content={({ active, payload }) => {
                               if (active && payload && payload.length) {
@@ -529,7 +529,7 @@ export default function ClassroomDetail({
                     {commonMistakes.length === 0 ? (
                       <div className="h-full flex flex-col items-center justify-center p-8 text-center text-zinc-500">
                         <CheckCircle2 className="size-8 text-emerald-500/30 mb-2" />
-                        <span className="text-xs">ยังไม่พบข้อมูลข้อผิดพลาด<br/>หรือนักเรียนยังไม่ได้ทำแบบสอบถาม</span>
+                        <span className="text-xs">ยังไม่พบข้อมูลข้อผิดพลาด<br />หรือนักเรียนยังไม่ได้ทำแบบสอบถาม</span>
                       </div>
                     ) : (
                       <div className="divide-y divide-zinc-850 text-xs">
@@ -544,11 +544,11 @@ export default function ClassroomDetail({
                                   const hex = COLOR_MAP[color.toLowerCase()]?.hex || "#3f3f46";
                                   const thName = COLOR_MAP[color.toLowerCase()]?.nameTh || color;
                                   return (
-                                    <div 
-                                      key={cIdx} 
-                                      className="w-3.5 h-3.5 rounded-full border border-zinc-900 shadow-sm" 
+                                    <div
+                                      key={cIdx}
+                                      className="w-3.5 h-3.5 rounded-full border border-zinc-900 shadow-sm"
                                       style={{ backgroundColor: hex }}
-                                      title={thName} 
+                                      title={thName}
                                     />
                                   );
                                 })}
@@ -570,13 +570,13 @@ export default function ClassroomDetail({
 
           {/* TAB 1: ASSIGNMENTS */}
           <TabsContent value="assignments" className="space-y-4 outline-none">
-            
+
             {/* Header section with Create button for teacher */}
             <div className="flex justify-between items-center pb-2">
               <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">
                 แบบฝึกหัดทั้งหมด ({assignments.length})
               </h2>
-              
+
               {user.role === "TEACHER" && (
                 <Button
                   onClick={() => { setError(null); setShowAssignModal(true); }}
@@ -622,11 +622,10 @@ export default function ClassroomDetail({
                             {assignment.dueDate && (
                               <Badge
                                 variant={isPastDue ? (assignment.allowLate ? "outline" : "destructive") : "secondary"}
-                                className={`text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold ${
-                                  isPastDue
+                                className={`text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold ${isPastDue
                                     ? (assignment.allowLate ? "border-yellow-500/30 bg-yellow-500/5 text-yellow-500" : "bg-red-500/10 text-red-400 border border-red-500/20")
                                     : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                }`}
+                                  }`}
                               >
                                 {isPastDue
                                   ? (assignment.allowLate ? "เลยกำหนดส่ง (ส่งเกินเวลาได้)" : "ปิดรับส่งแล้ว")
@@ -634,11 +633,11 @@ export default function ClassroomDetail({
                               </Badge>
                             )}
                           </div>
-                          
+
                           <p className="text-xs text-zinc-400 line-clamp-2">
                             {assignment.description || "ไม่มีรายละเอียดคำชี้แจงงาน"}
                           </p>
-                          
+
                           <div className="space-y-1">
                             <div className="text-[10px] text-zinc-500 flex items-center gap-1.5">
                               <Calendar className="size-3" />
@@ -937,7 +936,7 @@ export default function ClassroomDetail({
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-1.5">
                     <Label htmlFor="description" className="text-xs font-semibold text-zinc-400 uppercase">คำชี้แจง / รายละเอียดเพิ่มเติม</Label>
                     <textarea
@@ -1050,7 +1049,7 @@ export default function ClassroomDetail({
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6 flex flex-col items-center justify-center gap-4">
-                
+
                 {/* QR Image Box */}
                 <div className="p-3 bg-white rounded-xl border border-zinc-800 shadow-inner">
                   {joinUrl ? (
@@ -1115,7 +1114,7 @@ export default function ClassroomDetail({
                       <span>{error}</span>
                     </div>
                   )}
-                  
+
                   <div className="space-y-1.5">
                     <Label htmlFor="editName" className="text-xs font-semibold text-zinc-400 uppercase">ชื่อห้องเรียน</Label>
                     <Input
@@ -1127,7 +1126,7 @@ export default function ClassroomDetail({
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-1.5">
                     <Label htmlFor="editDescription" className="text-xs font-semibold text-zinc-400 uppercase">คำอธิบายห้องเรียน</Label>
                     <textarea
@@ -1279,7 +1278,7 @@ export default function ClassroomDetail({
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-1.5">
                     <Label htmlFor="edit-description" className="text-xs font-semibold text-zinc-400 uppercase">คำชี้แจง / รายละเอียด</Label>
                     <textarea
@@ -1373,7 +1372,7 @@ export default function ClassroomDetail({
                 </div>
                 <CardTitle className="text-lg font-bold text-zinc-100">ยืนยันการลบแบบฝึกหัด?</CardTitle>
                 <CardDescription className="text-xs text-zinc-400">
-                  คุณกำลังจะลบ <strong>{deletingAssignment.title}</strong><br/>
+                  คุณกำลังจะลบ <strong>{deletingAssignment.title}</strong><br />
                   คะแนนและการส่งงานทั้งหมดที่เกี่ยวข้องจะถูกลบทิ้งอย่างถาวร
                 </CardDescription>
               </CardHeader>
