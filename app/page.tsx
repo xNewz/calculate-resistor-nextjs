@@ -65,10 +65,10 @@ export default function HomePage() {
         </div>
 
         {/* Badge */}
-        <div className="mb-6 inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold px-4 py-1.5 rounded-full">
+        {/* <div className="mb-6 inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold px-4 py-1.5 rounded-full">
           <Zap className="size-3.5 fill-indigo-400" />
           ระบบฝึกทักษะอิเล็กทรอนิกส์ออนไลน์
-        </div>
+        </div> */}
 
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight max-w-3xl">
