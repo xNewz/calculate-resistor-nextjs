@@ -60,10 +60,12 @@ function ResistorBands({ bands, size = "md" }: { bands: string[]; size?: "sm" | 
   };
   const h = size === "sm" ? "h-8" : "h-11";
   const w = size === "sm" ? "w-3" : "w-4";
+  const is5Band = bands.length === 5;
+  const bgClass = is5Band ? "bg-[#7FB3D5] border-blue-700/30" : "bg-[#D4A96A] border-amber-700/30";
   return (
     <div className="flex items-center">
       <div className="h-[2px] w-4 bg-zinc-500" />
-      <div className={`relative flex items-center ${h} px-2 gap-2.5 bg-[#D4A96A] rounded-lg border border-amber-700/30 shadow-lg`}>
+      <div className={`relative flex items-center ${h} px-2 gap-2.5 ${bgClass} rounded-lg border shadow-lg`}>
         {bands.map((b, i) => (
           <div
             key={i}

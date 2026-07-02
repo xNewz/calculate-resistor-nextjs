@@ -51,7 +51,11 @@ export default function ResistorPreview({ colors, onLoad }: { colors: string[], 
       >
         <div
           className="absolute inset-0 bg-center bg-no-repeat transition-all duration-500"
-          style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "contain" }}
+          style={{ 
+            backgroundImage: `url(${bgImage})`, 
+            backgroundSize: "contain",
+            filter: is5Band ? "hue-rotate(190deg) saturate(1.2) brightness(0.85)" : "none"
+          }}
         />
         {colors.map((color, index) => {
           const leftPos = positions[index];
