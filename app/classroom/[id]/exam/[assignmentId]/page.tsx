@@ -6,8 +6,9 @@ import ExamQuiz from "./ExamQuiz";
 export default async function ExamPage({
   params
 }: {
-  params: { id: string, assignmentId: string }
+  params: Promise<{ id: string, assignmentId: string }>
 }) {
+  const { id, assignmentId } = await params;
   const session = await getSession();
   if (!session || session.role !== "LEARNER") {
     redirect("/auth/login");
@@ -18,7 +19,7 @@ export default async function ExamPage({
     where: {
       userId_classroomId: {
         userId: session.userId,
-        classroomId: params.id,
+        classroomId: id,
       },
     },
   });
@@ -29,11 +30,11 @@ export default async function ExamPage({
 
   // Verify Assignment
   const assignment = await prisma.assignment.findUnique({
-    where: { id: params.assignmentId },
+    where: { id: assignmentId },
   });
 
-  if (!assignment || !assignment.isExam || assignment.classroomId !== params.id) {
-    redirect(`/classroom/${params.id}`);
+  if (!assignment || !assignment.isExam || assignment.classroomId !== id) {
+    redirect(`/classroom/${id}`);
   }
 
   // Check if student already submitted
@@ -45,7 +46,7 @@ export default async function ExamPage({
   });
 
   if (existingSub) {
-    redirect(`/classroom/${params.id}/assignment/${assignment.id}/submission/${existingSub.id}`);
+    redirect(`/classroom/${id}/assignment/${assignment.id}/submission/${existingSub.id}`);
   }
 
   return (

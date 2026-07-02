@@ -6,8 +6,9 @@ import LiveMonitor from "./LiveMonitor";
 export default async function ExamMonitorPage({
   params
 }: {
-  params: { id: string, assignmentId: string }
+  params: Promise<{ id: string, assignmentId: string }>
 }) {
+  const { id, assignmentId } = await params;
   const session = await getSession();
   if (!session || (session.role !== "TEACHER" && session.role !== "ADMIN")) {
     redirect("/auth/login");
@@ -15,7 +16,7 @@ export default async function ExamMonitorPage({
 
   // Verify ownership or admin
   const assignment = await prisma.assignment.findUnique({
-    where: { id: params.assignmentId },
+    where: { id: assignmentId },
     include: { classroom: true }
   });
 
