@@ -73,15 +73,23 @@ export default function SubmissionReview({
   attempts,
 }: SubmissionReviewProps) {
 
-  const getVerdict = (finalScore: number, total: number) => {
+  const getVerdict = (finalScore: number, total: number, type: string) => {
     const ratio = finalScore / total;
+    if (type === "MULTIMETER") {
+      if (ratio === 1) return { text: "ระดับเทพ! ตอบถูกครบทุกข้อ อ่านค่ามัลติมิเตอร์ได้แม่นยำไม่มีที่ติ 🎉", color: "text-indigo-400" };
+      if (ratio >= 0.8) return { text: "ยอดเยี่ยมมาก! คุณมีความเข้าใจในการตั้งย่านวัดและอ่านหน้าปัดอย่างดีเยี่ยม 🌟", color: "text-emerald-400" };
+      if (ratio >= 0.5) return { text: "ผ่านเกณฑ์! ฝึกฝนการอ่านสเกลอีกนิดจะช่วยเพิ่มความคล่องแคล่ว 💪", color: "text-yellow-400" };
+      return { text: "ลองใหม่อีกครั้ง! ทบทวนวิธีอ่านค่ามัลติมิเตอร์เพื่อทำคะแนนให้ดียิ่งขึ้น 📚", color: "text-red-400" };
+    }
+    
+    // Default / RESISTOR
     if (ratio === 1) return { text: "ระดับเทพ! ตอบถูกครบทุกข้อ แม่นยำและรวดเร็วไม่มีที่ติ 🎉", color: "text-indigo-400" };
     if (ratio >= 0.8) return { text: "ยอดเยี่ยมมาก! คุณมีความเข้าใจในรหัสสีอย่างดีเยี่ยม 🌟", color: "text-emerald-400" };
     if (ratio >= 0.5) return { text: "ผ่านเกณฑ์! ฝึกฝนอีกนิดจะช่วยเพิ่มความคล่องแคล่ว 💪", color: "text-yellow-400" };
     return { text: "ลองใหม่อีกครั้ง! ทบทวนตารางสีเพื่อทำคะแนนให้ดียิ่งขึ้น 📚", color: "text-red-400" };
   };
 
-  const verdict = getVerdict(submission.score, assignment.questionCount);
+  const verdict = getVerdict(submission.score, assignment.questionCount, assignment.assignmentType);
 
   const renderExplanation = (q: Question) => {
     if (assignment.assignmentType === "MULTIMETER" && q.multimeterData) {

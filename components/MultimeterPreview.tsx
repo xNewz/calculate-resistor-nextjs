@@ -22,12 +22,9 @@ export default function MultimeterPreview({ range, pointerValue, onLoad }: Multi
     }
   }, [onLoad]);
 
-  const [calib, setCalib] = useState({ minAngle: -53, maxAngle: 53, centerOhm: 20 });
-  const [debugMode, setDebugMode] = useState(false);
-
-  const minA = debugMode ? calib.minAngle : -53;
-  const maxA = debugMode ? calib.maxAngle : 53;
-  const cOhm = debugMode ? calib.centerOhm : 20;
+  const minA = -53;
+  const maxA = 53;
+  const cOhm = 20;
 
   let percentage = 0;
   if (range.type === "OHM") {
@@ -83,43 +80,6 @@ export default function MultimeterPreview({ range, pointerValue, onLoad }: Multi
           </div>
         </div>
 
-        {/* Debug Calibration Panel (Dev Only) */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="mt-4 w-full text-[10px] text-zinc-600 bg-white p-3 rounded-xl border border-zinc-300 shadow-inner">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-bold text-zinc-800">โหมดปรับแต่งเข็ม (Debug)</span>
-              <input type="checkbox" checked={debugMode} onChange={e => setDebugMode(e.target.checked)} className="cursor-pointer" />
-            </div>
-            {debugMode && (
-              <div className="space-y-3 pt-2 border-t border-zinc-200">
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between font-mono font-bold text-red-500">
-                    <label>Min Angle (ซ้ายสุด)</label>
-                    <span>{calib.minAngle}°</span>
-                  </div>
-                  <input type="range" min="-60" max="-20" value={calib.minAngle} onChange={e => setCalib({ ...calib, minAngle: parseInt(e.target.value) })} className="w-full" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between font-mono font-bold text-emerald-500">
-                    <label>Max Angle (ขวาสุด)</label>
-                    <span>{calib.maxAngle}°</span>
-                  </div>
-                  <input type="range" min="20" max="60" value={calib.maxAngle} onChange={e => setCalib({ ...calib, maxAngle: parseInt(e.target.value) })} className="w-full" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between font-mono font-bold text-blue-500">
-                    <label>Center Ohm (ค่ากึ่งกลางสเกลโอห์ม)</label>
-                    <span>{calib.centerOhm}</span>
-                  </div>
-                  <input type="range" min="5" max="50" value={calib.centerOhm} onChange={e => setCalib({ ...calib, centerOhm: parseInt(e.target.value) })} className="w-full" />
-                </div>
-                <div className="pt-2 text-zinc-500 italic">
-                  * ปรับค่าเหล่านี้ให้เข็มชี้ตรงกับภาพ แล้วแจ้งตัวเลขให้ผมทราบเพื่อนำไปตั้งเป็นค่าเริ่มต้น
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
