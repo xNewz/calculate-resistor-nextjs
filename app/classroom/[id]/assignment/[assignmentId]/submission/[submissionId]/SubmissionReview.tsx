@@ -114,8 +114,8 @@ export default function SubmissionReview({
     const first = q.colors![0];
     const second = q.colors![1];
     const third = is5 ? q.colors![2] : null;
-    const mult = is5 ? q.colors[3] : q.colors[2];
-    const tol = is5 ? q.colors[4] : q.colors[3];
+    const mult = is5 ? q.colors![3] : q.colors![2];
+    const tol = is5 ? q.colors![4] : q.colors![3];
 
     const d1 = DIGIT_MAP[first] ?? 0;
     const d2 = DIGIT_MAP[second] ?? 0;
@@ -172,9 +172,9 @@ export default function SubmissionReview({
         <div className="pt-2 border-t border-zinc-850/80 font-mono text-zinc-300 flex flex-wrap gap-1.5 items-center">
           <span className="font-semibold text-zinc-400">คำนวณเป็นสมการ:</span>
           {is5 ? (
-            <span>({d1}{d2}{d3}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance)})</span>
+            <span>({d1}{d2}{d3}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance || 0)})</span>
           ) : (
-            <span>({d1}{d2}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance)})</span>
+            <span>({d1}{d2}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance || 0)})</span>
           )}
         </div>
       </div>
