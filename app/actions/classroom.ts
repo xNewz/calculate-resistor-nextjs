@@ -282,7 +282,7 @@ export async function getUserClassroomsAction() {
         },
         orderBy: { createdAt: "desc" },
       });
-      return enrollments.map((enr) => enr.classroom);
+      return enrollments.map((enr: { classroom: any; }) => enr.classroom);
     }
   } catch (e) {
     return [];
