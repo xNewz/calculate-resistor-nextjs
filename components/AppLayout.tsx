@@ -20,7 +20,9 @@ import {
   ChevronRight,
   ChevronDown,
   UserCog,
-  ShieldAlert
+  ShieldAlert,
+  Activity,
+  BarChart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSessionAction, logoutAction, updateProfileAction, pingAction } from "@/app/actions/auth";
@@ -177,6 +179,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       description: "ห้องเรียนวิชารหัสสี"
     }] : []),
     ...(user?.role === "ADMIN" ? [{
+      href: "/admin",
+      label: "แผงควบคุม (Dashboard)",
+      icon: Activity,
+      description: "ภาพรวมระบบทั้งหมด",
+      exact: true
+    }] : []),
+    ...(user?.role === "ADMIN" ? [{
       href: "/admin/users",
       label: "จัดการผู้ใช้งาน",
       icon: ShieldAlert,
@@ -288,7 +297,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <span className="px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">เมนูระบบ</span>
             {dashboardNavItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+              const isActive = (item as any).exact 
+                ? pathname === item.href 
+                : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
               
               return (
                 <Link
@@ -454,7 +465,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="space-y-1">
                 {dashboardNavItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+                  const isActive = (item as any).exact 
+                    ? pathname === item.href 
+                    : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
                   return (
                     <Link
                       key={item.href}

@@ -115,3 +115,61 @@ export async function adminCreateUserAction(formData: FormData) {
     return { success: false, error: error.message || "Failed to create user" };
   }
 }
+
+export async function getAdminDashboardStatsAction() {
+  try {
+    await checkAdmin();
+
+    const [
+      totalUsers,
+      adminUsers,
+      teacherUsers,
+      learnerUsers,
+      totalClassrooms,
+      totalEnrollments,
+      totalAssignments,
+      totalSubmissions,
+      recentUsers,
+      recentClassrooms
+    ] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { role: "ADMIN" } }),
+      prisma.user.count({ where: { role: "TEACHER" } }),
+      prisma.user.count({ where: { role: "LEARNER" } }),
+      prisma.classroom.count(),
+      prisma.enrollment.count(),
+      prisma.assignment.count(),
+      prisma.submission.count(),
+      prisma.user.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        select: { id: true, name: true, email: true, role: true, createdAt: true }
+      }),
+      prisma.classroom.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        select: { id: true, name: true, createdAt: true, teacher: { select: { name: true } } }
+      })
+    ]);
+
+    return {
+      success: true,
+      stats: {
+        users: {
+          total: totalUsers,
+          admin: adminUsers,
+          teacher: teacherUsers,
+          learner: learnerUsers
+        },
+        classrooms: totalClassrooms,
+        enrollments: totalEnrollments,
+        assignments: totalAssignments,
+        submissions: totalSubmissions,
+        recentUsers,
+        recentClassrooms
+      }
+    };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Failed to fetch dashboard stats" };
+  }
+}
