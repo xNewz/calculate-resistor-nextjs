@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CheckCircle2, ChevronRight, BookOpen, Layers, Zap, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 // ─── Color data ───────────────────────────────────────────────────────────────
 const COLORS = [
@@ -97,9 +98,18 @@ export default function LearnPage() {
               <BookOpen className="size-5 text-indigo-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-zinc-100">สื่อการสอน: การอ่านรหัสสีตัวต้านทาน</h1>
-              <p className="text-xs text-zinc-500 mt-0.5">เรียนรู้ตั้งแต่พื้นฐานจนถึงการอ่านค่าตัวต้านทานได้อย่างถูกต้อง</p>
+              <h1 className="text-2xl font-black text-zinc-100">สื่อการสอน (Learn)</h1>
+              <p className="text-xs text-zinc-500 mt-0.5">เลือกหัวข้อที่คุณต้องการศึกษา</p>
             </div>
+          </div>
+          
+          <div className="mt-6 flex flex-wrap gap-2 p-1 bg-zinc-900/50 border border-zinc-800 rounded-xl w-fit">
+            <Link href="/learn" className="px-5 py-2.5 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-sm border border-indigo-500/30">
+              ตัวต้านทาน (Resistor)
+            </Link>
+            <Link href="/learn/multimeter" className="px-5 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 font-bold text-sm transition-colors">
+              มัลติมิเตอร์ (Multimeter)
+            </Link>
           </div>
         </div>
 

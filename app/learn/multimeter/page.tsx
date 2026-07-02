@@ -36,16 +36,33 @@ export default function MultimeterLearnPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+                <BookOpen className="size-5 text-indigo-400" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-black text-zinc-100">สื่อการสอน (Learn)</h1>
+                <p className="text-xs text-zinc-500 mt-0.5">เลือกหัวข้อที่คุณต้องการศึกษา</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 p-1 bg-zinc-900/50 border border-zinc-800 rounded-xl w-fit">
+              <Link href="/learn" className="px-5 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 font-bold text-sm transition-colors">
+                ตัวต้านทาน (Resistor)
+              </Link>
+              <Link href="/learn/multimeter" className="px-5 py-2.5 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-sm border border-indigo-500/30">
+                มัลติมิเตอร์ (Multimeter)
+              </Link>
+            </div>
+          </div>
+
           <Link href="/">
-            <Button variant="ghost" className="hover:bg-zinc-900 gap-2">
+            <Button variant="outline" className="border-zinc-800 hover:bg-zinc-800 gap-2 shrink-0">
               <ArrowLeft className="size-4" /> กลับสู่หน้าหลัก
             </Button>
           </Link>
-          <div className="flex items-center gap-2">
-            <BookOpen className="size-5 text-indigo-400" />
-            <h1 className="text-xl font-bold">บทเรียน: การอ่านสเกลมัลติมิเตอร์แบบเข็ม</h1>
-          </div>
         </div>
 
         {/* Simulator Section */}
@@ -70,7 +87,7 @@ export default function MultimeterLearnPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-zinc-400 uppercase">เลือกย่านวัด (Range Selector)</label>
+                <label className="text-sm font-semibold text-zinc-400 uppercase">เลือกย่านวัด</label>
                 <div className="grid grid-cols-3 gap-2">
                   {multimeterRanges.map((range) => (
                     <Button
@@ -104,7 +121,7 @@ export default function MultimeterLearnPage() {
                 <div className="flex flex-col space-y-2 pt-2">
                   <span className="text-zinc-400">วิธีการคำนวณ:</span>
                   <span className="font-mono text-sm">
-                    {selectedRange.type === "OHM" 
+                    {selectedRange.type === "OHM"
                       ? `${pointerValue} x ${selectedRange.maxScale} = ${actualValue} Ω`
                       : `อ่านค่าตรงจากสเกล ${selectedRange.maxScale} ได้เลย`}
                   </span>
