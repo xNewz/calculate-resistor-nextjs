@@ -231,18 +231,28 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   }, [gameState, overallTimeLeft, submitExam, attempts, violations]);
 
 
+  const startExamState = () => {
+    setQuestions(generateQuestions());
+    setCurrentIndex(0);
+    setUserAnswer("");
+    setAttempts([]);
+    setGameState("playing");
+    setIsImageLoaded(false);
+  };
+
   const enterFullscreenAndStart = () => {
-    if (containerRef.current) {
+    if (containerRef.current && containerRef.current.requestFullscreen) {
       containerRef.current.requestFullscreen().then(() => {
-        setQuestions(generateQuestions());
-        setCurrentIndex(0);
-        setUserAnswer("");
-        setAttempts([]);
-        setGameState("playing");
-        setIsImageLoaded(false);
+        startExamState();
       }).catch((err) => {
-        setError("เบราว์เซอร์ไม่รองรับโหมดเต็มจอ หรือถูกบล็อก");
+        // Fallback for browsers that block it or fail (e.g. mobile permissions)
+        console.warn("Fullscreen failed or not supported, starting anyway.", err);
+        startExamState();
       });
+    } else {
+      // Fallback for iOS Safari which doesn't support requestFullscreen on elements
+      console.warn("Fullscreen API not supported on this browser/device, starting anyway.");
+      startExamState();
     }
   };
 
@@ -334,7 +344,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                   <Maximize className="size-5 text-indigo-400 shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-sm font-bold text-zinc-200">บังคับแสดงผลเต็มจอ</h4>
-                    <p className="text-xs text-zinc-400">คุณต้องอยู่ในโหมดเต็มจอตลอดการสอบ หากออกจากโหมดเต็มจอจะถือว่าทุจริต</p>
+                    <p className="text-xs text-zinc-400">คุณต้องอยู่ในโหมดเต็มจอตลอดการสอบ หากออกจากโหมดเต็มจอจะถือว่าทุจริต (หากอุปกรณ์ไม่รองรับ เช่น มือถือระบบ iOS ระบบจะอนุโลมให้ทำข้อสอบได้ตามปกติ)</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
