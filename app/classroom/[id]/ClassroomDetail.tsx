@@ -85,6 +85,7 @@ export default function ClassroomDetail({
 
   const [activeTab, setActiveTab] = useState(user.role === "TEACHER" || user.role === "ADMIN" ? "dashboard" : "assignments");
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [isExamMode, setIsExamMode] = useState(false);
 
   // Assignment Edit & Delete states
   const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
@@ -610,9 +611,15 @@ export default function ClassroomDetail({
                       <div className="p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-bold text-sm text-zinc-100">
+                            <h3 className="font-bold text-sm text-zinc-100 flex items-center gap-1.5">
+                              {assignment.isExam && <span title="โหมดสอบ"><ShieldAlert className="size-4 text-red-400" /></span>}
                               {assignment.title}
                             </h3>
+                            {assignment.isExam && (
+                              <Badge variant="outline" className="border-red-500/20 bg-red-500/10 text-red-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-bold">
+                                โหมดสอบ {assignment.timeLimit ? `(${assignment.timeLimit} นาที)` : ""}
+                              </Badge>
+                            )}
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
                               {assignment.bandType} แถบสี
                             </Badge>
@@ -672,8 +679,8 @@ export default function ClassroomDetail({
                         </div>
 
                         {/* Action buttons based on Role */}
-                        <div className="shrink-0 flex items-center gap-3 justify-end sm:justify-start border-t sm:border-t-0 border-zinc-850/80 pt-3 sm:pt-0">
-                          {user.role === "TEACHER" ? (
+                        <div className="shrink-0 flex flex-wrap items-center gap-3 justify-end sm:justify-start border-t sm:border-t-0 border-zinc-850/80 pt-3 sm:pt-0">
+                          {user.role === "TEACHER" || user.role === "ADMIN" ? (
                             <div className="flex items-center gap-4">
                               <div className="text-right">
                                 <span className="text-xs font-semibold block text-zinc-400">
@@ -686,30 +693,42 @@ export default function ClassroomDetail({
                                 </span>
                               </div>
                               <div className="flex gap-1.5 border-l border-zinc-800 pl-4">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="size-7 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 cursor-pointer"
-                                  onClick={() => {
-                                    setEditingAssignment(assignment);
-                                    setShowEditAssignmentModal(true);
-                                  }}
-                                  title="แก้ไข"
-                                >
-                                  <Settings className="size-3.5" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="size-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
-                                  onClick={() => {
-                                    setDeletingAssignment(assignment);
-                                    setShowDeleteAssignmentModal(true);
-                                  }}
-                                  title="ลบ"
-                                >
-                                  <Trash2 className="size-3.5" />
-                                </Button>
+                                {assignment.isExam && (
+                                  <Link href={`/classroom/${classroom.id}/exam/${assignment.id}/monitor`}>
+                                    <Button variant="outline" size="sm" className="h-7 px-2 border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 gap-1.5 text-[10px] font-bold cursor-pointer">
+                                      <Activity className="size-3" />
+                                      Live Monitor
+                                    </Button>
+                                  </Link>
+                                )}
+                                {user.role === "TEACHER" && (
+                                  <>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-7 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 cursor-pointer"
+                                      onClick={() => {
+                                        setEditingAssignment(assignment);
+                                        setShowEditAssignmentModal(true);
+                                      }}
+                                      title="แก้ไข"
+                                    >
+                                      <Settings className="size-3.5" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
+                                      onClick={() => {
+                                        setDeletingAssignment(assignment);
+                                        setShowDeleteAssignmentModal(true);
+                                      }}
+                                      title="ลบ"
+                                    >
+                                      <Trash2 className="size-3.5" />
+                                    </Button>
+                                  </>
+                                )}
                               </div>
                             </div>
                           ) : (
@@ -740,10 +759,10 @@ export default function ClassroomDetail({
                                   <span>ปิดรับส่งแล้ว</span>
                                 </Button>
                               ) : (
-                                <Link href={`/classroom/${classroom.id}/assignment/${assignment.id}`}>
-                                  <Button className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs rounded-lg gap-1 px-3 cursor-pointer shadow-sm">
-                                    <Play className="size-3 fill-primary-foreground text-primary-foreground" />
-                                    <span>ทำแบบทดสอบ{isPastDue ? " (ส่งเกินเวลา)" : ""}</span>
+                                <Link href={`/classroom/${classroom.id}/${assignment.isExam ? 'exam' : 'assignment'}/${assignment.id}`}>
+                                  <Button className={`h-8 text-primary-foreground hover:bg-primary/90 font-bold text-xs rounded-lg gap-1 px-3 cursor-pointer shadow-sm ${assignment.isExam ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-primary'}`}>
+                                    <Play className="size-3 fill-current" />
+                                    <span>{assignment.isExam ? 'เข้าห้องสอบ' : 'ทำแบบทดสอบ'}{isPastDue ? " (ส่งเกินเวลา)" : ""}</span>
                                   </Button>
                                 </Link>
                               )}

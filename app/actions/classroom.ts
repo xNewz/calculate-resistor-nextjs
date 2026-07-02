@@ -174,6 +174,16 @@ export async function createAssignmentAction(
   }
 
   const allowLate = allowLateStr === "true" || allowLateStr === "on";
+  
+  // Exam fields
+  const isExamStr = formData.get("isExam") as string;
+  const timeLimitStr = formData.get("timeLimit") as string;
+  const isExam = isExamStr === "true" || isExamStr === "on";
+  let timeLimit: number | null = null;
+  if (isExam && timeLimitStr && timeLimitStr.trim() !== "") {
+    timeLimit = parseInt(timeLimitStr, 10);
+    if (isNaN(timeLimit) || timeLimit < 1) timeLimit = null;
+  }
 
   try {
     // Verify teacher owns the classroom
@@ -196,6 +206,8 @@ export async function createAssignmentAction(
         questionCount,
         dueDate,
         allowLate,
+        isExam,
+        timeLimit,
         classroomId,
       },
     });
@@ -217,7 +229,9 @@ export async function createAssignmentAction(
 export async function submitQuizAction(
   assignmentId: string,
   score: number,
-  answers: any[]
+  answers: any[],
+  violationCount: number = 0,
+  isAutoSubmitted: boolean = false
 ): Promise<ActionResponse> {
   const session = await getSession();
   if (!session || session.role !== "LEARNER") {
@@ -263,6 +277,8 @@ export async function submitQuizAction(
         studentId: session.userId,
         score,
         answers: JSON.stringify(answers), // Serialize to string to fit JSON or Db JSON field
+        violationCount,
+        isAutoSubmitted,
       },
     });
 
