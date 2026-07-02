@@ -35,9 +35,23 @@ import {
   Settings,
   Trash2,
   MoreVertical,
-  BarChart
+  BarChart,
+  Download,
+  PieChart,
+  Activity,
+  AlertTriangle
 } from "lucide-react";
 import { StudentStatsModal } from "@/components/StudentStatsModal";
+import { downloadGradebookCsv } from "@/lib/exportCsv";
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface ClassroomDetailProps {
   user: {
@@ -68,7 +82,7 @@ export default function ClassroomDetail({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   
-  const [activeTab, setActiveTab] = useState("assignments");
+  const [activeTab, setActiveTab] = useState(user.role === "TEACHER" ? "dashboard" : "assignments");
   const [showAssignModal, setShowAssignModal] = useState(false);
   
   // Assignment Edit & Delete states
@@ -210,6 +224,82 @@ export default function ClassroomDetail({
     return submissions.find((s) => s.assignmentId === assignmentId && s.studentId === studentId);
   };
 
+  // --- Dashboard Data Computations (Teacher Only) ---
+  const { dashboardData, commonMistakes, overallAvgPercent, overallSubmissionRate } = React.useMemo(() => {
+    if (user.role !== "TEACHER") return { dashboardData: [], commonMistakes: [], overallAvgPercent: 0, overallSubmissionRate: 0 };
+
+    // 1. Chart Data & Overalls
+    let totalScore = 0;
+    let totalMaxScore = 0;
+    let totalPossibleSubmissions = assignments.length * enrollments.length;
+    let totalActualSubmissions = 0;
+
+    const chartData = assignments.map(asg => {
+      const subs = submissions.filter(s => s.assignmentId === asg.id);
+      let avgPercent = 0;
+      totalActualSubmissions += subs.length;
+      
+      if (subs.length > 0) {
+        const asgTotalRaw = subs.reduce((sum, s) => sum + s.score, 0);
+        totalScore += asgTotalRaw;
+        totalMaxScore += subs.length * asg.questionCount;
+        avgPercent = Math.round((asgTotalRaw / (subs.length * asg.questionCount)) * 100);
+      }
+      return {
+        name: asg.title.length > 15 ? asg.title.substring(0, 15) + "..." : asg.title,
+        fullTitle: asg.title,
+        avgPercent,
+        submissions: subs.length,
+        totalEnrolled: enrollments.length
+      };
+    });
+
+    const oAvg = totalMaxScore > 0 ? Math.round((totalScore / totalMaxScore) * 100) : 0;
+    const oRate = totalPossibleSubmissions > 0 ? Math.round((totalActualSubmissions / totalPossibleSubmissions) * 100) : 0;
+
+    // 2. Common Mistakes Analysis
+    const mistakeCounts: Record<string, { count: number, formatted: string, colors: string[] }> = {};
+    
+    submissions.forEach(sub => {
+      if (!sub.answers) return;
+      try {
+        let parsedAnswers = [];
+        if (typeof sub.answers === 'string') {
+          parsedAnswers = JSON.parse(sub.answers);
+        } else if (Array.isArray(sub.answers)) {
+          parsedAnswers = sub.answers;
+        }
+
+        parsedAnswers.forEach((ans: any) => {
+          if (!ans.isCorrect && ans.question && !ans.isTimeout) {
+            const key = ans.question.formatted;
+            if (!mistakeCounts[key]) {
+              mistakeCounts[key] = {
+                count: 0,
+                formatted: ans.question.formatted,
+                colors: ans.question.colors || []
+              };
+            }
+            mistakeCounts[key].count += 1;
+          }
+        });
+      } catch (e) {
+        // parsing error
+      }
+    });
+
+    const sortedMistakes = Object.values(mistakeCounts)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5); // top 5
+
+    return { 
+      dashboardData: chartData, 
+      commonMistakes: sortedMistakes,
+      overallAvgPercent: oAvg,
+      overallSubmissionRate: oRate
+    };
+  }, [assignments, submissions, enrollments, user.role]);
+
   return (
     <div className="min-h-screen lg:min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -316,16 +406,175 @@ export default function ClassroomDetail({
 
         {/* Tab Controls */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-zinc-950 border border-zinc-850 p-1 rounded-xl h-11 w-full sm:w-[320px]">
+          <TabsList className={`bg-zinc-950 border border-zinc-850 p-1 rounded-xl h-11 w-full ${user.role === "TEACHER" ? "sm:w-[450px]" : "sm:w-[320px]"}`}>
+            {user.role === "TEACHER" && (
+              <TabsTrigger value="dashboard" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
+                <PieChart className="size-3.5" />
+                <span>ภาพรวม (Dashboard)</span>
+              </TabsTrigger>
+            )}
             <TabsTrigger value="assignments" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
               <BookOpen className="size-3.5" />
               <span>แบบฝึกหัด</span>
             </TabsTrigger>
             <TabsTrigger value="members" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
               <Users className="size-3.5" />
-              <span>{user.role === "TEACHER" ? "ผลการเรียน / สมาชิก" : "รายชื่อเพื่อนร่วมชั้น"}</span>
+              <span>{user.role === "TEACHER" ? "สมุดคะแนน" : "รายชื่อเพื่อน"}</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* TAB: DASHBOARD (Teacher Only) */}
+          {user.role === "TEACHER" && (
+            <TabsContent value="dashboard" className="space-y-4 outline-none">
+              
+              {/* Top Stats Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card className="bg-zinc-900/60 border-zinc-850 p-4 flex flex-col justify-center rounded-xl shadow-sm">
+                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <Users className="size-3" /> จำนวนผู้เรียน
+                  </div>
+                  <div className="text-2xl font-black text-zinc-100">
+                    {enrollments.length} <span className="text-sm text-zinc-500 font-medium">คน</span>
+                  </div>
+                </Card>
+                <Card className="bg-zinc-900/60 border-zinc-850 p-4 flex flex-col justify-center rounded-xl shadow-sm">
+                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <BookOpen className="size-3" /> แบบฝึกหัดทั้งหมด
+                  </div>
+                  <div className="text-2xl font-black text-zinc-100">
+                    {assignments.length} <span className="text-sm text-zinc-500 font-medium">ชุด</span>
+                  </div>
+                </Card>
+                <Card className="bg-emerald-500/5 border-emerald-500/20 p-4 flex flex-col justify-center rounded-xl shadow-sm">
+                  <div className="text-emerald-500/70 text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <Activity className="size-3" /> อัตราการส่งงาน
+                  </div>
+                  <div className="text-2xl font-black text-emerald-400">
+                    {overallSubmissionRate}%
+                  </div>
+                </Card>
+                <Card className="bg-indigo-500/5 border-indigo-500/20 p-4 flex flex-col justify-center rounded-xl shadow-sm">
+                  <div className="text-indigo-500/70 text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <BarChart className="size-3" /> คะแนนเฉลี่ยรวม
+                  </div>
+                  <div className="text-2xl font-black text-indigo-400">
+                    {overallAvgPercent}%
+                  </div>
+                </Card>
+              </div>
+
+              {/* Main Charts & Analysis Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                {/* Left: Bar Chart */}
+                <Card className="lg:col-span-2 bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                  <CardHeader className="border-b border-zinc-850 pb-4">
+                    <CardTitle className="text-sm font-bold text-zinc-200">กราฟคะแนนเฉลี่ยแยกตามแบบฝึกหัด</CardTitle>
+                    <CardDescription className="text-xs text-zinc-400">
+                      แสดงเป็นเปอร์เซ็นต์คะแนนเฉลี่ยของทั้งชั้นเรียน
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-5 pt-6 flex-1 min-h-[250px]">
+                    {dashboardData.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-zinc-500 text-xs">
+                        ยังไม่มีข้อมูลการมอบหมายงาน
+                      </div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsBarChart data={dashboardData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                          <XAxis dataKey="name" stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} />
+                          <YAxis stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(val) => `${val}%`} />
+                          <RechartsTooltip 
+                            cursor={{ fill: '#27272a', opacity: 0.4 }}
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                const data = payload[0].payload;
+                                return (
+                                  <div className="bg-zinc-950 border border-zinc-800 shadow-xl rounded-lg p-3 text-xs">
+                                    <div className="font-bold text-zinc-200 mb-2">{data.fullTitle}</div>
+                                    <div className="flex justify-between gap-4 mb-1">
+                                      <span className="text-zinc-400">ส่งแล้ว:</span>
+                                      <span className="text-zinc-200">{data.submissions} / {data.totalEnrolled} คน</span>
+                                    </div>
+                                    <div className="flex justify-between gap-4">
+                                      <span className="text-zinc-400">คะแนนเฉลี่ย:</span>
+                                      <span className="font-bold text-indigo-400">{data.avgPercent}%</span>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Bar dataKey="avgPercent" fill="#818cf8" radius={[4, 4, 0, 0]} maxBarSize={50} animationDuration={1000} />
+                        </RechartsBarChart>
+                      </ResponsiveContainer>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Right: Common Mistakes */}
+                <Card className="bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden shadow-sm flex flex-col">
+                  <CardHeader className="border-b border-zinc-850 pb-4 bg-red-500/5">
+                    <CardTitle className="text-sm font-bold text-red-400 flex items-center gap-2">
+                      <AlertTriangle className="size-4" /> ข้อผิดพลาดที่พบบ่อย
+                    </CardTitle>
+                    <CardDescription className="text-xs text-red-400/70">
+                      ค่าตัวต้านทานที่ผู้เรียนมักตอบผิดมากที่สุด
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0 flex-1">
+                    {commonMistakes.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-zinc-500">
+                        <CheckCircle2 className="size-8 text-emerald-500/30 mb-2" />
+                        <span className="text-xs">ยังไม่พบข้อมูลข้อผิดพลาด<br/>หรือนักเรียนยังไม่ได้ทำแบบสอบถาม</span>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-zinc-850 text-xs">
+                        {commonMistakes.map((mistake, idx) => (
+                          <div key={mistake.formatted} className="p-4 flex items-center justify-between hover:bg-zinc-900/50">
+                            <div className="space-y-1.5">
+                              <div className="font-bold text-zinc-200 font-mono text-sm">
+                                {mistake.formatted}
+                              </div>
+                              <div className="flex gap-1">
+                                {mistake.colors.map((color, cIdx) => {
+                                  // Map english color to tailwind roughly for small badge
+                                  const colorMap: Record<string, string> = {
+                                    black: "bg-black text-white border-zinc-800",
+                                    brown: "bg-[#8B4513] text-white",
+                                    red: "bg-red-500 text-white",
+                                    orange: "bg-orange-500 text-white",
+                                    yellow: "bg-yellow-400 text-black",
+                                    green: "bg-green-500 text-white",
+                                    blue: "bg-blue-500 text-white",
+                                    violet: "bg-[#8A2BE2] text-white",
+                                    gray: "bg-gray-500 text-white",
+                                    white: "bg-white text-black border-zinc-300",
+                                    gold: "bg-[#FFD700] text-black",
+                                    silver: "bg-[#C0C0C0] text-black"
+                                  };
+                                  const styles = colorMap[color.toLowerCase()] || "bg-zinc-800 text-zinc-400";
+                                  return (
+                                    <div key={cIdx} className={`w-3 h-3 rounded-full border border-zinc-900 ${styles}`} title={color} />
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-red-400 font-bold">{mistake.count} ครั้ง</div>
+                              <div className="text-[9px] text-zinc-500">ที่ตอบผิด</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          )}
 
           {/* TAB 1: ASSIGNMENTS */}
           <TabsContent value="assignments" className="space-y-4 outline-none">
@@ -523,13 +772,24 @@ export default function ClassroomDetail({
             {user.role === "TEACHER" ? (
               // Teacher Gradebook View
               <Card className="bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden">
-                <CardHeader className="border-b border-zinc-850 pb-4">
-                  <CardTitle className="text-sm font-bold text-zinc-200">
-                    สมุดบันทึกผลคะแนน (Gradebook)
-                  </CardTitle>
-                  <CardDescription className="text-xs text-zinc-400">
-                    แสดงคะแนนที่ผู้เรียนทั้งหมดส่งคำตอบในแต่ละแบบฝึกหัด
-                  </CardDescription>
+                <CardHeader className="border-b border-zinc-850 pb-4 flex flex-row items-start justify-between">
+                  <div>
+                    <CardTitle className="text-sm font-bold text-zinc-200">
+                      สมุดบันทึกผลคะแนน (Gradebook)
+                    </CardTitle>
+                    <CardDescription className="text-xs text-zinc-400 mt-1">
+                      แสดงคะแนนที่ผู้เรียนทั้งหมดส่งคำตอบในแต่ละแบบฝึกหัด
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => downloadGradebookCsv(classroom.name, enrollments, assignments, submissions)}
+                    variant="outline"
+                    size="sm"
+                    className="h-8 border-zinc-700 bg-zinc-800/50 hover:bg-zinc-800 text-xs text-zinc-300 font-semibold rounded-lg gap-1.5 cursor-pointer"
+                  >
+                    <Download className="size-3.5" />
+                    <span className="hidden sm:inline">ดาวน์โหลด CSV</span>
+                  </Button>
                 </CardHeader>
                 <CardContent className="p-0 overflow-x-auto">
                   {enrollments.length === 0 ? (
