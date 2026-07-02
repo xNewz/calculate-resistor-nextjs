@@ -97,8 +97,8 @@ export default function SubmissionReview({
           </p>
           {type === "OHM" ? (
             <p className="text-zinc-300">
-              นำค่าที่อ่านได้คูณด้วยตัวคูณย่านวัด (x{q.multimeterData.range.multiplier}) <br/>
-              = {q.multimeterData.pointerValue} × {q.multimeterData.range.multiplier} = <strong className="text-emerald-400">{q.multimeterData.value} Ω</strong>
+              นำค่าที่อ่านได้คูณด้วยตัวคูณย่านวัด (x{q.multimeterData.range.maxScale}) <br/>
+              = {q.multimeterData.pointerValue} × {q.multimeterData.range.maxScale} = <strong className="text-emerald-400">{q.multimeterData.value} Ω</strong>
             </p>
           ) : (
             <p className="text-zinc-300">
