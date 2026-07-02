@@ -180,6 +180,23 @@ export async function getSessionAction() {
   };
 }
 
+export async function pingAction() {
+  try {
+    const session = await getSession();
+    if (!session) return { success: false };
+
+    // Update last active
+    await prisma.user.update({
+      where: { id: session.userId },
+      data: { lastActive: new Date() },
+    });
+    
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
 export async function updateProfileAction(
   prevState: AuthState | null,
   formData: FormData

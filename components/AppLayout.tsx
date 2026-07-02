@@ -23,7 +23,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getSessionAction, logoutAction, updateProfileAction } from "@/app/actions/auth";
+import { getSessionAction, logoutAction, updateProfileAction, pingAction } from "@/app/actions/auth";
 import { getUserClassroomsAction } from "@/app/actions/classroom";
 import { Button } from "./ui/button";
 
@@ -122,6 +122,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
     loadLayoutData();
   }, [pathname]); // Reload when pathname changes to ensure correct state
+
+  // Keep-alive ping to update online status
+  useEffect(() => {
+    if (!user) return;
+    
+    const ping = () => {
+      pingAction().catch(console.error);
+    };
+    
+    // Ping right away, then every 60 seconds
+    ping();
+    const interval = setInterval(ping, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleLogout = async () => {
     startTransition(async () => {
