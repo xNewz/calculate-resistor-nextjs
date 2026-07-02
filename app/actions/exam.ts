@@ -11,19 +11,22 @@ export async function getExamViolationsAction(assignmentId: string) {
 
   try {
     // Verify assignment belongs to teacher (if not admin)
-    if (session.role === "TEACHER") {
-      const assignment = await prisma.assignment.findFirst({
-        where: {
-          id: assignmentId,
-          classroom: {
-            teacherId: session.userId
-          }
-        }
-      });
-      if (!assignment) {
-        return { success: false, error: "Not found or unauthorized" };
-      }
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: { classroom: true }
+    });
+
+    if (!assignment) {
+      return { success: false, error: "Not found" };
     }
+
+    if (session.role === "TEACHER" && assignment.classroom.teacherId !== session.userId) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const totalStudents = await prisma.enrollment.count({
+      where: { classroomId: assignment.classroomId }
+    });
 
     // Fetch violations
     const violations = await prisma.examViolation.findMany({
@@ -48,7 +51,7 @@ export async function getExamViolationsAction(assignmentId: string) {
       take: 50,
     });
 
-    return { success: true, data: { violations, submissions } };
+    return { success: true, data: { violations, submissions, totalStudents } };
   } catch (error) {
     console.error("Error fetching exam monitor data:", error);
     return { success: false, error: "Internal Server Error" };

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 export default function LiveMonitor({ assignment }: { assignment: any }) {
   const [violations, setViolations] = useState<any[]>([]);
   const [submissions, setSubmissions] = useState<any[]>([]);
+  const [totalStudents, setTotalStudents] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   const fetchViolations = async () => {
@@ -17,6 +18,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
     if (res.success && res.data) {
       setViolations(res.data.violations);
       setSubmissions(res.data.submissions);
+      setTotalStudents(res.data.totalStudents);
     }
     setLoading(false);
   };
@@ -124,7 +126,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                   ส่งข้อสอบแล้ว (Live Submissions)
                 </div>
                 <span className="text-xs text-zinc-500 font-normal">
-                  ทำเสร็จแล้ว {submissions.length} คน
+                  ทำเสร็จแล้ว {submissions.length} / {totalStudents} คน
                 </span>
               </CardTitle>
             </CardHeader>
