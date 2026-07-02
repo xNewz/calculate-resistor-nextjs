@@ -69,8 +69,13 @@ function formatMultiplierValue(value: number): string {
   return `${value}`;
 }
 
-const generateQuestion = (): Question => {
-  const bands = Math.random() > 0.5 ? 5 : 4;
+type QuizMode = "mixed" | "4-band" | "5-band";
+
+const generateQuestion = (mode: QuizMode): Question => {
+  let bands: 4 | 5 = 4;
+  if (mode === "4-band") bands = 4;
+  else if (mode === "5-band") bands = 5;
+  else bands = Math.random() > 0.5 ? 5 : 4;
 
   if (bands === 4) {
     const first = digits[Math.floor(Math.random() * (digits.length - 1)) + 1]; // no black first
@@ -119,6 +124,7 @@ function parseTextAnswer(input: string): number | null {
 
 export default function QuizPage() {
   const [gameState, setGameState] = useState<"idle" | "playing" | "ended">("idle");
+  const [quizMode, setQuizMode] = useState<QuizMode>("mixed");
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
@@ -225,7 +231,7 @@ export default function QuizPage() {
   }, [gameState, currentIndex, handleTimeout]);
 
   const startQuiz = () => {
-    const newQuestions = Array.from({ length: 10 }, generateQuestion);
+    const newQuestions = Array.from({ length: 10 }, () => generateQuestion(quizMode));
     setQuestions(newQuestions);
     setCurrentIndex(0);
     setUserAnswer("");
@@ -362,12 +368,39 @@ export default function QuizPage() {
                     กติกาการทำแบบทดสอบ:
                   </h4>
                   <ul className="list-disc pl-5 space-y-1.5">
-                    <li>ระบบจะสุ่มคำถามตัวต้านทานแบบ 4 แถบสี และ 5 แถบสี รวมทั้งสิ้น 10 ข้อ</li>
+                    <li>คุณสามารถเลือกทำแบบทดสอบ 4 แถบสี, 5 แถบสี หรือแบบสุ่มได้ รวม 10 ข้อ</li>
                     <li>มีเวลานับถอยหลังในการตอบข้อละ 30 วินาที</li>
                     <li>เมื่อส่งคำตอบแต่ละข้อ ระบบจะบันทึกและข้ามไปยังข้อถัดไปทันที</li>
                     <li>หากหมดเวลาก่อนตอบ จะถือว่าข้อนั้นผิด (Timeout) และข้ามข้อโดยอัตโนมัติ</li>
                     <li>ระบบจะสรุปคะแนนและเฉลยคำตอบพร้อมวิธีคำนวณให้ดูทั้งหมด 10 ข้อในตอนท้าย</li>
                   </ul>
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  <Label className="text-foreground">เลือกรูปแบบการทดสอบ:</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <Button
+                      variant={quizMode === "4-band" ? "default" : "outline"}
+                      onClick={() => setQuizMode("4-band")}
+                      className="h-11"
+                    >
+                      4 แถบสี
+                    </Button>
+                    <Button
+                      variant={quizMode === "5-band" ? "default" : "outline"}
+                      onClick={() => setQuizMode("5-band")}
+                      className="h-11"
+                    >
+                      5 แถบสี
+                    </Button>
+                    <Button
+                      variant={quizMode === "mixed" ? "default" : "outline"}
+                      onClick={() => setQuizMode("mixed")}
+                      className="h-11"
+                    >
+                      สุ่ม (4 และ 5 แถบสี)
+                    </Button>
+                  </div>
                 </div>
 
                 <Button
