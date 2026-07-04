@@ -874,7 +874,7 @@ export default function ClassroomDetail({
                     className="h-8 border-zinc-700 bg-zinc-800/50 hover:bg-zinc-800 text-xs text-zinc-300 font-semibold rounded-lg gap-1.5 cursor-pointer"
                   >
                     <Download className="size-3.5" />
-                    <span className="hidden sm:inline">ดาวน์โหลด CSV</span>
+                    <span className="hidden sm:inline">ส่งออกคะแนนรวม (Excel/CSV)</span>
                   </Button>
                 </CardHeader>
                 <CardContent className="p-0 overflow-x-auto">
@@ -1431,8 +1431,9 @@ export default function ClassroomDetail({
               setTimeout(() => setSelectedStatsStudent(null), 200);
             }}
             studentName={selectedStatsStudent.name}
+            classroomName={classroom.name}
             assignments={assignments}
-            submissions={submissions.filter(s => s.userId === selectedStatsStudent.id)}
+            submissions={submissions.filter(s => s.studentId === selectedStatsStudent.id)}
           />
         )}
 

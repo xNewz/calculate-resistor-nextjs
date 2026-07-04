@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { X, TrendingUp, TrendingDown, Minus, BarChart, Award } from "lucide-react";
+import { X, TrendingUp, TrendingDown, Minus, BarChart, Award, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   LineChart,
@@ -13,11 +13,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { downloadStudentGradebookCsv } from "@/lib/exportCsv";
 
 interface StudentStatsModalProps {
   isOpen: boolean;
   onClose: () => void;
   studentName: string;
+  classroomName: string;
   assignments: {
     id: string;
     title: string;
@@ -35,6 +37,7 @@ export function StudentStatsModal({
   isOpen,
   onClose,
   studentName,
+  classroomName,
   assignments,
   submissions,
 }: StudentStatsModalProps) {
@@ -122,15 +125,30 @@ export function StudentStatsModal({
               </p>
             </div>
           </div>
-          <Button
-            type="button"
-            onClick={onClose}
-            variant="ghost"
-            size="icon"
-            className="size-8 rounded-full text-zinc-450 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
-          >
-            <X className="size-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {chartData.length > 0 && (
+              <Button
+                type="button"
+                onClick={() => downloadStudentGradebookCsv(studentName, classroomName, assignments, submissions)}
+                variant="outline"
+                size="sm"
+                className="h-8 border-zinc-700 bg-zinc-800/50 hover:bg-zinc-800 text-xs text-zinc-300 font-semibold rounded-lg gap-1.5 cursor-pointer"
+                title="ส่งออกรายงานคะแนนรายบุคคลเป็น CSV/Excel"
+              >
+                <Download className="size-3.5" />
+                <span className="hidden sm:inline">ส่งออกคะแนน (CSV/Excel)</span>
+              </Button>
+            )}
+            <Button
+              type="button"
+              onClick={onClose}
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-full text-zinc-450 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Content */}
