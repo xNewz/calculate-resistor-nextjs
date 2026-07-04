@@ -333,7 +333,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const resumeExam = () => {
     setIsTransitioning(true);
     
-    if (containerRef.current && !document.fullscreenElement) {
+    if (containerRef.current && containerRef.current.requestFullscreen && !document.fullscreenElement) {
       containerRef.current.requestFullscreen()
         .then(() => {
           setGameState("playing");
