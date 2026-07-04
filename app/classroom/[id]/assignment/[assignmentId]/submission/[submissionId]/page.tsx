@@ -76,6 +76,19 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
   const isTeacherOrAdmin = user.role === "TEACHER" || user.role === "ADMIN";
   const showSolutions = isTeacherOrAdmin || submission.assignment.showSolutions;
 
+  // Fetch violations if it is an exam
+  const violations = submission.assignment.isExam
+    ? await prisma.examViolation.findMany({
+        where: {
+          assignmentId,
+          studentId: submission.studentId,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      })
+    : [];
+
   return (
     <SubmissionReview
       classroomId={classroomId}
@@ -84,14 +97,23 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
         title: submission.assignment.title,
         questionCount: submission.assignment.questionCount,
         assignmentType: submission.assignment.assignmentType,
+        isExam: submission.assignment.isExam,
       }}
       submission={{
         id: submission.id,
         score: submission.score,
         createdAt: submission.createdAt,
+        violationCount: submission.violationCount,
+        isAutoSubmitted: submission.isAutoSubmitted,
       }}
       attempts={attempts}
       showSolutions={showSolutions}
+      violations={violations.map(v => ({
+        id: v.id,
+        type: v.type,
+        details: v.details,
+        createdAt: v.createdAt,
+      }))}
     />
   );
 }

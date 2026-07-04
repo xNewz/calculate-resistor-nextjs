@@ -15,7 +15,9 @@ import {
   XCircle,
   ArrowLeft,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  ShieldAlert,
+  AlertTriangle
 } from "lucide-react";
 import {
   COLOR_MAP,
@@ -50,16 +52,24 @@ interface SubmissionReviewProps {
     title: string;
     questionCount: number;
     assignmentType?: string;
+    isExam?: boolean;
   };
   submission: {
     id: string;
     score: number;
     createdAt: Date;
+    violationCount?: number;
+    isAutoSubmitted?: boolean;
   };
   attempts: UserAttempt[];
   showSolutions: boolean;
+  violations?: {
+    id: string;
+    type: string;
+    details: string | null;
+    createdAt: Date;
+  }[];
 }
-
 
 export default function SubmissionReview({
   classroomId,
@@ -67,6 +77,7 @@ export default function SubmissionReview({
   submission,
   attempts,
   showSolutions,
+  violations = [],
 }: SubmissionReviewProps) {
 
   const getVerdict = (finalScore: number, total: number, type: string) => {
@@ -234,6 +245,87 @@ export default function SubmissionReview({
             </Link>
           </CardContent>
         </Card>
+
+        {/* Proctoring / Cheating Report for Exams */}
+        {assignment.isExam && (
+          <Card className="bg-zinc-900/40 border-zinc-850 shadow-md rounded-2xl overflow-hidden backdrop-blur-md">
+            <CardHeader className="border-b border-zinc-850 pb-4">
+              <CardTitle className="text-sm font-bold text-zinc-300 flex items-center gap-2">
+                <ShieldAlert className="size-4 text-red-400" />
+                <span>รายงานพฤติกรรมระหว่างการสอบ (Exam Proctoring Report)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4">
+              {submission.violationCount === 0 ? (
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-emerald-400">
+                  <CheckCircle2 className="size-5 shrink-0" />
+                  <div className="text-xs">
+                    <p className="font-bold">ไม่พบประวัติพฤติกรรมน่าสงสัย</p>
+                    <p className="text-[10px] text-zinc-500 mt-0.5">ผู้เรียนทำข้อสอบตามกฎระเบียบอย่างเคร่งครัด ไม่มีประวัติการสลับจอหรือการคัดลอกใดๆ</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className={`flex items-start gap-3 p-4 rounded-xl text-xs border ${
+                    submission.isAutoSubmitted 
+                      ? "bg-red-500/5 border-red-500/10 text-red-400" 
+                      : "bg-orange-500/5 border-orange-500/10 text-orange-400"
+                  }`}>
+                    <AlertTriangle className="size-5 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">
+                        {submission.isAutoSubmitted 
+                          ? "ตรวจพบการทุจริตเกินกำหนด - ระบบทำการส่งข้อสอบทันที" 
+                          : `ตรวจพบประวัติพฤติกรรมน่าสงสัยทั้งหมด ${submission.violationCount} ครั้ง`}
+                      </p>
+                      <p className="text-[10px] text-zinc-550 mt-0.5">
+                        {submission.isAutoSubmitted 
+                          ? "นักเรียนสลับแท็บหรือออกจากการแสดงผลเต็มจอเกินจำนวนที่ครูกำหนดไว้ ทำให้ระบบตัดสิทธิ์และล็อกคำตอบแบบอัตโนมัติ" 
+                          : "นักเรียนมีการสลับแท็บ หรือหลุดออกจากหน้าจอเต็มจอระหว่างการทำข้อสอบ รายละเอียดแสดงผลย้อนหลังอยู่ด้านล่าง"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Timeline Logs */}
+                  {violations && violations.length > 0 && (
+                    <div className="space-y-2.5">
+                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 pl-1">
+                        ลำดับเหตุการณ์การละเมิดกฎการสอบ (Timeline Logs)
+                      </h4>
+                      <div className="relative border-l border-zinc-800 ml-4 pl-4 space-y-4 text-xs py-1">
+                        {violations.map((v, idx) => (
+                          <div key={v.id} className="relative">
+                            {/* Dot indicator */}
+                            <div className="absolute size-2 rounded-full bg-red-500 -left-[21px] top-1.5 border border-black shadow" />
+                            
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-zinc-300 font-sans">ละเมิดกฎครั้งที่ {idx + 1}</span>
+                                <span className="text-[10px] text-zinc-500 font-mono">
+                                  {new Date(v.createdAt).toLocaleTimeString("th-TH")} น.
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-zinc-400">
+                                {v.details || (
+                                  <>
+                                    {v.type === "TAB_SWITCH" && "สลับหน้าจอ (พับหน้าจอ / เปิดแท็บอื่น)"}
+                                    {v.type === "FULLSCREEN_EXIT" && "ออกจากโหมดเต็มจอ"}
+                                    {v.type === "COPY_PASTE" && "พยายามคัดลอก หรือ วางข้อความ"}
+                                    {v.type === "CONTEXT_MENU" && "พยายามเปิดเมนูคลิกขวา"}
+                                  </>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Detailed Solutions Accordion */}
         <div className="space-y-3">

@@ -40,9 +40,12 @@ import {
   Download,
   PieChart,
   Activity,
-  AlertTriangle
+  AlertTriangle,
+  X
 } from "lucide-react";
 import { StudentStatsModal } from "@/components/StudentStatsModal";
+import ResistorPreview from "@/components/ResistorPreview";
+import MultimeterPreview from "@/components/MultimeterPreview";
 import { downloadGradebookCsv } from "@/lib/exportCsv";
 import {
   BarChart as RechartsBarChart,
@@ -108,6 +111,8 @@ export default function ClassroomDetail({
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [selectedStatsStudent, setSelectedStatsStudent] = useState<{ id: string; name: string } | null>(null);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [analyzingAssignment, setAnalyzingAssignment] = useState<any | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [editName, setEditName] = useState(classroom.name);
   const [editDescription, setEditDescription] = useState(classroom.description || "");
@@ -303,6 +308,58 @@ export default function ClassroomDetail({
       overallSubmissionRate: oRate
     };
   }, [assignments, submissions, enrollments, user.role]);
+
+  const mistakeAnalysis = React.useMemo(() => {
+    if (!analyzingAssignment) return [];
+
+    const assignmentSubmissions = submissions.filter(s => s.assignmentId === analyzingAssignment.id);
+    
+    const mistakeCounts: Record<string, { 
+      question: any;
+      totalWrong: number;
+      wrongAnswers: Record<string, number>; 
+    }> = {};
+
+    assignmentSubmissions.forEach(sub => {
+      if (!sub.answers) return;
+      try {
+        let parsedAnswers = [];
+        if (typeof sub.answers === 'string') {
+          parsedAnswers = JSON.parse(sub.answers);
+        } else if (Array.isArray(sub.answers)) {
+          parsedAnswers = sub.answers;
+        }
+
+        parsedAnswers.forEach((ans: any) => {
+          if (!ans.isCorrect && ans.question && !ans.isTimeout) {
+            const q = ans.question;
+            const qKey = q.colors 
+              ? `resistor-${q.bands}-${q.colors.join(',')}` 
+              : `multimeter-${q.multimeterData?.range?.name || 'unknown'}-${q.multimeterData?.pointerValue || '0'}`;
+
+            if (!mistakeCounts[qKey]) {
+              mistakeCounts[qKey] = {
+                question: q,
+                totalWrong: 0,
+                wrongAnswers: {}
+              };
+            }
+
+            mistakeCounts[qKey].totalWrong += 1;
+
+            const userAns = ans.userAnswer ? ans.userAnswer.trim() : "ว่าง/ไม่ตอบ";
+            mistakeCounts[qKey].wrongAnswers[userAns] = (mistakeCounts[qKey].wrongAnswers[userAns] || 0) + 1;
+          }
+        });
+      } catch (e) {
+        console.error("Error parsing submission answers:", e);
+      }
+    });
+
+    // Convert to sorted array
+    return Object.values(mistakeCounts)
+      .sort((a, b) => b.totalWrong - a.totalWrong);
+  }, [analyzingAssignment, submissions]);
 
   return (
     <div className="min-h-screen lg:min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
@@ -694,7 +751,20 @@ export default function ClassroomDetail({
                                     : "0"}/{assignment.questionCount}
                                 </span>
                               </div>
-                              <div className="flex gap-1.5 border-l border-zinc-800 pl-4">
+                              <div className="flex gap-1.5 border-l border-zinc-800 pl-4 flex-wrap">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 px-2 border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 gap-1.5 text-[10px] font-bold cursor-pointer"
+                                  onClick={() => {
+                                    setAnalyzingAssignment(assignment);
+                                    setShowAnalysisModal(true);
+                                  }}
+                                  title="วิเคราะห์ข้อที่เด็กทำผิดบ่อย"
+                                >
+                                  <BarChart className="size-3" />
+                                  วิเคราะห์คำตอบผิด
+                                </Button>
                                 {assignment.isExam && (
                                   <Link href={`/classroom/${classroom.id}/exam/${assignment.id}/monitor`}>
                                     <Button variant="outline" size="sm" className="h-7 px-2 border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 gap-1.5 text-[10px] font-bold cursor-pointer">
@@ -1528,6 +1598,149 @@ export default function ClassroomDetail({
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* ASSIGNMENT MISTAKE ANALYTICS MODAL */}
+        {showAnalysisModal && analyzingAssignment && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <div className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 shadow-2xl rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              
+              {/* Header */}
+              <div className="p-5 border-b border-zinc-800 flex items-center justify-between shrink-0 bg-zinc-900/40">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                    <BarChart className="size-5 text-indigo-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-zinc-100">
+                      วิเคราะห์คำตอบผิดพลาด: <span className="text-indigo-400">{analyzingAssignment.title}</span>
+                    </h3>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      เจาะลึกข้อผิดพลาดยอดฮิตเพื่ออธิบายเนื้อหาหน้าชั้นเรียน
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setShowAnalysisModal(false);
+                    setAnalyzingAssignment(null);
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-full text-zinc-450 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                >
+                  <X className="size-4" />
+                </Button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 overflow-y-auto space-y-6 animate-[fadeIn_0.3s_ease-out]">
+                {mistakeAnalysis.length === 0 ? (
+                  <div className="py-12 flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20 rounded-xl border border-zinc-800/50 border-dashed">
+                    <CheckCircle2 className="size-10 text-emerald-500/40 mb-3" />
+                    <p className="text-sm font-semibold text-emerald-400">ยังไม่พบข้อผิดพลาดในบทเรียนนี้</p>
+                    <p className="text-xs mt-1 text-zinc-550">นักเรียนทุกคนตอบคำถามได้ถูกต้องทั้งหมด หรือยังไม่มีใครเริ่มทำการส่งงาน</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80 text-xs text-zinc-450">
+                      พบปัญหาทั้งหมด <span className="text-red-400 font-bold">{mistakeAnalysis.length} ข้อ</span> ที่มีนักเรียนตอบผิด (เรียงตามลำดับความถี่ในการตอบผิด)
+                    </div>
+
+                    <div className="space-y-4">
+                      {mistakeAnalysis.map((item, idx) => {
+                        const q = item.question;
+                        const sortedWrong = Object.entries(item.wrongAnswers)
+                          .sort((a, b) => b[1] - a[1]);
+
+                        return (
+                          <div key={idx} className="p-4 rounded-xl bg-zinc-900/30 border border-zinc-850 space-y-4 text-left">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                                ข้อวิเคราะห์อันดับที่ {idx + 1}
+                              </span>
+                              <Badge variant="destructive" className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 h-5 text-[10px] font-bold">
+                                ตอบผิด {item.totalWrong} คน
+                              </Badge>
+                            </div>
+
+                            {/* Visual Preview */}
+                            <div className="flex flex-col sm:flex-row items-center gap-4 bg-zinc-950/60 p-4 rounded-xl border border-zinc-850/80">
+                              <div className="w-full sm:w-1/2 flex items-center justify-center bg-zinc-900/40 p-2.5 rounded-lg border border-zinc-850">
+                                {q.colors ? (
+                                  <ResistorPreview colors={q.colors} />
+                                ) : q.multimeterData ? (
+                                  <div className="w-full scale-90 origin-center py-2">
+                                    <MultimeterPreview
+                                      range={q.multimeterData.range}
+                                      pointerValue={q.multimeterData.pointerValue}
+                                    />
+                                  </div>
+                                ) : (
+                                  <span className="text-xs text-zinc-550">ไม่มีรูปภาพแสดงผล</span>
+                                )}
+                              </div>
+
+                              <div className="w-full sm:w-1/2 space-y-2 text-xs">
+                                <div className="text-zinc-400">
+                                  คำเฉลยที่ถูกต้อง:
+                                  <span className="ml-2 font-mono font-bold text-sm text-emerald-400">
+                                    {q.formatted}
+                                  </span>
+                                </div>
+
+                                {q.colors && (
+                                  <div className="text-[10px] text-zinc-500 leading-relaxed">
+                                    <strong>แถบสี:</strong> {q.colors.map((c: string) => COLOR_MAP[c.toLowerCase()]?.nameTh || c).join(" - ")}
+                                  </div>
+                                )}
+                                {q.multimeterData && (
+                                  <div className="text-[10px] text-zinc-500 leading-relaxed">
+                                    <strong>ย่านวัด:</strong> {q.multimeterData.range.name} | <strong>ค่าที่ตั้งไว้:</strong> {q.multimeterData.pointerValue} V/Ω/mA
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Common Incorrect Answers breakdown */}
+                            <div className="space-y-2">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
+                                คำตอบยอดนิยมที่นักเรียนสับสน (Incorrect Answers Frequency)
+                              </span>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                {sortedWrong.map(([wrongAns, count]) => (
+                                  <div key={wrongAns} className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-950/40 border border-zinc-850/50 hover:border-zinc-800 transition-colors">
+                                    <span className="font-mono text-red-350 font-bold">{wrongAns}</span>
+                                    <span className="text-[10px] text-zinc-400 font-semibold bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                                      ตอบผิด {count} คน
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t border-zinc-800 bg-zinc-900/20 flex justify-end shrink-0">
+                <Button
+                  onClick={() => {
+                    setShowAnalysisModal(false);
+                    setAnalyzingAssignment(null);
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-9 font-semibold"
+                >
+                  ปิดหน้าต่างนี้
+                </Button>
+              </div>
+            </div>
           </div>
         )}
 

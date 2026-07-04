@@ -73,6 +73,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const [attempts, setAttempts] = useState<UserAttempt[]>([]);
   
   const [overallTimeLeft, setOverallTimeLeft] = useState<number | null>(null);
+  const [examStartTime, setExamStartTime] = useState<number | null>(null);
 
   // Initialize timer based on dueDate
   useEffect(() => {
@@ -173,19 +174,35 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const handleViolation = useCallback((type: string) => {
     if (gameState !== "playing") return;
 
-    reportViolationToServer(type);
+    // Calculate elapsed seconds since exam started
+    const elapsedSeconds = examStartTime ? Math.max(0, Math.floor((Date.now() - examStartTime) / 1000)) : 0;
+    const formatElapsed = (sec: number) => {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    };
+    const timeText = `ผ่านไป ${formatElapsed(elapsedSeconds)} นาที`;
+
+    let desc = "";
+    if (type === "TAB_SWITCH") desc = "สลับหน้าจอ (พับหน้าจอ / เปิดแท็บอื่น)";
+    else if (type === "FULLSCREEN_EXIT") desc = "ออกจากโหมดเต็มจอ";
+    else if (type === "COPY_PASTE") desc = "พยายามคัดลอก หรือ วางข้อความ";
+    else if (type === "CONTEXT_MENU") desc = "พยายามคลิกขวาเปิดคอนเท็กซ์เมนู";
+
+    const details = `${timeText} - ${desc}`;
+    reportViolationToServer(type, details);
     
     setViolations(prev => {
-      const current = prev + 1;
-      if (current >= maxViolations) {
-        setIsAutoSubmitted(true);
-        submitExam(attempts, true, current);
-      }
-      return current;
+       const current = prev + 1;
+       if (current >= maxViolations) {
+         setIsAutoSubmitted(true);
+         submitExam(attempts, true, current);
+       }
+       return current;
     });
 
     setGameState("violationAlert");
-  }, [gameState, attempts, submitExam]);
+  }, [gameState, attempts, submitExam, examStartTime]);
 
   // Anti-Cheat Listeners
   useEffect(() => {
@@ -262,6 +279,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
     setAttempts([]);
     setGameState("playing");
     setIsImageLoaded(false);
+    setExamStartTime(Date.now()); // Record starting timestamp
   };
 
   const enterFullscreenAndStart = () => {
