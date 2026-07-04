@@ -157,8 +157,13 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
       console.error("Failed to report violation", e);
     }
   };
-
   const submitExam = useCallback((finalAttempts: UserAttempt[], autoSub: boolean, currentVio: number) => {
+    // Clear localStorage on submit
+    localStorage.removeItem(`exam_started_${assignment.id}`);
+    localStorage.removeItem(`exam_violations_${assignment.id}`);
+    localStorage.removeItem(`exam_attempts_${assignment.id}`);
+    localStorage.removeItem(`exam_start_time_${assignment.id}`);
+
     setGameState("submitting");
     const finalScore = finalAttempts.filter((a) => a.isCorrect).length;
 
@@ -182,6 +187,46 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
       }
     });
   }, [assignment, router]);
+
+  // Recover exam session after reload/refresh
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const hasStarted = localStorage.getItem(`exam_started_${assignment.id}`) === "true";
+    if (hasStarted) {
+      const savedViolations = parseInt(localStorage.getItem(`exam_violations_${assignment.id}`) || "0", 10);
+      let savedAttempts: UserAttempt[] = [];
+      try {
+        savedAttempts = JSON.parse(localStorage.getItem(`exam_attempts_${assignment.id}`) || "[]");
+      } catch (e) {
+        console.error("Failed to parse saved attempts", e);
+      }
+
+      const savedStartTime = parseInt(localStorage.getItem(`exam_start_time_${assignment.id}`) || "0", 10);
+      if (savedStartTime > 0) {
+        setExamStartTime(savedStartTime);
+      }
+
+      const q = generateQuestions();
+      setQuestions(q);
+      setCurrentIndex(savedAttempts.length);
+      setAttempts(savedAttempts);
+
+      const currentViolations = savedViolations + 1;
+      setViolations(currentViolations);
+      localStorage.setItem(`exam_violations_${assignment.id}`, String(currentViolations));
+
+      // Report reload violation
+      reportViolationToServer("PAGE_RELOAD", `ผู้สอบทุจริตด้วยการรีโหลดหน้าเว็บ (ความผิดครั้งที่ ${currentViolations})`);
+
+      if (currentViolations >= maxViolations) {
+        setIsAutoSubmitted(true);
+        submitExam(savedAttempts, true, currentViolations);
+      } else {
+        setGameState("violationAlert");
+      }
+    }
+  }, [assignment.id, generateQuestions, submitExam]);
 
   const handleViolation = useCallback((type: string) => {
     if (gameState !== "playing" || isTransitioning) return;
@@ -207,6 +252,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
     
     setViolations(prev => {
        const current = prev + 1;
+       localStorage.setItem(`exam_violations_${assignment.id}`, String(current));
        if (current >= maxViolations) {
          setIsAutoSubmitted(true);
          submitExam(attempts, true, current);
@@ -382,13 +428,19 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
 
   const startExamState = () => {
+    const nowTime = Date.now();
     setQuestions(generateQuestions());
     setCurrentIndex(0);
     setUserAnswer("");
     setAttempts([]);
     setGameState("playing");
     setIsImageLoaded(false);
-    setExamStartTime(Date.now()); // Record starting timestamp
+    setExamStartTime(nowTime); // Record starting timestamp
+
+    localStorage.setItem(`exam_started_${assignment.id}`, "true");
+    localStorage.setItem(`exam_violations_${assignment.id}`, "0");
+    localStorage.setItem(`exam_attempts_${assignment.id}`, JSON.stringify([]));
+    localStorage.setItem(`exam_start_time_${assignment.id}`, String(nowTime));
   };
 
   const enterFullscreenAndStart = () => {
@@ -444,6 +496,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
     const nextAttempts = [...attempts, newAttempt];
     setAttempts(nextAttempts);
+    localStorage.setItem(`exam_attempts_${assignment.id}`, JSON.stringify(nextAttempts));
 
     if (nextAttempts.length === assignment.questionCount) {
       submitExam(nextAttempts, false, violations);

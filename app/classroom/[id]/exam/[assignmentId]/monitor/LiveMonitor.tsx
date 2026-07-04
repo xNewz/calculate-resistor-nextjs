@@ -144,6 +144,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                           {v.type === "COPY_PASTE" && "พยายามคัดลอก หรือ วางข้อความ"}
                           {v.type === "CONTEXT_MENU" && "พยายามเปิดเมนูคลิกขวา"}
                           {v.type === "BACK_BUTTON_EXIT" && "พยายามกดย้อนกลับ หรือปัดออกจากหน้าสอบ"}
+                          {v.type === "PAGE_RELOAD" && "พยายามรีโหลดหน้าจอเว็บเพื่อเลี่ยงกลไกควบคุม"}
                         </p>
                         {v.details && (
                           <p className={`text-[10px] mt-1 ${isWarning ? "text-zinc-300 italic font-bold" : "text-zinc-500"}`}>
