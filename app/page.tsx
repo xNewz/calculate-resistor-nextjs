@@ -315,13 +315,13 @@ export default function HomePage() {
                 ))}
               </div>
               
-              <div className="pt-2">
+              {/* <div className="pt-2">
                 <Link href="/learn/multimeter">
                   <Button variant="outline" className="h-10 px-5 border-zinc-700 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 text-xs rounded-xl cursor-pointer">
                     ศึกษาบทเรียนมัลติมิเตอร์
                   </Button>
                 </Link>
-              </div>
+              </div> */}
             </div>
 
           </div>
@@ -353,27 +353,53 @@ export default function HomePage() {
       </section>
 
       {/* ───── CTA Banner ───── */}
-      <section className="py-20 px-4">
-        <div className="max-w-2xl mx-auto text-center bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 rounded-3xl p-12">
-          <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl w-fit mx-auto mb-4">
-            <BookOpen className="size-7 text-indigo-400" />
+      <section className="py-24 px-4 relative overflow-hidden">
+        {/* Background decorative glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+
+        <div className="max-w-3xl mx-auto relative bg-gradient-to-b from-zinc-900/60 to-zinc-950/80 border border-zinc-800/80 rounded-3xl p-8 sm:p-12 shadow-2xl overflow-hidden text-center">
+          {/* Inner glows */}
+          <div className="absolute -right-20 -top-20 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold px-3 py-1 rounded-full mb-6 mx-auto">
+            <GraduationCap className="size-3.5" />
+            <span>เริ่มต้นพัฒนาการเรียนรู้วันนี้</span>
           </div>
-          <h2 className="text-3xl font-black text-zinc-100">พร้อมเริ่มเรียนรู้แล้วหรือยัง?</h2>
-          <p className="text-zinc-400 text-sm mt-3 leading-relaxed">
-            สมัครสมาชิกฟรี แล้วเริ่มฝึกทักษะการอ่านรหัสสีตัวต้านทานได้เลย
+
+          <h2 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight leading-snug">
+            ยกระดับทักษะการวัดและการอ่านค่าอิเล็กทรอนิกส์
+          </h2>
+          <p className="text-zinc-400 text-xs sm:text-sm mt-4 max-w-xl mx-auto leading-relaxed">
+            เข้าร่วมแพลตฟอร์มการเรียนรู้รูปแบบ Interactive ฟรี เรียนรู้รหัสสีตัวต้านทานและเครื่องมือวัดมัลติมิเตอร์อย่างเป็นขั้นตอน เหมาะสำหรับการเรียนการสอนในชั้นเรียนและการศึกษาด้วยตนเอง
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/register">
-              <Button className="h-11 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl gap-2 cursor-pointer w-full sm:w-auto">
-                สมัครสมาชิกฟรี
+
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/register" className="w-full sm:w-auto">
+              <Button className="h-11 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl gap-2 cursor-pointer w-full sm:w-auto transition-all shadow-lg shadow-indigo-900/35">
+                เริ่มต้นใช้งานบัญชีฟรี
                 <ArrowRight className="size-4" />
               </Button>
             </Link>
-            <Link href="/login">
-              <Button variant="outline" className="h-11 px-8 border-zinc-700 text-zinc-300 hover:bg-zinc-800/60 text-sm rounded-xl cursor-pointer w-full sm:w-auto">
-                เข้าสู่ระบบ
+            <Link href="/login" className="w-full sm:w-auto">
+              <Button variant="outline" className="h-11 px-8 border-zinc-800 text-zinc-300 hover:bg-zinc-800/60 hover:text-white text-sm rounded-xl cursor-pointer w-full sm:w-auto transition-all">
+                เข้าสู่ระบบผู้ใช้งาน
               </Button>
             </Link>
+          </div>
+
+          {/* Core highlights row */}
+          <div className="mt-12 pt-8 border-t border-zinc-850/60 grid grid-cols-3 gap-2 sm:gap-4 text-center">
+            {[
+              { label: "Interactive Tools", val: "เครื่องมือแบบโต้ตอบ" },
+              { label: "Classroom Support", val: "รองรับระบบห้องเรียน" },
+              { label: "100% Free to Use", val: "ใช้งานฟรีไม่มีค่าใช้จ่าย" }
+            ].map((item) => (
+              <div key={item.label} className="space-y-1">
+                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{item.label}</div>
+                <div className="text-[11px] font-semibold text-zinc-300">{item.val}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
