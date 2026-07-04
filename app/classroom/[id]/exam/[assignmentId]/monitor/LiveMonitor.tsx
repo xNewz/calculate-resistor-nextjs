@@ -2,16 +2,23 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { getExamViolationsAction } from "@/app/actions/exam";
-import { Activity, AlertTriangle, ArrowLeft, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { getExamViolationsAction, sendExamWarningAction } from "@/app/actions/exam";
+import { Activity, AlertTriangle, ArrowLeft, ShieldAlert, CheckCircle2, Send, Bell, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function LiveMonitor({ assignment }: { assignment: any }) {
   const [violations, setViolations] = useState<any[]>([]);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [totalStudents, setTotalStudents] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+
+  // Send warning states
+  const [warningStudent, setWarningStudent] = useState<{ id: string; name: string } | null>(null);
+  const [warningMessage, setWarningMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const fetchViolations = async () => {
     const res = await getExamViolationsAction(assignment.id);
@@ -32,6 +39,25 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
 
     return () => clearInterval(interval);
   }, [assignment.id]);
+
+  const handleSendWarning = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!warningStudent || !warningMessage.trim()) return;
+
+    setIsSending(true);
+    setModalError(null);
+
+    const res = await sendExamWarningAction(assignment.id, warningStudent.id, warningMessage);
+    setIsSending(false);
+
+    if (res.success) {
+      setWarningStudent(null);
+      setWarningMessage("");
+      fetchViolations();
+    } else {
+      setModalError(res.error || "เกิดข้อผิดพลาดในการส่งคำเตือน");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
@@ -88,30 +114,56 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
               </div>
             ) : (
               <div className="space-y-3">
-                {violations.map((v) => (
-                  <div key={v.id} className="flex items-start gap-4 p-4 rounded-xl bg-zinc-950/60 border border-red-900/30">
-                    <div className="size-8 rounded-full bg-red-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <AlertTriangle className="size-4 text-red-500" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-zinc-200 text-sm">{v.student.name}</span>
-                        <span className="text-[10px] text-zinc-500 font-mono">
-                          {new Date(v.createdAt).toLocaleTimeString("th-TH")}
-                        </span>
+                {violations.map((v) => {
+                  const isWarning = v.type === "TEACHER_WARNING";
+                  return (
+                    <div 
+                      key={v.id} 
+                      className={`flex items-start gap-4 p-4 rounded-xl bg-zinc-950/60 border ${
+                        isWarning ? "border-amber-500/20" : "border-red-900/30"
+                      }`}
+                    >
+                      <div className={`size-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                        isWarning ? "bg-amber-550/10 text-amber-550" : "bg-red-500/10 text-red-500"
+                      }`}>
+                        {isWarning ? <Bell className="size-4" /> : <AlertTriangle className="size-4" />}
                       </div>
-                      <p className="text-xs text-zinc-400">
-                        {v.type === "TAB_SWITCH" && "สลับหน้าจอ (พับหน้าจอ / เปิดแท็บอื่น)"}
-                        {v.type === "FULLSCREEN_EXIT" && "ออกจากโหมดเต็มจอ"}
-                        {v.type === "COPY_PASTE" && "พยายามคัดลอก หรือ วางข้อความ"}
-                        {v.type === "CONTEXT_MENU" && "พยายามเปิดเมนูคลิกขวา"}
-                      </p>
-                      {v.details && (
-                        <p className="text-[10px] text-zinc-500 mt-1">{v.details}</p>
-                      )}
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-zinc-200 text-sm">
+                            {isWarning ? `ส่งคำเตือนไปยัง: ${v.student.name}` : v.student.name}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-mono">
+                            {new Date(v.createdAt).toLocaleTimeString("th-TH")}
+                          </span>
+                        </div>
+                        <p className={`text-xs ${isWarning ? "text-amber-400 font-bold" : "text-zinc-400"}`}>
+                          {isWarning && "ส่งคำเตือนจากผู้สอน"}
+                          {v.type === "TAB_SWITCH" && "สลับหน้าจอ (พับหน้าจอ / เปิดแท็บอื่น)"}
+                          {v.type === "FULLSCREEN_EXIT" && "ออกจากโหมดเต็มจอ"}
+                          {v.type === "COPY_PASTE" && "พยายามคัดลอก หรือ วางข้อความ"}
+                          {v.type === "CONTEXT_MENU" && "พยายามเปิดเมนูคลิกขวา"}
+                        </p>
+                        {v.details && (
+                          <p className={`text-[10px] mt-1 ${isWarning ? "text-zinc-300 italic font-bold" : "text-zinc-500"}`}>
+                            {isWarning ? `"${v.details}"` : v.details}
+                          </p>
+                        )}
+                        {!isWarning && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setWarningStudent({ id: v.studentId, name: v.student.name })}
+                            className="mt-2 h-7 border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/25 text-orange-400 text-[10px] font-bold rounded-lg px-2.5 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                          >
+                            <Send className="size-3" />
+                            <span>เตือนผู้เรียนรายนี้</span>
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -189,6 +241,73 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
           </Card>
         </div>
 
+        {/* WARNING DIALOG MODAL */}
+        {warningStudent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-zinc-950 border-zinc-800 shadow-2xl rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-zinc-850 pb-4 bg-zinc-900/40">
+                <CardTitle className="text-sm font-bold text-orange-400 flex items-center gap-2">
+                  <Bell className="size-4 animate-bounce" />
+                  <span>ส่งคำเตือนไปยัง {warningStudent.name}</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <form onSubmit={handleSendWarning} className="space-y-4">
+                  {modalError && (
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                      <ShieldAlert className="size-4 shrink-0" />
+                      <span>{modalError}</span>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                      ข้อความคำเตือน (คำแจ้งเตือนจะแสดงบนหน้าจอของผู้เรียนทันที)
+                    </label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={warningMessage}
+                      onChange={(e) => setWarningMessage(e.target.value)}
+                      placeholder="เช่น โปรดทำข้อสอบอย่างสุจริต ห้ามแอบสลับหน้าจอไปเปิดแท็บอื่นเด็ดขาด"
+                      className="w-full p-3 text-xs rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:ring-1 focus:ring-orange-500/50 placeholder:text-zinc-650 focus:border-orange-500/30 transition-all font-semibold"
+                    />
+                  </div>
+                  <div className="flex items-center justify-end gap-2 pt-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setWarningStudent(null);
+                        setWarningMessage("");
+                        setModalError(null);
+                      }}
+                      className="h-9 px-4 text-xs hover:bg-zinc-900 text-zinc-450 font-bold rounded-lg cursor-pointer"
+                    >
+                      ยกเลิก
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSending || !warningMessage.trim()}
+                      className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-lg cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                    >
+                      {isSending ? (
+                        <>
+                          <Loader2 className="size-3.5 animate-spin" />
+                          <span>กำลังส่ง...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="size-3.5" />
+                          <span>ส่งคำเตือน</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

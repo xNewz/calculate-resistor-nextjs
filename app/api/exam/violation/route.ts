@@ -40,3 +40,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session || session.role !== "LEARNER") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const assignmentId = searchParams.get("assignmentId");
+
+    if (!assignmentId) {
+      return NextResponse.json({ error: "Missing assignmentId" }, { status: 400 });
+    }
+
+    // Fetch teacher warnings for this student and assignment
+    const warnings = await prisma.examViolation.findMany({
+      where: {
+        assignmentId,
+        studentId: session.userId,
+        type: "TEACHER_WARNING",
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return NextResponse.json({ success: true, warnings });
+  } catch (error) {
+    console.error("Failed to fetch exam warnings:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { submitQuizAction } from "@/app/actions/classroom";
 import {
-  ShieldAlert, Maximize, AlertTriangle, Clock, ArrowRight, Loader2, CheckCircle2
+  ShieldAlert, Maximize, AlertTriangle, Clock, ArrowRight, Loader2, CheckCircle2, Bell
 } from "lucide-react";
 
 interface Question {
@@ -98,6 +98,9 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const [violations, setViolations] = useState(0);
   const [isAutoSubmitted, setIsAutoSubmitted] = useState(false);
   const maxViolations = 3;
+  const [warningCountdown, setWarningCountdown] = useState(15);
+  const [shownWarningIds, setShownWarningIds] = useState<Set<string>>(new Set());
+  const [activeTeacherWarning, setActiveTeacherWarning] = useState<{ id: string; message: string } | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const processingRef = useRef(false);
@@ -278,6 +281,73 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
     return () => clearInterval(timer);
   }, [gameState, overallTimeLeft, submitExam, attempts, violations]);
+
+  // Countdown during violation alert (Auto-Submit if ignored/inactive)
+  useEffect(() => {
+    if (gameState !== "violationAlert") {
+      setWarningCountdown(15);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setWarningCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsAutoSubmitted(true);
+          submitExam(attempts, true, violations);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [gameState, attempts, submitExam, violations]);
+
+  // Poll for teacher warnings
+  useEffect(() => {
+    if (gameState !== "playing" && gameState !== "violationAlert") return;
+
+    const checkWarnings = async () => {
+      try {
+        const res = await fetch(`/api/exam/violation?assignmentId=${assignment.id}`);
+        const data = await res.json();
+        if (data.success && data.warnings) {
+          const newWarning = data.warnings.find((w: any) => !shownWarningIds.has(w.id));
+          if (newWarning) {
+            setActiveTeacherWarning({ id: newWarning.id, message: newWarning.details || "กรุณาตั้งใจทำข้อสอบ" });
+            setGameState("violationAlert");
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch teacher warnings:", e);
+      }
+    };
+
+    checkWarnings();
+    const interval = setInterval(checkWarnings, 3000);
+    return () => clearInterval(interval);
+  }, [gameState, assignment.id, shownWarningIds]);
+
+  const acknowledgeTeacherWarning = () => {
+    if (activeTeacherWarning) {
+      setShownWarningIds((prev) => {
+        const next = new Set(prev);
+        next.add(activeTeacherWarning.id);
+        return next;
+      });
+      setActiveTeacherWarning(null);
+    }
+    
+    // Resume game & re-enter fullscreen
+    if (containerRef.current && !document.fullscreenElement) {
+      containerRef.current.requestFullscreen()
+        .then(() => setGameState("playing"))
+        .catch(() => setGameState("playing"));
+    } else {
+      setGameState("playing");
+    }
+  };
 
 
   const startExamState = () => {
@@ -475,28 +545,63 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
         {/* VIOLATION ALERT */}
         {gameState === "violationAlert" && (
-          <Card className="bg-zinc-900 border-red-500 shadow-[0_0_50px_rgba(220,38,38,0.3)] rounded-2xl overflow-hidden animate-pulse py-0 gap-0">
+          <Card className="bg-zinc-900 border-red-500 shadow-[0_0_50px_rgba(220,38,38,0.3)] rounded-2xl overflow-hidden py-0 gap-0">
             <CardContent className="p-10 flex flex-col items-center text-center space-y-6">
-              <AlertTriangle className="size-20 text-red-500" />
-              <div className="space-y-2">
-                <h2 className="text-2xl font-black text-white">ตรวจพบพฤติกรรมน่าสงสัย!</h2>
-                <p className="text-zinc-400">คุณได้ออกจากโหมดเต็มจอ หรือเปิดหน้าต่างอื่น</p>
-                <p className="text-red-400 font-bold text-lg">
-                  คำเตือนครั้งที่ {violations} / {maxViolations}
-                </p>
-              </div>
-              <Button 
-                onClick={() => {
-                  if (containerRef.current && !document.fullscreenElement) {
-                    containerRef.current.requestFullscreen().then(() => setGameState("playing")).catch(() => setGameState("playing"));
-                  } else {
-                    setGameState("playing");
-                  }
-                }}
-                className="bg-white text-black hover:bg-zinc-200 font-bold px-8 h-12 rounded-xl"
-              >
-                กลับเข้าสู่การสอบ
-              </Button>
+              {activeTeacherWarning ? (
+                <>
+                  <div className="relative">
+                    <Bell className="size-20 text-amber-550 animate-bounce" />
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    <h2 className="text-2xl font-black text-amber-400">คำเตือนจากอาจารย์ผู้สอน!</h2>
+                    <div className="bg-zinc-950/80 border border-zinc-800 p-5 rounded-xl max-w-md mx-auto my-2 text-zinc-200 font-bold text-sm italic">
+                      "{activeTeacherWarning.message}"
+                    </div>
+                    <p className="text-xs text-zinc-400">
+                      กรุณากดปุ่มรับทราบด้านล่างเพื่อยืนยันการรับทราบคำเตือน
+                    </p>
+                    <p className="text-red-400 font-bold text-xs animate-pulse">
+                      กรุณาตอบกลับภายใน {warningCountdown} วินาที (มิฉะนั้นระบบจะส่งข้อสอบทันที)
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={acknowledgeTeacherWarning}
+                    className="bg-amber-500 text-black hover:bg-amber-600 font-bold px-8 h-12 rounded-xl shadow-lg shadow-amber-500/10 cursor-pointer animate-pulse"
+                  >
+                    รับทราบและทำข้อสอบต่อ
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="size-20 text-red-500 animate-pulse" />
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-black text-white">ตรวจพบพฤติกรรมน่าสงสัย!</h2>
+                    <p className="text-zinc-400">คุณได้ออกจากโหมดเต็มจอ หรือเปิดหน้าต่างอื่น</p>
+                    <p className="text-red-400 font-bold text-lg">
+                      คำเตือนครั้งที่ {violations} / {maxViolations}
+                    </p>
+                    <p className="text-red-400 font-bold text-xs animate-pulse">
+                      กรุณากลับเข้าสู่การสอบภายใน {warningCountdown} วินาที (มิฉะนั้นระบบจะส่งข้อสอบทันที)
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      if (containerRef.current && !document.fullscreenElement) {
+                        containerRef.current.requestFullscreen().then(() => setGameState("playing")).catch(() => setGameState("playing"));
+                      } else {
+                        setGameState("playing");
+                      }
+                    }}
+                    className="bg-white text-black hover:bg-zinc-200 font-bold px-8 h-12 rounded-xl cursor-pointer"
+                  >
+                    กลับเข้าสู่การสอบ
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
         )}

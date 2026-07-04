@@ -57,3 +57,45 @@ export async function getExamViolationsAction(assignmentId: string) {
     return { success: false, error: "Internal Server Error" };
   }
 }
+
+export async function sendExamWarningAction(
+  assignmentId: string,
+  studentId: string,
+  message: string
+) {
+  const session = await getSession();
+  if (!session || (session.role !== "TEACHER" && session.role !== "ADMIN")) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  try {
+    // Verify assignment belongs to teacher (if not admin)
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: { classroom: true }
+    });
+
+    if (!assignment) {
+      return { success: false, error: "Not found" };
+    }
+
+    if (session.role === "TEACHER" && assignment.classroom.teacherId !== session.userId) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    // Create the warning as a special type of exam violation
+    const violation = await prisma.examViolation.create({
+      data: {
+        assignmentId,
+        studentId,
+        type: "TEACHER_WARNING",
+        details: message
+      }
+    });
+
+    return { success: true, data: violation };
+  } catch (error) {
+    console.error("Error sending exam warning:", error);
+    return { success: false, error: "Internal Server Error" };
+  }
+}
