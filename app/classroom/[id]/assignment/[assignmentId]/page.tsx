@@ -68,6 +68,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
   return (
     <AssignmentQuiz
       classroomId={classroomId}
+      userId={user.id}
       assignment={{
         id: assignment.id,
         title: assignment.title,

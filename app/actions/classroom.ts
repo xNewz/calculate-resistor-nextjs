@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { logSystemEvent } from "@/lib/logger";
+import { generateSeededQuestions } from "@/lib/seededQuestions";
+import { parseTextAnswer } from "@/lib/resistor";
+import { parseMultimeterAnswer } from "@/lib/multimeter";
 
 export type ActionResponse = {
   success: boolean;
@@ -280,19 +283,66 @@ export async function submitQuizAction(
       return { success: false, error: "คุณไม่ได้อยู่ในห้องเรียนนี้" };
     }
 
-    // Create submission
+    // Re-generate questions on the server side dynamically based on student ID and assignment ID
+    const serverQuestions = generateSeededQuestions(
+      session.userId,
+      assignmentId,
+      assignment.assignmentType || "RESISTOR",
+      assignment.questionCount,
+      assignment.questionMode || "INPUT",
+      assignment.bandType
+    );
+
+    // Re-grade each answer on the server to prevent score tampering
+    let calculatedScore = 0;
+    const gradedAnswers = answers.map((attempt: any, index: number) => {
+      const currentQuestion = serverQuestions[index];
+      if (!currentQuestion) return attempt;
+
+      const cleanAnswer = (attempt.userAnswer || "").trim();
+      let isCorrect = false;
+
+      if (cleanAnswer && !attempt.isTimeout) {
+        if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
+          const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
+          if (parsed !== null) {
+            const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
+            isCorrect = diff <= 0.001;
+          }
+        } else {
+          const parsed = parseTextAnswer(cleanAnswer);
+          if (parsed !== null && currentQuestion.resistance !== undefined) {
+            const diff = Math.abs(parsed - currentQuestion.resistance);
+            const limit = 0.01 * currentQuestion.resistance;
+            isCorrect = diff <= limit;
+          }
+        }
+      }
+
+      if (isCorrect) {
+        calculatedScore++;
+      }
+
+      return {
+        ...attempt,
+        question: currentQuestion, // Force the question data to match what was generated on server
+        isCorrect,
+      };
+    });
+
+    // Create submission with verified score
     const submission = await prisma.submission.create({
       data: {
         assignmentId,
         studentId: session.userId,
-        score,
-        answers: JSON.stringify(answers), // Serialize to string to fit JSON or Db JSON field
+        score: calculatedScore,
+        answers: JSON.stringify(gradedAnswers),
         violationCount,
         isAutoSubmitted,
       },
     });
 
-    await logSystemEvent("SUBMIT_QUIZ", "SUCCESS", `ส่งแบบฝึกหัด "${assignment.title}" สำเร็จ ได้คะแนน ${score}/${assignment.questionCount}`, session.userId);
+    await logSystemEvent("SUBMIT_QUIZ", "SUCCESS", `ส่งแบบฝึกหัด "${assignment.title}" สำเร็จ ได้คะแนน ${calculatedScore}/${assignment.questionCount}`, session.userId);
 
     revalidatePath(`/classroom/${assignment.classroomId}`);
     return { success: true, data: submission };
