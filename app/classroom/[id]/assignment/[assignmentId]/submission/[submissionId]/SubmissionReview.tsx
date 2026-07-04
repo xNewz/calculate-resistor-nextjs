@@ -22,7 +22,8 @@ import {
   DIGIT_MAP,
   MULTIPLIER_MAP,
   TOLERANCE_MAP,
-  formatValue
+  formatValue,
+  formatMultiplierValue,
 } from "@/lib/resistor";
 import { MultimeterQuestion } from "@/lib/multimeter";
 
@@ -59,13 +60,6 @@ interface SubmissionReviewProps {
   showSolutions: boolean;
 }
 
-function formatMultiplierValue(value: number): string {
-  if (value === 0.1) return "0.1";
-  if (value === 0.01) return "0.01";
-  if (value >= 1_000_000) return `${value / 1_000_000}M`;
-  if (value >= 1_000) return `${value / 1_000}k`;
-  return `${value}`;
-}
 
 export default function SubmissionReview({
   classroomId,

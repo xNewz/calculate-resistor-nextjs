@@ -12,6 +12,7 @@ import {
   calculate4Band,
   calculate5Band,
   formatValue,
+  parseTextAnswer,
 } from "@/lib/resistor";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -57,20 +58,6 @@ interface AssignmentQuizProps {
   };
 }
 
-function parseTextAnswer(input: string): number | null {
-  const clean = input.trim().toLowerCase().replace(/[\sΩohmωโอห์ม]/g, "");
-  const match = clean.match(/^([0-9.]+)(k|m|g)?$/);
-  if (!match) return null;
-
-  const num = parseFloat(match[1]);
-  if (isNaN(num)) return null;
-
-  const unit = match[2];
-  if (unit === "k") return num * 1_000;
-  if (unit === "m") return num * 1_000_000;
-  if (unit === "g") return num * 1_000_000_000;
-  return num;
-}
 
 export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQuizProps) {
   const router = useRouter();

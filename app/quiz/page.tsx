@@ -15,6 +15,8 @@ import {
   MULTIPLIER_MAP,
   TOLERANCE_MAP,
   formatValue,
+  parseTextAnswer,
+  formatMultiplierValue,
 } from "@/lib/resistor";
 import {
   Card,
@@ -65,13 +67,6 @@ interface UserAttempt {
   isTimeout: boolean;
 }
 
-function formatMultiplierValue(value: number): string {
-  if (value === 0.1) return "0.1";
-  if (value === 0.01) return "0.01";
-  if (value >= 1_000_000) return `${value / 1_000_000}M`;
-  if (value >= 1_000) return `${value / 1_000}k`;
-  return `${value}`;
-}
 
 type QuizMode = "mixed" | "4-band" | "5-band" | "multimeter";
 
@@ -119,20 +114,6 @@ const generateQuestion = (mode: QuizMode): Question => {
   }
 };
 
-function parseTextAnswer(input: string): number | null {
-  const clean = input.trim().toLowerCase().replace(/[\sΩohmωโอห์ม]/g, "");
-  const match = clean.match(/^([0-9.]+)(k|m|g)?$/);
-  if (!match) return null;
-
-  const num = parseFloat(match[1]);
-  if (isNaN(num)) return null;
-
-  const unit = match[2];
-  if (unit === "k") return num * 1_000;
-  if (unit === "m") return num * 1_000_000;
-  if (unit === "g") return num * 1_000_000_000;
-  return num;
-}
 
 export default function QuizPage() {
   const [gameState, setGameState] = useState<"idle" | "playing" | "ended">("idle");
