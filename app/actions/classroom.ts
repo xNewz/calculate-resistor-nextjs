@@ -171,7 +171,10 @@ export async function createAssignmentAction(
 
   let dueDate: Date | null = null;
   if (dueDateStr && dueDateStr.trim() !== "") {
-    dueDate = new Date(dueDateStr);
+    const localDateStr = dueDateStr.includes("T") && !dueDateStr.includes("Z") && !dueDateStr.includes("+")
+      ? `${dueDateStr}:00+07:00`
+      : dueDateStr;
+    dueDate = new Date(localDateStr);
     if (isNaN(dueDate.getTime())) {
       return { success: false, error: "วันกำหนดส่งไม่ถูกต้อง" };
     }
@@ -503,7 +506,10 @@ export async function updateAssignmentAction(
 
   let dueDate: Date | null = null;
   if (dueDateStr && dueDateStr.trim() !== "") {
-    dueDate = new Date(dueDateStr);
+    const localDateStr = dueDateStr.includes("T") && !dueDateStr.includes("Z") && !dueDateStr.includes("+")
+      ? `${dueDateStr}:00+07:00`
+      : dueDateStr;
+    dueDate = new Date(localDateStr);
     if (isNaN(dueDate.getTime())) {
       return { success: false, error: "วันกำหนดส่งไม่ถูกต้อง" };
     }
