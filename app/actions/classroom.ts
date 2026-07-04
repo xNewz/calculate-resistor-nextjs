@@ -181,6 +181,7 @@ export async function createAssignmentAction(
   const timeLimitStr = formData.get("timeLimit") as string;
   const allowMobileStr = formData.get("allowMobile") as string;
   const showSolutionsStr = formData.get("showSolutions") as string;
+  const questionMode = formData.get("questionMode") as string || "INPUT";
   const isExam = isExamStr === "true" || isExamStr === "on";
   let timeLimit: number | null = null;
   if (isExam && timeLimitStr && timeLimitStr.trim() !== "") {
@@ -216,6 +217,7 @@ export async function createAssignmentAction(
         timeLimit,
         allowMobile,
         showSolutions,
+        questionMode,
         classroomId,
       },
     });
@@ -436,6 +438,7 @@ export async function updateAssignmentAction(
   const timeLimitStr = formData.get("timeLimit") as string;
   const allowMobileStr = formData.get("allowMobile") as string;
   const showSolutionsStr = formData.get("showSolutions") as string;
+  const questionMode = formData.get("questionMode") as string || "INPUT";
 
   if (!title || title.trim().length < 2) {
     return { success: false, error: "กรุณากรอกหัวข้อแบบฝึกหัดอย่างน้อย 2 ตัวอักษร" };
@@ -499,6 +502,7 @@ export async function updateAssignmentAction(
         timeLimit,
         allowMobile,
         showSolutions,
+        questionMode,
       },
     });
 

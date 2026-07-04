@@ -87,3 +87,16 @@ export function parseMultimeterAnswer(input: string, type: "DCV" | "ACV" | "OHM"
   }
   return num;
 }
+
+export function generateMultimeterChoices(correctFormatted: string, correctRangeType: "DCV" | "ACV" | "OHM"): string[] {
+  const set = new Set<string>([correctFormatted]);
+  let attempts = 0;
+  while (set.size < 4 && attempts < 100) {
+    attempts++;
+    const q = generateMultimeterQuestion();
+    if (q.range.type === correctRangeType) {
+      set.add(q.formatted);
+    }
+  }
+  return Array.from(set).sort(() => Math.random() - 0.5);
+}

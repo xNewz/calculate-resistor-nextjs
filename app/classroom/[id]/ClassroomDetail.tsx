@@ -682,6 +682,9 @@ export default function ClassroomDetail({
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
                               {assignment.assignmentType === "MULTIMETER" ? "มัลติมิเตอร์" : `${assignment.bandType} แถบสี`}
                             </Badge>
+                            <Badge variant="outline" className="border-zinc-700 bg-zinc-800/30 text-zinc-300 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
+                              {assignment.questionMode === "CHOICE" ? "4 ตัวเลือก" : "แบบกรอก"}
+                            </Badge>
                             <Badge variant="secondary" className="bg-zinc-950 text-zinc-400 text-[10px] py-0 px-2 h-5 rounded-full">
                               โจทย์ {assignment.questionCount} ข้อ
                             </Badge>
@@ -1095,6 +1098,18 @@ export default function ClassroomDetail({
                       type="datetime-local"
                       className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100 scheme-dark"
                     />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="questionMode" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบคำตอบ (Question Mode)</Label>
+                    <select
+                      id="questionMode"
+                      name="questionMode"
+                      className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                    >
+                      <option value="INPUT">พิมพ์คำตอบเอง (Text Input)</option>
+                      <option value="CHOICE">ตัวเลือก 4 ตัวเลือก (Multiple Choice)</option>
+                    </select>
                   </div>
 
                   <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-850">
@@ -1519,6 +1534,19 @@ export default function ClassroomDetail({
                       defaultValue={editingAssignment.dueDate ? new Date(new Date(editingAssignment.dueDate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
                       className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100 scheme-dark"
                     />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="edit-questionMode" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบคำตอบ (Question Mode)</Label>
+                    <select
+                      id="edit-questionMode"
+                      name="questionMode"
+                      defaultValue={editingAssignment.questionMode || "INPUT"}
+                      className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                    >
+                      <option value="INPUT">พิมพ์คำตอบเอง (Text Input)</option>
+                      <option value="CHOICE">ตัวเลือก 4 ตัวเลือก (Multiple Choice)</option>
+                    </select>
                   </div>
 
                   <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-850">

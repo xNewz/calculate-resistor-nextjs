@@ -9,7 +9,9 @@ import {
   digits, multipliers, tolerances,
   calculate4Band, calculate5Band,
   parseTextAnswer,
+  generateResistorChoices,
 } from "@/lib/resistor";
+import { generateMultimeterChoices } from "@/lib/multimeter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,7 @@ interface Question {
   formatted: string;
   tolerance?: number;
   multimeterData?: MultimeterQuestion;
+  choices?: string[];
 }
 
 interface UserAttempt {
@@ -47,6 +50,7 @@ interface ExamQuizProps {
     questionCount: number;
     allowMobile?: boolean;
     dueDate?: Date | string | null;
+    questionMode?: string;
   };
 }
 
@@ -103,11 +107,13 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const generateQuestions = useCallback(() => {
     const list: Question[] = [];
     const type = assignment.assignmentType || "RESISTOR";
+    const mode = assignment.questionMode || "INPUT";
 
     if (type === "MULTIMETER") {
       for (let i = 0; i < assignment.questionCount; i++) {
         const q = generateMultimeterQuestion();
-        list.push({ formatted: q.formatted, multimeterData: q });
+        const choices = mode === "CHOICE" ? generateMultimeterChoices(q.formatted, q.range.type) : undefined;
+        list.push({ formatted: q.formatted, multimeterData: q, choices });
       }
       return list;
     }
@@ -120,7 +126,8 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
         const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
         const tol = tolerances[Math.floor(Math.random() * tolerances.length)];
         const res = calculate4Band(first, second, mult, tol);
-        list.push({ bands: 4, colors: [first, second, mult, tol], ...res });
+        const choices = mode === "CHOICE" ? generateResistorChoices(res.formatted, 4) : undefined;
+        list.push({ bands: 4, colors: [first, second, mult, tol], ...res, choices });
       } else {
         const first = digits[Math.floor(Math.random() * (digits.length - 1)) + 1];
         const second = digits[Math.floor(Math.random() * digits.length)];
@@ -128,7 +135,8 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
         const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
         const tol = tolerances[Math.floor(Math.random() * tolerances.length)];
         const res = calculate5Band(first, second, third, mult, tol);
-        list.push({ bands: 5, colors: [first, second, third, mult, tol], ...res });
+        const choices = mode === "CHOICE" ? generateResistorChoices(res.formatted, 5) : undefined;
+        list.push({ bands: 5, colors: [first, second, third, mult, tol], ...res, choices });
       }
     }
     return list;
@@ -539,39 +547,64 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
                 <div className="w-full max-w-sm space-y-4 transition-all duration-500">
                   <div className="space-y-1.5">
-                    <Label htmlFor="answer" className="text-sm font-bold text-zinc-300 flex items-center justify-between">
+                    <Label className="text-sm font-bold text-zinc-300 flex items-center justify-between">
                       คำตอบของคุณ
                       <span className="text-xs font-normal text-zinc-500">
                         {assignment.assignmentType === "MULTIMETER" 
-                          ? (currentQuestion.multimeterData?.range.type === "OHM" ? "หน่วย: โอห์ม (Ω)" : "หน่วย: โวลต์ (V)") 
-                          : "ใส่ตัวเลข เช่น 4.7k, 100"}
+                          ? (currentQuestion.multimeterData?.range.type === "OHM" ? "เลือกคำตอบหน่วย: โอห์ม (Ω)" : "เลือกคำตอบหน่วย: โวลต์ (V)") 
+                          : "เลือกคำตอบที่ถูกต้อง"}
                       </span>
                     </Label>
-                    <div className="relative group">
-                      <Input
-                        ref={inputRef}
-                        id="answer"
-                        value={userAnswer}
-                        onChange={(e) => setUserAnswer(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        disabled={!isImageLoaded}
-                        placeholder="พิมพ์ค่าความต้านทาน..."
-                        className="h-14 bg-zinc-950 border-2 border-zinc-800 text-lg sm:text-xl font-bold px-4 transition-all group-hover:border-zinc-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 text-zinc-100 placeholder:font-normal placeholder:text-zinc-700 rounded-xl disabled:opacity-50 select-none"
-                        autoComplete="off"
-                      />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 font-bold text-zinc-500 text-lg">
-                        <span className="font-serif italic">
-                          {assignment.assignmentType === "MULTIMETER" 
-                            ? (currentQuestion.multimeterData?.range.type === "OHM" ? "Ω" : "V") 
-                            : "Ω"}
-                        </span>
+                    
+                    {assignment.questionMode === "CHOICE" && currentQuestion.choices ? (
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        {currentQuestion.choices.map((choice) => {
+                          const isSelected = userAnswer === choice;
+                          return (
+                            <Button
+                              key={choice}
+                              type="button"
+                              variant="outline"
+                              onClick={() => setUserAnswer(choice)}
+                              className={`h-14 text-sm font-mono font-bold rounded-xl border transition-all duration-200 cursor-pointer ${
+                                isSelected 
+                                  ? "bg-red-500/25 border-red-500 text-red-200 shadow-[0_0_12px_rgba(239,68,68,0.2)]" 
+                                  : "bg-zinc-950/60 border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-zinc-200"
+                              }`}
+                              disabled={!isImageLoaded}
+                            >
+                              {choice}
+                            </Button>
+                          );
+                        })}
                       </div>
-                    </div>
+                    ) : (
+                      <div className="relative group">
+                        <Input
+                          ref={inputRef}
+                          id="answer"
+                          value={userAnswer}
+                          onChange={(e) => setUserAnswer(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          disabled={!isImageLoaded}
+                          placeholder="พิมพ์ค่าความต้านทาน..."
+                          className="h-14 bg-zinc-950 border-2 border-zinc-800 text-lg sm:text-xl font-bold px-4 transition-all group-hover:border-zinc-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 text-zinc-100 placeholder:font-normal placeholder:text-zinc-700 rounded-xl disabled:opacity-50 select-none"
+                          autoComplete="off"
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 font-bold text-zinc-500 text-lg">
+                          <span className="font-serif italic">
+                            {assignment.assignmentType === "MULTIMETER" 
+                              ? (currentQuestion.multimeterData?.range.type === "OHM" ? "Ω" : "V") 
+                              : "Ω"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <Button 
                     onClick={handleNext}
-                    disabled={!isImageLoaded || processingRef.current}
+                    disabled={!isImageLoaded || processingRef.current || (assignment.questionMode === "CHOICE" && !userAnswer)}
                     className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98] cursor-pointer"
                   >
                     {currentIndex === assignment.questionCount - 1 ? (

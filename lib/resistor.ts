@@ -205,3 +205,26 @@ export function formatMultiplierValue(value: number): string {
   if (value >= 1_000) return `${value / 1_000}k`;
   return `${value}`;
 }
+
+export function generateResistorChoices(correctFormatted: string, bands: 4 | 5): string[] {
+  const set = new Set<string>([correctFormatted]);
+  let attempts = 0;
+  while (set.size < 4 && attempts < 100) {
+    attempts++;
+    const first = digits[Math.floor(Math.random() * (digits.length - 1)) + 1];
+    const second = digits[Math.floor(Math.random() * digits.length)];
+    const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
+    const tol = tolerances[Math.floor(Math.random() * tolerances.length)];
+    let wrongFormatted = "";
+    if (bands === 4) {
+      wrongFormatted = calculate4Band(first, second, mult, tol).formatted;
+    } else {
+      const third = digits[Math.floor(Math.random() * digits.length)];
+      wrongFormatted = calculate5Band(first, second, third, mult, tol).formatted;
+    }
+    if (wrongFormatted) {
+      set.add(wrongFormatted);
+    }
+  }
+  return Array.from(set).sort(() => Math.random() - 0.5);
+}

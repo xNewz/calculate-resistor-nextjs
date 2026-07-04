@@ -68,6 +68,7 @@ model Assignment {
   timeLimit     Int?         // in minutes
   allowMobile   Boolean      @default(true)
   showSolutions Boolean      @default(false)
+  questionMode  String       @default("INPUT") // "INPUT" or "CHOICE"
 
   classroomId   String
   classroom     Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)

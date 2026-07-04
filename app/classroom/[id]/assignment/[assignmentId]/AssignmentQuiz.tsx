@@ -13,7 +13,9 @@ import {
   calculate5Band,
   formatValue,
   parseTextAnswer,
+  generateResistorChoices,
 } from "@/lib/resistor";
+import { generateMultimeterChoices } from "@/lib/multimeter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -37,6 +39,7 @@ interface Question {
   formatted: string;
   tolerance?: number;
   multimeterData?: MultimeterQuestion;
+  choices?: string[];
 }
 
 interface UserAttempt {
@@ -55,6 +58,7 @@ interface AssignmentQuizProps {
     bandType: string; // "4" or "5"
     assignmentType?: string;
     questionCount: number;
+    questionMode?: string;
   };
 }
 
@@ -83,13 +87,16 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
   const generateQuestions = useCallback(() => {
     const list: Question[] = [];
     const type = assignment.assignmentType || "RESISTOR";
+    const mode = assignment.questionMode || "INPUT";
 
     if (type === "MULTIMETER") {
       for (let i = 0; i < assignment.questionCount; i++) {
         const q = generateMultimeterQuestion();
+        const choices = mode === "CHOICE" ? generateMultimeterChoices(q.formatted, q.range.type) : undefined;
         list.push({
           formatted: q.formatted,
           multimeterData: q,
+          choices,
         });
       }
       return list;
@@ -104,12 +111,14 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
         const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
         const tol = tolerances[Math.floor(Math.random() * tolerances.length)];
         const res = calculate4Band(first, second, mult, tol);
+        const choices = mode === "CHOICE" ? generateResistorChoices(res.formatted, 4) : undefined;
         list.push({
           bands: 4,
           colors: [first, second, mult, tol],
           resistance: res.resistance,
           formatted: res.formatted,
           tolerance: res.tolerance,
+          choices,
         });
       } else {
         const first = digits[Math.floor(Math.random() * (digits.length - 1)) + 1]; // no black first
@@ -118,12 +127,14 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
         const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
         const tol = tolerances[Math.floor(Math.random() * tolerances.length)];
         const res = calculate5Band(first, second, third, mult, tol);
+        const choices = mode === "CHOICE" ? generateResistorChoices(res.formatted, 5) : undefined;
         list.push({
           bands: 5,
           colors: [first, second, third, mult, tol],
           resistance: res.resistance,
           formatted: res.formatted,
           tolerance: res.tolerance,
+          choices,
         });
       }
     }
@@ -367,26 +378,51 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
                   )}
                 </div>
 
-                {/* Input form */}
-                <div className="space-y-4 max-w-sm mx-auto">
+                {/* Input form or Choices Grid */}
+                <div className="space-y-4 max-w-md mx-auto">
                   <div className="space-y-2">
                     <Label htmlFor="answer-input" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block text-center">
                       {assignment.assignmentType === "MULTIMETER" 
-                        ? (currentQuestion.multimeterData?.range.type === "OHM" ? "อ่านค่าจากเข็ม (หน่วย: โอห์ม Ω)" : "อ่านค่าจากเข็ม (หน่วย: โวลต์ V)")
-                        : "กรอกค่าความต้านทาน (หน่วย: โอห์ม Ω)"}
+                        ? (currentQuestion.multimeterData?.range.type === "OHM" ? "เลือกคำตอบจากเข็ม (หน่วย: โอห์ม Ω)" : "เลือกคำตอบจากเข็ม (หน่วย: โวลต์ V)")
+                        : "เลือกค่าความต้านทานที่ถูกต้อง (หน่วย: โอห์ม Ω)"}
                     </Label>
-                    <Input
-                      id="answer-input"
-                      ref={inputRef}
-                      type="text"
-                      placeholder="ตัวอย่างเช่น: 220, 1k, 4.7k, 1M"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      className="h-12 bg-zinc-950/70 border-zinc-800 focus:ring-zinc-750/50 text-center font-mono text-lg font-bold text-zinc-100 rounded-xl"
-                      disabled={isPending}
-                      autoComplete="off"
-                    />
+
+                    {assignment.questionMode === "CHOICE" && currentQuestion.choices ? (
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        {currentQuestion.choices.map((choice) => {
+                          const isSelected = userAnswer === choice;
+                          return (
+                            <Button
+                              key={choice}
+                              type="button"
+                              variant="outline"
+                              onClick={() => setUserAnswer(choice)}
+                              className={`h-14 text-sm font-mono font-bold rounded-xl border transition-all duration-200 cursor-pointer ${
+                                isSelected 
+                                  ? "bg-indigo-500/25 border-indigo-500 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)]" 
+                                  : "bg-zinc-950/60 border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-zinc-200"
+                              }`}
+                              disabled={isPending}
+                            >
+                              {choice}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <Input
+                        id="answer-input"
+                        ref={inputRef}
+                        type="text"
+                        placeholder="ตัวอย่างเช่น: 220, 1k, 4.7k, 1M"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="h-12 bg-zinc-950/70 border-zinc-800 focus:ring-zinc-750/50 text-center font-mono text-lg font-bold text-zinc-100 rounded-xl"
+                        disabled={isPending}
+                        autoComplete="off"
+                      />
+                    )}
                   </div>
 
                   <div className="flex gap-2.5 pt-2">
@@ -400,7 +436,7 @@ export default function AssignmentQuiz({ classroomId, assignment }: AssignmentQu
                     </Button>
                     <Button
                       onClick={handleNext}
-                      disabled={isPending}
+                      disabled={isPending || (assignment.questionMode === "CHOICE" && !userAnswer)}
                       className="flex-1 h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs rounded-xl gap-1.5 cursor-pointer shadow-md"
                     >
                       <span>ส่งคำตอบ</span>
