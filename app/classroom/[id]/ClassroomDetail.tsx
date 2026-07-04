@@ -519,8 +519,8 @@ export default function ClassroomDetail({
                 </Card>
 
                 {/* Right: Common Mistakes */}
-                <Card className="bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                  <CardHeader className="border-b border-zinc-850 pb-4 bg-red-500/5">
+                <Card className="bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden shadow-sm flex flex-col py-0 gap-0">
+                  <CardHeader className="border-b border-zinc-850 pt-4 pb-4 bg-red-500/5">
                     <CardTitle className="text-sm font-bold text-red-400 flex items-center gap-2">
                       <AlertTriangle className="size-4" /> ข้อผิดพลาดที่พบบ่อย
                     </CardTitle>
