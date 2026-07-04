@@ -360,8 +360,8 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
         {/* INTRO STATE */}
         {gameState === "intro" && (
           assignment.allowMobile === false && isMobileDevice ? (
-            <Card className="bg-zinc-900 border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.2)] rounded-2xl overflow-hidden border border-red-900/40">
-              <CardHeader className="text-center pb-6 border-b border-zinc-850 bg-red-500/5">
+            <Card className="bg-zinc-900 border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.2)] rounded-2xl overflow-hidden border border-red-900/40 py-0 gap-0">
+              <CardHeader className="text-center pb-6 pt-6 px-6 sm:px-8 border-b border-zinc-850 bg-red-500/5">
                 <div className="mx-auto p-4 rounded-full bg-red-500/10 border border-red-500/20 w-fit mb-3 text-red-500">
                   <ShieldAlert className="size-8 animate-bounce" />
                 </div>
@@ -390,8 +390,8 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden border border-red-500/20">
-              <CardHeader className="text-center pb-6 border-b border-zinc-850 bg-red-500/5">
+            <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden border border-red-500/20 py-0 gap-0">
+              <CardHeader className="text-center pb-6 pt-6 px-6 sm:px-8 border-b border-zinc-850 bg-red-500/5">
                 <div className="mx-auto p-4 rounded-full bg-red-500/10 border border-red-500/20 w-fit mb-3 text-red-400">
                   <ShieldAlert className="size-8" />
                 </div>
@@ -402,7 +402,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                   การทดสอบนี้มีการจับตาดูพฤติกรรมการทุจริตอย่างเข้มงวด
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-8 space-y-6">
+              <CardContent className="p-6 sm:p-8 space-y-6">
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
@@ -443,7 +443,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
         {/* VIOLATION ALERT */}
         {gameState === "violationAlert" && (
-          <Card className="bg-zinc-900 border-red-500 shadow-[0_0_50px_rgba(220,38,38,0.3)] rounded-2xl overflow-hidden animate-pulse">
+          <Card className="bg-zinc-900 border-red-500 shadow-[0_0_50px_rgba(220,38,38,0.3)] rounded-2xl overflow-hidden animate-pulse py-0 gap-0">
             <CardContent className="p-10 flex flex-col items-center text-center space-y-6">
               <AlertTriangle className="size-20 text-red-500" />
               <div className="space-y-2">
