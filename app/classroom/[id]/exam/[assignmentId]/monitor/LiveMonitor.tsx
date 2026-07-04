@@ -143,6 +143,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                           {v.type === "FULLSCREEN_EXIT" && "ออกจากโหมดเต็มจอ"}
                           {v.type === "COPY_PASTE" && "พยายามคัดลอก หรือ วางข้อความ"}
                           {v.type === "CONTEXT_MENU" && "พยายามเปิดเมนูคลิกขวา"}
+                          {v.type === "BACK_BUTTON_EXIT" && "พยายามกดย้อนกลับ หรือปัดออกจากหน้าสอบ"}
                         </p>
                         {v.details && (
                           <p className={`text-[10px] mt-1 ${isWarning ? "text-zinc-300 italic font-bold" : "text-zinc-500"}`}>

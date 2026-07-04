@@ -200,6 +200,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
     else if (type === "FULLSCREEN_EXIT") desc = "ออกจากโหมดเต็มจอ";
     else if (type === "COPY_PASTE") desc = "พยายามคัดลอก หรือ วางข้อความ";
     else if (type === "CONTEXT_MENU") desc = "พยายามคลิกขวาเปิดคอนเท็กซ์เมนู";
+    else if (type === "BACK_BUTTON_EXIT") desc = "พยายามกดย้อนกลับ หรือปัดหน้าจอเพื่อออกจากห้องสอบ";
 
     const details = `${timeText} - ${desc}`;
     reportViolationToServer(type, details);
@@ -219,6 +220,9 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   // Anti-Cheat Listeners
   useEffect(() => {
     if (gameState !== "playing" && gameState !== "violationAlert") return;
+
+    // Push dummy state to capture browser back clicks
+    window.history.pushState(null, "", window.location.href);
 
     const handleVisibility = () => {
       if (document.visibilityState === "hidden") {
@@ -246,12 +250,26 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
       handleViolation("COPY_PASTE");
     };
 
+    const handlePopState = (e: PopStateEvent) => {
+      // Re-push history state to prevent navigation
+      window.history.pushState(null, "", window.location.href);
+      handleViolation("BACK_BUTTON_EXIT");
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "คุณแน่ใจหรือไม่ว่าต้องการออกจากหน้าสอบ? การปิดหน้าต่างนี้จะถูกบันทึกเป็นการละเมิดกฎ";
+      return e.returnValue;
+    };
+
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("blur", handleBlur);
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     document.addEventListener("contextmenu", blockDefault);
     document.addEventListener("copy", blockCopy);
     document.addEventListener("paste", blockCopy);
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
@@ -260,6 +278,8 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
       document.removeEventListener("contextmenu", blockDefault);
       document.removeEventListener("copy", blockCopy);
       document.removeEventListener("paste", blockCopy);
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [gameState, handleViolation]);
 
