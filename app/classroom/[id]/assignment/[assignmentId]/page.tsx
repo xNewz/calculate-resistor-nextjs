@@ -75,6 +75,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
         bandType: assignment.bandType,
         assignmentType: assignment.assignmentType,
         questionCount: assignment.questionCount,
+        questionMode: assignment.questionMode,
       }}
     />
   );
