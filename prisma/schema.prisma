@@ -66,6 +66,7 @@ model Assignment {
   // Exam Mode Additions
   isExam        Boolean      @default(false)
   timeLimit     Int?         // in minutes
+  allowMobile   Boolean      @default(true)
 
   classroomId   String
   classroom     Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)

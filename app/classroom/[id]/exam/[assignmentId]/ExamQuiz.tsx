@@ -45,6 +45,7 @@ interface ExamQuizProps {
     assignmentType?: string;
     questionCount: number;
     timeLimit: number | null;
+    allowMobile?: boolean;
   };
 }
 
@@ -66,6 +67,17 @@ function parseTextAnswer(input: string): number | null {
 export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|operamini/i;
+      const isScreenSmall = window.innerWidth < 768;
+      return mobileRegex.test(userAgent) || isScreenSmall;
+    };
+    setIsMobileDevice(checkMobile());
+  }, []);
 
   const [gameState, setGameState] = useState<"intro" | "playing" | "submitting" | "violationAlert">("intro");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -347,54 +359,86 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
         
         {/* INTRO STATE */}
         {gameState === "intro" && (
-          <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden border-red-500/20">
-            <CardHeader className="text-center pb-6 border-b border-zinc-850 bg-red-500/5">
-              <div className="mx-auto p-4 rounded-full bg-red-500/10 border border-red-500/20 w-fit mb-3 text-red-400">
-                <ShieldAlert className="size-8" />
-              </div>
-              <CardTitle className="text-2xl font-black text-zinc-100 mb-2 font-heading tracking-tight">
-                โหมดสอบ: {assignment.title}
-              </CardTitle>
-              <CardDescription className="text-sm text-zinc-400 font-medium">
-                การทดสอบนี้มีการจับตาดูพฤติกรรมการทุจริตอย่างเข้มงวด
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-8 space-y-6">
-              
-              <div className="space-y-4">
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
-                  <Maximize className="size-5 text-indigo-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-sm font-bold text-zinc-200">บังคับแสดงผลเต็มจอ</h4>
-                    <p className="text-xs text-zinc-400">คุณต้องอยู่ในโหมดเต็มจอตลอดการสอบ หากออกจากโหมดเต็มจอจะถือว่าทุจริต (หากอุปกรณ์ไม่รองรับ เช่น มือถือระบบ iOS ระบบจะอนุโลมให้ทำข้อสอบได้ตามปกติ)</p>
+          assignment.allowMobile === false && isMobileDevice ? (
+            <Card className="bg-zinc-900 border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.2)] rounded-2xl overflow-hidden border border-red-900/40">
+              <CardHeader className="text-center pb-6 border-b border-zinc-850 bg-red-500/5">
+                <div className="mx-auto p-4 rounded-full bg-red-500/10 border border-red-500/20 w-fit mb-3 text-red-500">
+                  <ShieldAlert className="size-8 animate-bounce" />
+                </div>
+                <CardTitle className="text-xl sm:text-2xl font-black text-zinc-100 mb-2 font-heading tracking-tight">
+                  ปฏิเสธการเข้าสอบผ่านอุปกรณ์มือถือ
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm text-red-400 font-medium">
+                  ข้อสอบนี้กำหนดให้ทำผ่านเครื่องคอมพิวเตอร์เท่านั้น
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6 sm:p-8 space-y-5 text-center">
+                <p className="text-xs sm:text-sm text-zinc-355 leading-relaxed">
+                  เนื่องจากข้อสอบนี้มีการตั้งค่าความปลอดภัยขั้นสูงและ <strong className="text-red-400">ไม่อนุญาตให้เข้าทำข้อสอบผ่านโทรศัพท์มือถือหรือแท็บเล็ต</strong> เพื่อความเสถียรและความโปร่งใสในการตรวจสอบพฤติกรรม
+                </p>
+                <p className="text-[11px] sm:text-xs text-zinc-500 leading-relaxed bg-zinc-950/60 p-4 rounded-xl border border-zinc-850/80">
+                  กรุณาเปิดเบราว์เซอร์บนเครื่องคอมพิวเตอร์ตั้งโต๊ะ (Desktop PC) หรือโน้ตบุ๊ก (Laptop) เพื่อทำข้อสอบนี้
+                </p>
+                <div className="pt-2">
+                  <Button
+                    onClick={() => router.push(`/classroom/${assignment.classroomId}`)}
+                    className="w-full h-11 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl border border-zinc-700 cursor-pointer text-xs sm:text-sm"
+                  >
+                    กลับสู่หน้าห้องเรียน
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden border border-red-500/20">
+              <CardHeader className="text-center pb-6 border-b border-zinc-850 bg-red-500/5">
+                <div className="mx-auto p-4 rounded-full bg-red-500/10 border border-red-500/20 w-fit mb-3 text-red-400">
+                  <ShieldAlert className="size-8" />
+                </div>
+                <CardTitle className="text-2xl font-black text-zinc-100 mb-2 font-heading tracking-tight">
+                  โหมดสอบ: {assignment.title}
+                </CardTitle>
+                <CardDescription className="text-sm text-zinc-400 font-medium">
+                  การทดสอบนี้มีการจับตาดูพฤติกรรมการทุจริตอย่างเข้มงวด
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-8 space-y-6">
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
+                    <Maximize className="size-5 text-indigo-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-bold text-zinc-200">บังคับแสดงผลเต็มจอ</h4>
+                      <p className="text-xs text-zinc-400">คุณต้องอยู่ในโหมดเต็มจอตลอดการสอบ หากออกจากโหมดเต็มจอจะถือว่าทุจริต {isMobileDevice ? "(อุปกรณ์พกพาของท่านได้รับความยินยอมโดยระบบ)" : "(หากอุปกรณ์ไม่รองรับ เช่น มือถือระบบ iOS ระบบจะอนุโลมให้ทำข้อสอบได้ตามปกติ)"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
+                    <AlertTriangle className="size-5 text-orange-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-bold text-zinc-200">ห้ามสลับแท็บหรือเปิดหน้าต่างอื่น</h4>
+                      <p className="text-xs text-zinc-400">ระบบจะบันทึกการละเมิดกฎ หากทำผิดครบ {maxViolations} ครั้ง ระบบจะบังคับส่งข้อสอบทันที</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
+                    <Clock className="size-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-bold text-zinc-200">เวลาในการทำข้อสอบ</h4>
+                      <p className="text-xs text-zinc-400">{assignment.timeLimit ? `จำกัดเวลา ${assignment.timeLimit} นาที` : "ไม่จำกัดเวลา"} (มีทั้งหมด {assignment.questionCount} ข้อ)</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
-                  <AlertTriangle className="size-5 text-orange-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-sm font-bold text-zinc-200">ห้ามสลับแท็บหรือเปิดหน้าต่างอื่น</h4>
-                    <p className="text-xs text-zinc-400">ระบบจะบันทึกการละเมิดกฎ หากทำผิดครบ {maxViolations} ครั้ง ระบบจะบังคับส่งข้อสอบทันที</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
-                  <Clock className="size-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-sm font-bold text-zinc-200">เวลาในการทำข้อสอบ</h4>
-                    <p className="text-xs text-zinc-400">{assignment.timeLimit ? `จำกัดเวลา ${assignment.timeLimit} นาที` : "ไม่จำกัดเวลา"} (มีทั้งหมด {assignment.questionCount} ข้อ)</p>
-                  </div>
-                </div>
-              </div>
 
-              {error && <div className="text-red-400 text-sm text-center font-bold bg-red-500/10 p-3 rounded-xl">{error}</div>}
+                {error && <div className="text-red-400 text-sm text-center font-bold bg-red-500/10 p-3 rounded-xl">{error}</div>}
 
-              <Button 
-                onClick={enterFullscreenAndStart}
-                className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.3)] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all cursor-pointer"
-              >
-                ยอมรับเงื่อนไขและเริ่มทำข้อสอบ
-              </Button>
-            </CardContent>
-          </Card>
+                <Button 
+                  onClick={enterFullscreenAndStart}
+                  className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.3)] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all cursor-pointer"
+                >
+                  ยอมรับเงื่อนไขและเริ่มทำข้อสอบ
+                </Button>
+              </CardContent>
+            </Card>
+          )
         )}
 
         {/* VIOLATION ALERT */}

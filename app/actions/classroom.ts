@@ -179,12 +179,14 @@ export async function createAssignmentAction(
   // Exam fields
   const isExamStr = formData.get("isExam") as string;
   const timeLimitStr = formData.get("timeLimit") as string;
+  const allowMobileStr = formData.get("allowMobile") as string;
   const isExam = isExamStr === "true" || isExamStr === "on";
   let timeLimit: number | null = null;
   if (isExam && timeLimitStr && timeLimitStr.trim() !== "") {
     timeLimit = parseInt(timeLimitStr, 10);
     if (isNaN(timeLimit) || timeLimit < 1) timeLimit = null;
   }
+  const allowMobile = !isExam || (allowMobileStr === "true" || allowMobileStr === "on");
 
   try {
     // Verify teacher owns the classroom
@@ -210,6 +212,7 @@ export async function createAssignmentAction(
         allowLate,
         isExam,
         timeLimit,
+        allowMobile,
         classroomId,
       },
     });
@@ -427,6 +430,8 @@ export async function updateAssignmentAction(
   const questionCountStr = formData.get("questionCount") as string;
   const dueDateStr = formData.get("dueDate") as string;
   const allowLateStr = formData.get("allowLate") as string;
+  const timeLimitStr = formData.get("timeLimit") as string;
+  const allowMobileStr = formData.get("allowMobile") as string;
 
   if (!title || title.trim().length < 2) {
     return { success: false, error: "กรุณากรอกหัวข้อแบบฝึกหัดอย่างน้อย 2 ตัวอักษร" };
@@ -459,6 +464,20 @@ export async function updateAssignmentAction(
       return { success: false, error: "ไม่พบแบบฝึกหัด หรือไม่มีสิทธิ์ในการดำเนินการ" };
     }
 
+    let timeLimit: number | null = existing.timeLimit;
+    if (existing.isExam && timeLimitStr !== null) {
+      if (timeLimitStr.trim() === "") {
+        timeLimit = null;
+      } else {
+        const parsed = parseInt(timeLimitStr, 10);
+        timeLimit = isNaN(parsed) || parsed < 1 ? null : parsed;
+      }
+    }
+
+    const allowMobile = existing.isExam
+      ? (allowMobileStr === "true" || allowMobileStr === "on")
+      : true;
+
     const updated = await prisma.assignment.update({
       where: { id: assignmentId },
       data: {
@@ -469,6 +488,8 @@ export async function updateAssignmentAction(
         questionCount,
         dueDate,
         allowLate,
+        timeLimit,
+        allowMobile,
       },
     });
 
