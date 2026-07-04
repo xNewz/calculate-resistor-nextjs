@@ -44,8 +44,8 @@ interface ExamQuizProps {
     bandType: string;
     assignmentType?: string;
     questionCount: number;
-    timeLimit: number | null;
     allowMobile?: boolean;
+    dueDate?: Date | string | null;
   };
 }
 
@@ -85,9 +85,20 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const [userAnswer, setUserAnswer] = useState("");
   const [attempts, setAttempts] = useState<UserAttempt[]>([]);
   
-  const [overallTimeLeft, setOverallTimeLeft] = useState<number | null>(
-    assignment.timeLimit ? assignment.timeLimit * 60 : null
-  );
+  const [overallTimeLeft, setOverallTimeLeft] = useState<number | null>(null);
+
+  // Initialize timer based on dueDate
+  useEffect(() => {
+    if (assignment.dueDate) {
+      const updateTimer = () => {
+        const dueTime = new Date(assignment.dueDate!).getTime();
+        const now = Date.now();
+        const diffSeconds = Math.max(0, Math.floor((dueTime - now) / 1000));
+        setOverallTimeLeft(diffSeconds);
+      };
+      updateTimer();
+    }
+  }, [assignment.dueDate]);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -348,8 +359,12 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const currentQuestion = questions[currentIndex];
 
   const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
+    if (h > 0) {
+      return `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
@@ -423,7 +438,11 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                     <Clock className="size-5 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
                       <h4 className="text-sm font-bold text-zinc-200">เวลาในการทำข้อสอบ</h4>
-                      <p className="text-xs text-zinc-400">{assignment.timeLimit ? `จำกัดเวลา ${assignment.timeLimit} นาที` : "ไม่จำกัดเวลา"} (มีทั้งหมด {assignment.questionCount} ข้อ)</p>
+                      <p className="text-xs text-zinc-400">
+                        {assignment.dueDate 
+                          ? `ต้องส่งก่อนเวลา ${new Date(assignment.dueDate).toLocaleString("th-TH")} น. (เวลาที่เหลือ: ${overallTimeLeft !== null ? formatTime(overallTimeLeft) : "คำนวณ..."})` 
+                          : "ไม่จำกัดเวลา"} (มีทั้งหมด {assignment.questionCount} ข้อ)
+                      </p>
                     </div>
                   </div>
                 </div>

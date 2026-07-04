@@ -619,7 +619,7 @@ export default function ClassroomDetail({
                             </h3>
                             {assignment.isExam && (
                               <Badge variant="outline" className="border-red-500/20 bg-red-500/10 text-red-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-bold">
-                                โหมดสอบ {assignment.timeLimit ? `(${assignment.timeLimit} นาที)` : ""}
+                                โหมดสอบ
                               </Badge>
                             )}
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
@@ -1069,17 +1069,6 @@ export default function ClassroomDetail({
 
                     {isExamMode && (
                       <div className="space-y-4 pt-2 border-t border-red-500/20">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="timeLimit" className="text-xs font-semibold text-zinc-400 uppercase">เวลาสอบ (นาที)</Label>
-                          <Input
-                            id="timeLimit"
-                            name="timeLimit"
-                            type="number"
-                            placeholder="เช่น 15 (ปล่อยว่างหากไม่จำกัดเวลา)"
-                            min={1}
-                            className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100"
-                          />
-                        </div>
                         <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-950/40 border border-zinc-850">
                           <div className="space-y-0.5 pr-2">
                             <Label htmlFor="allowMobile" className="text-xs font-bold text-zinc-300 cursor-pointer">อนุญาตให้ทำสอบบนมือถือ</Label>
@@ -1481,18 +1470,6 @@ export default function ClassroomDetail({
 
                   {editingAssignment.isExam && (
                     <div className="flex flex-col gap-3 p-3.5 rounded-xl bg-red-950/20 border border-red-500/20">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="edit-timeLimit" className="text-xs font-semibold text-zinc-400 uppercase">เวลาสอบ (นาที)</Label>
-                        <Input
-                          id="edit-timeLimit"
-                          name="timeLimit"
-                          type="number"
-                          placeholder="เช่น 15 (ปล่อยว่างหากไม่จำกัดเวลา)"
-                          min={1}
-                          defaultValue={editingAssignment.timeLimit || ""}
-                          className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100"
-                        />
-                      </div>
                       <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-950/40 border border-zinc-850">
                         <div className="space-y-0.5 pr-2">
                           <Label htmlFor="edit-allowMobile" className="text-xs font-bold text-zinc-300 cursor-pointer">อนุญาตให้ทำสอบบนมือถือ</Label>
