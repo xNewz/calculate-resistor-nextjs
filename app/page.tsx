@@ -239,6 +239,95 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ───── What is a Multimeter? ───── */}
+      <section className="py-20 px-4 border-t border-zinc-800/60 bg-zinc-950">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            
+            {/* Visual Multimeter Diagram */}
+            <div className="relative bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center gap-6 order-2 md:order-1">
+              <p className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">จำลองหน้าปัดและย่านวัด</p>
+              
+              <div className="w-full max-w-[280px] bg-zinc-850 rounded-xl p-3 border border-zinc-700/50 shadow-lg flex flex-col gap-4">
+                {/* Dial screen */}
+                <div className="relative w-full aspect-[1.8] bg-zinc-100 rounded-t-xl rounded-b border border-zinc-300 overflow-hidden flex justify-center shadow-inner">
+                  {/* Stylized arc scale */}
+                  <div className="absolute top-4 w-48 h-48 border-4 border-zinc-400 border-dashed rounded-full opacity-40" />
+                  <div className="absolute top-7 w-40 h-40 border-2 border-indigo-500/20 rounded-full" />
+                  
+                  {/* Needle */}
+                  <div className="absolute bottom-0 left-1/2 w-[2px] h-[85%] bg-red-500 origin-bottom -translate-x-1/2 rotate-[15deg]" />
+                  
+                  {/* Pivot */}
+                  <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-6 h-6 bg-zinc-900 rounded-full border-2 border-zinc-650" />
+                  
+                  {/* Numbers */}
+                  <span className="absolute left-4 bottom-2 text-[9px] font-bold text-zinc-600">0</span>
+                  <span className="absolute right-4 bottom-2 text-[9px] font-bold text-zinc-600">∞</span>
+                  <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] font-black text-indigo-500">Ω / V</span>
+                </div>
+
+                {/* Knob */}
+                <div className="flex justify-center items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-zinc-800 border-4 border-zinc-700 flex items-center justify-center shadow-md relative">
+                    {/* Dial mark */}
+                    <div className="absolute top-1 w-1.5 h-3 bg-red-500 rounded-full" />
+                    <div className="text-[7px] text-zinc-400 font-bold uppercase mt-2">OHM</div>
+                  </div>
+                  <div className="text-left text-xs space-y-1">
+                    <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">ย่านวัดที่เลือก</div>
+                    <div className="text-indigo-400 font-bold font-mono">Ω x10</div>
+                    <div className="text-zinc-400 text-[10px]">บิดเพื่อคูณค่าจากเข็มชี้</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl font-black text-indigo-400">150 Ω</div>
+                <p className="text-[11px] text-zinc-500 mt-1">เข็มชี้ที่เลข 15 × ย่านวัด x10 = 150 โอห์ม</p>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-5 order-1 md:order-2">
+              <div className="inline-flex items-center gap-2 bg-zinc-800/60 text-zinc-400 text-xs font-semibold px-3 py-1.5 rounded-full border border-zinc-700">
+                <Layers className="size-3.5" />
+                ทำความรู้จักมัลติมิเตอร์
+              </div>
+              <h2 className="text-3xl font-black text-zinc-100 leading-tight">
+                มัลติมิเตอร์คืออะไร?
+              </h2>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                <strong className="text-zinc-200">มัลติมิเตอร์ (Multimeter)</strong> เป็นอุปกรณ์วัดปริมาณทางไฟฟ้าอเนกประสงค์ สามารถวัดได้ทั้งกระแสตรง/สลับ, แรงดันไฟ และความต้านทานไฟฟ้า
+              </p>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                การฝึกอ่านค่ามัลติมิเตอร์แบบอนาล็อก (แบบเข็ม) เป็นทักษะพื้นฐานหลักในการวิเคราะห์และตรวจซ่อมวงจรอิเล็กทรอนิกส์
+              </p>
+              <div className="space-y-2">
+                {[
+                  "ย่านความต้านทาน (Ω): อ่านตัวเลขแถวบนสุดจากขวาไปซ้าย แล้วคูณด้วยย่านวัด",
+                  "ย่านแรงดัน (DCV/ACV): อ่านสเกลเชิงเส้นจากซ้ายไปขวาตามแถบย่านวัดที่ถูกต้อง",
+                ].map((t) => (
+                  <div key={t} className="flex items-start gap-2 text-sm text-zinc-300">
+                    <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{t}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="pt-2">
+                <Link href="/learn/multimeter">
+                  <Button variant="outline" className="h-10 px-5 border-zinc-700 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 text-xs rounded-xl cursor-pointer">
+                    ศึกษาบทเรียนมัลติมิเตอร์
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* ───── Features ───── */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
@@ -297,7 +386,7 @@ export default function HomePage() {
           </div>
           <span className="font-bold text-zinc-400">Practice-Lab</span>
         </div>
-        <p>ระบบฝึกทักษะการอ่านค่าตัวต้านทาน | Resistor Color Code Learning Platform</p>
+        <p>ระบบฝึกทักษะการอ่านค่าตัวต้านทานและมัลติมิเตอร์ | Resistor & Multimeter Learning Platform</p>
       </footer>
 
     </div>
