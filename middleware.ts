@@ -49,7 +49,10 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute && session) {
-    // Redirect to classroom if already logged in
+    // Redirect based on role if already logged in
+    if (session.role === "ADMIN") {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
     return NextResponse.redirect(new URL("/classroom", request.url));
   }
 

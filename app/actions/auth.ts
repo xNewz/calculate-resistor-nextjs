@@ -9,6 +9,7 @@ import { encrypt, getSession } from "@/lib/auth";
 export type AuthState = {
   success: boolean;
   error?: string;
+  role?: string;
   fieldErrors?: {
     email?: string;
     password?: string;
@@ -154,7 +155,7 @@ export async function loginAction(
       path: "/",
     });
 
-    return { success: true };
+    return { success: true, role: user.role };
   } catch (error) {
     console.error("Login error:", error);
     return {

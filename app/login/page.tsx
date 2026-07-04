@@ -24,8 +24,12 @@ export default function LoginPage() {
     startTransition(async () => {
       const result = await loginAction(null, formData);
       if (result.success) {
-        // Redirect to classroom page
-        router.push("/classroom");
+        // Redirect based on user role
+        if (result.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/classroom");
+        }
         router.refresh();
       } else {
         if (result.error) {
