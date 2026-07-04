@@ -95,11 +95,11 @@ export default function MultimeterLearnPage() {
               </div>
             </div>
 
-            <Link href="/">
+            {/* <Link href="/">
               <Button variant="outline" className="border-zinc-800 hover:bg-zinc-800 gap-2 shrink-0 cursor-pointer text-xs h-9 rounded-lg">
                 <ArrowLeft className="size-4" /> กลับสู่หน้าหลัก
               </Button>
-            </Link>
+            </Link> */}
           </div>
           
           <div className="mt-6 flex flex-wrap gap-2 p-1 bg-zinc-900/50 border border-zinc-800 rounded-xl w-fit">
