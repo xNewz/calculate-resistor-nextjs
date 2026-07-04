@@ -1097,6 +1097,22 @@ export default function ClassroomDetail({
                             <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
                           </label>
                         </div>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-950/40 border border-zinc-850">
+                          <div className="space-y-0.5 pr-2">
+                            <Label htmlFor="showSolutions" className="text-xs font-bold text-zinc-300 cursor-pointer">แสดงเฉลยและคำอธิบายหลังส่งข้อสอบ</Label>
+                            <span className="text-[9px] text-zinc-500 block">เปิดเพื่อให้ผู้เรียนสามารถดูข้อที่ตอบผิดและคำอธิบายการคำนวณหลังส่งข้อสอบได้</span>
+                          </div>
+                          <label htmlFor="showSolutions" className="relative inline-flex items-center cursor-pointer shrink-0">
+                            <input
+                              type="checkbox"
+                              id="showSolutions"
+                              name="showSolutions"
+                              value="true"
+                              className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
+                          </label>
+                        </div>
                       </div>
                     )}
                   </div>

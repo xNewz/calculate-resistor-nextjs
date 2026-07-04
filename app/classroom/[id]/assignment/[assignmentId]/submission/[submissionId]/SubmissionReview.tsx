@@ -56,6 +56,7 @@ interface SubmissionReviewProps {
     createdAt: Date;
   };
   attempts: UserAttempt[];
+  showSolutions: boolean;
 }
 
 function formatMultiplierValue(value: number): string {
@@ -71,6 +72,7 @@ export default function SubmissionReview({
   assignment,
   submission,
   attempts,
+  showSolutions,
 }: SubmissionReviewProps) {
 
   const getVerdict = (finalScore: number, total: number, type: string) => {
@@ -246,80 +248,96 @@ export default function SubmissionReview({
             <span>รายละเอียดคำตอบและการเฉลยแต่ละข้อ ({attempts.length})</span>
           </h2>
 
-          <Accordion className="space-y-3 border-none">
-            {attempts.map((attempt, index) => {
-              const q = attempt.question;
-              return (
-                <AccordionItem
-                  key={index}
-                  value={`item-${index}`}
-                  className="bg-zinc-900/40 border border-zinc-850 hover:border-zinc-800/80 rounded-xl overflow-hidden shadow-sm"
-                >
-                  <AccordionTrigger className="px-5 py-4 hover:no-underline text-xs flex justify-between cursor-pointer">
-                    <div className="flex items-center gap-3.5 w-full text-left">
-                      <span className="font-bold text-zinc-400">ข้อที่ {index + 1}</span>
-                      
-                      <div className="flex items-center gap-1.5">
-                        {attempt.isCorrect ? (
-                          <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 py-0.5 px-2 rounded-full text-[10px] font-bold">
-                            <CheckCircle2 className="size-3.5" />
-                            <span>ถูกต้อง</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1 bg-red-500/10 text-red-400 border border-red-500/20 py-0.5 px-2 rounded-full text-[10px] font-bold">
-                            <XCircle className="size-3.5" />
-                            <span>{attempt.isTimeout ? "หมดเวลา" : "ผิด"}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <span className="text-zinc-500 hidden sm:inline">
-                        แถบสี: {q.bands} สี
-                      </span>
-
-                      <div className="ml-auto pr-3 font-semibold text-zinc-300">
-                        เฉลย: <span className="font-mono text-zinc-200">{q.formatted} ±{q.tolerance}%</span>
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  
-                  <AccordionContent className="px-5 pb-5 border-t border-zinc-850/60 pt-4">
-                    <div className="space-y-5">
-                      
-                      {/* Interactive Visual */}
-                      <div>
-                        {assignment.assignmentType === "MULTIMETER" && q.multimeterData ? (
-                          <MultimeterPreview range={q.multimeterData.range} pointerValue={q.multimeterData.pointerValue} />
-                        ) : (
-                          <ResistorPreview colors={q.colors!} />
-                        )}
-                      </div>
-
-                      {/* Score Summary Info */}
-                      <div className="grid grid-cols-2 gap-4 max-w-md text-xs">
-                        <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
-                          <span className="text-[10px] text-zinc-500 block">คำตอบของคุณ</span>
-                          <span className={`font-mono font-bold ${attempt.isCorrect ? "text-emerald-400" : "text-red-400"}`}>
-                            {attempt.userAnswer}
-                          </span>
+          {showSolutions ? (
+            <Accordion className="space-y-3 border-none">
+              {attempts.map((attempt, index) => {
+                const q = attempt.question;
+                return (
+                  <AccordionItem
+                    key={index}
+                    value={`item-${index}`}
+                    className="bg-zinc-900/40 border border-zinc-850 hover:border-zinc-800/80 rounded-xl overflow-hidden shadow-sm"
+                  >
+                    <AccordionTrigger className="px-5 py-4 hover:no-underline text-xs flex justify-between cursor-pointer">
+                      <div className="flex items-center gap-3.5 w-full text-left">
+                        <span className="font-bold text-zinc-400">ข้อที่ {index + 1}</span>
+                        
+                        <div className="flex items-center gap-1.5">
+                          {attempt.isCorrect ? (
+                            <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 py-0.5 px-2 rounded-full text-[10px] font-bold">
+                              <CheckCircle2 className="size-3.5" />
+                              <span>ถูกต้อง</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1 bg-red-500/10 text-red-400 border border-red-500/20 py-0.5 px-2 rounded-full text-[10px] font-bold">
+                              <XCircle className="size-3.5" />
+                              <span>{attempt.isTimeout ? "หมดเวลา" : "ผิด"}</span>
+                            </div>
+                          )}
                         </div>
-                        <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
-                          <span className="text-[10px] text-zinc-500 block">คำตอบที่ถูกต้อง</span>
-                          <span className="font-mono font-bold text-emerald-400">
-                            {q.formatted}
-                          </span>
+
+                        <span className="text-zinc-500 hidden sm:inline">
+                          แถบสี: {q.bands} สี
+                        </span>
+
+                        <div className="ml-auto pr-3 font-semibold text-zinc-300">
+                          เฉลย: <span className="font-mono text-zinc-200">{q.formatted} ±{q.tolerance}%</span>
                         </div>
                       </div>
+                    </AccordionTrigger>
+                    
+                    <AccordionContent className="px-5 pb-5 border-t border-zinc-850/60 pt-4">
+                      <div className="space-y-5">
+                        
+                        {/* Interactive Visual */}
+                        <div>
+                          {assignment.assignmentType === "MULTIMETER" && q.multimeterData ? (
+                            <MultimeterPreview range={q.multimeterData.range} pointerValue={q.multimeterData.pointerValue} />
+                          ) : (
+                            <ResistorPreview colors={q.colors!} />
+                          )}
+                        </div>
 
-                      {/* Mathematical Explanation */}
-                      {renderExplanation(q)}
+                        {/* Score Summary Info */}
+                        <div className="grid grid-cols-2 gap-4 max-w-md text-xs">
+                          <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
+                            <span className="text-[10px] text-zinc-550 block">คำตอบของคุณ</span>
+                            <span className={`font-mono font-bold ${attempt.isCorrect ? "text-emerald-400" : "text-red-400"}`}>
+                              {attempt.userAnswer}
+                            </span>
+                          </div>
+                          <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
+                            <span className="text-[10px] text-zinc-550 block">คำตอบที่ถูกต้อง</span>
+                            <span className="font-mono font-bold text-emerald-400">
+                              {q.formatted}
+                            </span>
+                          </div>
+                        </div>
 
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
+                        {/* Mathematical Explanation */}
+                        {renderExplanation(q)}
+
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
+          ) : (
+            <Card className="bg-zinc-900/40 border-zinc-850 p-6 rounded-2xl text-center backdrop-blur-md">
+              <CardContent className="p-4 flex flex-col items-center justify-center space-y-2">
+                <div className="p-2.5 bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 rounded-full w-fit">
+                  <BookOpen className="size-6 text-zinc-400" />
+                </div>
+                <p className="text-sm font-semibold text-zinc-300">
+                  ผู้สอนไม่ได้เปิดใช้งานระบบการแสดงเฉลยสำหรับการทดสอบนี้
+                </p>
+                <p className="text-xs text-zinc-500">
+                  คุณจะสามารถตรวจสอบคะแนนดิบที่ทำได้เท่านั้น
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
       </div>

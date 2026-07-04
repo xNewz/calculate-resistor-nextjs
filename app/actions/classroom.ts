@@ -180,6 +180,7 @@ export async function createAssignmentAction(
   const isExamStr = formData.get("isExam") as string;
   const timeLimitStr = formData.get("timeLimit") as string;
   const allowMobileStr = formData.get("allowMobile") as string;
+  const showSolutionsStr = formData.get("showSolutions") as string;
   const isExam = isExamStr === "true" || isExamStr === "on";
   let timeLimit: number | null = null;
   if (isExam && timeLimitStr && timeLimitStr.trim() !== "") {
@@ -187,6 +188,7 @@ export async function createAssignmentAction(
     if (isNaN(timeLimit) || timeLimit < 1) timeLimit = null;
   }
   const allowMobile = !isExam || (allowMobileStr === "true" || allowMobileStr === "on");
+  const showSolutions = !isExam || (showSolutionsStr === "true" || showSolutionsStr === "on");
 
   try {
     // Verify teacher owns the classroom
@@ -213,6 +215,7 @@ export async function createAssignmentAction(
         isExam,
         timeLimit,
         allowMobile,
+        showSolutions,
         classroomId,
       },
     });
@@ -432,6 +435,7 @@ export async function updateAssignmentAction(
   const allowLateStr = formData.get("allowLate") as string;
   const timeLimitStr = formData.get("timeLimit") as string;
   const allowMobileStr = formData.get("allowMobile") as string;
+  const showSolutionsStr = formData.get("showSolutions") as string;
 
   if (!title || title.trim().length < 2) {
     return { success: false, error: "กรุณากรอกหัวข้อแบบฝึกหัดอย่างน้อย 2 ตัวอักษร" };
@@ -478,6 +482,10 @@ export async function updateAssignmentAction(
       ? (allowMobileStr === "true" || allowMobileStr === "on")
       : true;
 
+    const showSolutions = existing.isExam
+      ? (showSolutionsStr === "true" || showSolutionsStr === "on")
+      : true;
+
     const updated = await prisma.assignment.update({
       where: { id: assignmentId },
       data: {
@@ -490,6 +498,7 @@ export async function updateAssignmentAction(
         allowLate,
         timeLimit,
         allowMobile,
+        showSolutions,
       },
     });
 

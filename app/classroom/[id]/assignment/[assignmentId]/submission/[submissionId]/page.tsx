@@ -73,6 +73,9 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
     console.error("Error parsing submission answers JSON:", e);
   }
 
+  const isTeacherOrAdmin = user.role === "TEACHER" || user.role === "ADMIN";
+  const showSolutions = isTeacherOrAdmin || submission.assignment.showSolutions;
+
   return (
     <SubmissionReview
       classroomId={classroomId}
@@ -88,6 +91,7 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
         createdAt: submission.createdAt,
       }}
       attempts={attempts}
+      showSolutions={showSolutions}
     />
   );
 }
