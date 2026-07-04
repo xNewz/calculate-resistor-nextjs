@@ -99,8 +99,9 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   const [isAutoSubmitted, setIsAutoSubmitted] = useState(false);
   const maxViolations = 3;
   const [warningCountdown, setWarningCountdown] = useState(15);
-  const [shownWarningIds, setShownWarningIds] = useState<Set<string>>(new Set());
+  const shownWarningIdsRef = useRef<Set<string>>(new Set());
   const [activeTeacherWarning, setActiveTeacherWarning] = useState<{ id: string; message: string } | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const processingRef = useRef(false);
@@ -183,7 +184,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   }, [assignment, router]);
 
   const handleViolation = useCallback((type: string) => {
-    if (gameState !== "playing") return;
+    if (gameState !== "playing" || isTransitioning) return;
 
     // Calculate elapsed seconds since exam started
     const elapsedSeconds = examStartTime ? Math.max(0, Math.floor((Date.now() - examStartTime) / 1000)) : 0;
@@ -213,7 +214,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
     });
 
     setGameState("violationAlert");
-  }, [gameState, attempts, submitExam, examStartTime]);
+  }, [gameState, attempts, submitExam, examStartTime, isTransitioning]);
 
   // Anti-Cheat Listeners
   useEffect(() => {
@@ -313,7 +314,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
         const res = await fetch(`/api/exam/violation?assignmentId=${assignment.id}`);
         const data = await res.json();
         if (data.success && data.warnings) {
-          const newWarning = data.warnings.find((w: any) => !shownWarningIds.has(w.id));
+          const newWarning = data.warnings.find((w: any) => !shownWarningIdsRef.current.has(w.id));
           if (newWarning) {
             setActiveTeacherWarning({ id: newWarning.id, message: newWarning.details || "กรุณาตั้งใจทำข้อสอบ" });
             setGameState("violationAlert");
@@ -327,26 +328,36 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
     checkWarnings();
     const interval = setInterval(checkWarnings, 3000);
     return () => clearInterval(interval);
-  }, [gameState, assignment.id, shownWarningIds]);
+  }, [gameState, assignment.id]);
+
+  const resumeExam = () => {
+    setIsTransitioning(true);
+    
+    if (containerRef.current && !document.fullscreenElement) {
+      containerRef.current.requestFullscreen()
+        .then(() => {
+          setGameState("playing");
+          setTimeout(() => setIsTransitioning(false), 2000);
+        })
+        .catch((err) => {
+          console.error("Fullscreen failed:", err);
+          setGameState("playing");
+          setTimeout(() => setIsTransitioning(false), 2000);
+        });
+    } else {
+      setGameState("playing");
+      setTimeout(() => setIsTransitioning(false), 2000);
+    }
+  };
 
   const acknowledgeTeacherWarning = () => {
     if (activeTeacherWarning) {
-      setShownWarningIds((prev) => {
-        const next = new Set(prev);
-        next.add(activeTeacherWarning.id);
-        return next;
-      });
+      shownWarningIdsRef.current.add(activeTeacherWarning.id);
       setActiveTeacherWarning(null);
     }
     
     // Resume game & re-enter fullscreen
-    if (containerRef.current && !document.fullscreenElement) {
-      containerRef.current.requestFullscreen()
-        .then(() => setGameState("playing"))
-        .catch(() => setGameState("playing"));
-    } else {
-      setGameState("playing");
-    }
+    resumeExam();
   };
 
 
@@ -589,13 +600,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                     </p>
                   </div>
                   <Button 
-                    onClick={() => {
-                      if (containerRef.current && !document.fullscreenElement) {
-                        containerRef.current.requestFullscreen().then(() => setGameState("playing")).catch(() => setGameState("playing"));
-                      } else {
-                        setGameState("playing");
-                      }
-                    }}
+                    onClick={resumeExam}
                     className="bg-white text-black hover:bg-zinc-200 font-bold px-8 h-12 rounded-xl cursor-pointer"
                   >
                     กลับเข้าสู่การสอบ
