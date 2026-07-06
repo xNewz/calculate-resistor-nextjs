@@ -21,7 +21,7 @@ echo 🔄 Starting/Restarting application with PM2...
 call pm2 restart resistor-lab
 if %ERRORLEVEL% neq 0 (
   echo Starting new PM2 process...
-  call pm2 start npm --name "resistor-lab" -- run start -p 8080
+  call pm2 start npm --name "resistor-lab" -- run start -- -p 8080
 )
 
 echo =========================================
