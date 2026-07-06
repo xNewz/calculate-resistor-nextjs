@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Key, Mail, User, ShieldAlert, Loader2, Zap } from "lucide-react";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { cn } from "@/lib/utils";
 
 export default function RegisterPage() {
@@ -153,7 +154,18 @@ export default function RegisterPage() {
                 )}
               </Button>
 
-              <div className="text-center pt-4 text-sm text-zinc-500 border-t border-zinc-800/80">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-zinc-800" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-zinc-900/80 px-2 text-zinc-500 font-medium">หรือลงทะเบียนด้วย</span>
+                </div>
+              </div>
+
+              <GoogleLoginButton mode="login" />
+
+              <div className="text-center pt-4 text-sm text-zinc-500 border-t border-zinc-800/80 mt-2">
                 มีบัญชีอยู่แล้ว?{" "}
                 <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium hover:underline transition-all">
                   เข้าสู่ระบบที่นี่

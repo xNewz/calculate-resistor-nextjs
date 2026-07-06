@@ -16,8 +16,10 @@ enum Role {
 model User {
   id                String       @id @default(uuid())
   email             String       @unique
-  password          String
+  password          String?      // Optional for Google OAuth users
   name              String
+  googleId          String?      @unique
+  image             String?      @db.Text
   role              Role         @default(LEARNER)
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt

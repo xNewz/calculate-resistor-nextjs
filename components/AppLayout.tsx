@@ -30,11 +30,13 @@ import { cn } from "@/lib/utils";
 import { getSessionAction, logoutAction, updateProfileAction, pingAction } from "@/app/actions/auth";
 import { getUserClassroomsAction } from "@/app/actions/classroom";
 import { Button } from "./ui/button";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 interface UserSession {
   userId: string;
   email: string;
   name: string;
+  image?: string;
   role: "LEARNER" | "TEACHER" | "ADMIN";
 }
 
@@ -388,9 +390,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* User Info & Profile at Bottom */}
         <div className="p-4 border-t border-zinc-900 bg-zinc-950/20">
           <div className="flex items-center gap-2.5 p-1 rounded-xl bg-zinc-900/40 border border-zinc-900 px-3 py-2.5">
-            <div className={`size-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+            <div className={`size-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 overflow-hidden ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
               }`}>
-              {user.name.charAt(0)}
+              {user.image ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" /> : user.name.charAt(0)}
             </div>
 
             <div className="min-w-0 flex-1">
@@ -449,9 +451,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="flex items-center gap-2">
           {/* User Badge initials */}
-          <div className={`size-7.5 rounded-full flex items-center justify-center font-bold text-xs ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400" : "bg-emerald-400/10 text-emerald-400"
+          <div className={`size-7.5 rounded-full flex items-center justify-center font-bold text-xs overflow-hidden ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400" : "bg-emerald-400/10 text-emerald-400"
             }`}>
-            {user.name.charAt(0)}
+            {user.image ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" /> : user.name.charAt(0)}
           </div>
         </div>
       </header>
@@ -549,8 +551,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="pt-4 border-t border-zinc-900">
               <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900/40 border border-zinc-900/60">
                 <div className="flex items-center gap-2">
-                  <div className="size-7 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-300">
-                    {user.name.charAt(0)}
+                  <div className="size-7 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-300 overflow-hidden">
+                    {user.image ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" /> : user.name.charAt(0)}
                   </div>
                   <div className="min-w-0">
                     <div className="font-bold text-[11px] text-zinc-200 truncate w-[100px]">{user.name}</div>
@@ -674,16 +676,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
                 {newPassword.trim().length > 0 && (
                   <div className="space-y-1.5 animate-[fadeIn_0.2s_ease-out]">
-                    <label htmlFor="currentPassword" className="text-xs font-bold text-yellow-500 uppercase">รหัสผ่านปัจจุบัน (เพื่อยืนยันการเปลี่ยนรหัสผ่าน)</label>
+                    <label htmlFor="currentPassword" className="text-xs font-bold text-yellow-500 uppercase">รหัสผ่านปัจจุบัน (เว้นว่างได้หากสมัครด้วย Google)</label>
                     <input
                       id="currentPassword"
                       name="currentPassword"
                       type="password"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
-                      placeholder="กรอกรหัสผ่านปัจจุบันของคุณ"
+                      placeholder="กรอกรหัสผ่านปัจจุบันของคุณ (ถ้ามี)"
                       className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
-                      required
                     />
                   </div>
                 )}
@@ -713,6 +714,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </Button>
                 </div>
               </form>
+              
+              <div className="mt-6 pt-6 border-t border-zinc-800">
+                <h4 className="text-xs font-semibold text-zinc-400 uppercase mb-3">การเชื่อมต่อบัญชี</h4>
+                <GoogleLoginButton 
+                  mode="link" 
+                  onSuccess={async () => {
+                    const session = await getSessionAction();
+                    setUser(session);
+                    router.refresh();
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>

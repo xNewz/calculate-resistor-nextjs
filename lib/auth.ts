@@ -9,6 +9,7 @@ export interface JWTPayload {
   userId: string;
   email: string;
   name: string;
+  image?: string;
   role: "LEARNER" | "TEACHER" | "ADMIN";
   [key: string]: unknown;
 }
@@ -57,6 +58,7 @@ export async function getCurrentUser() {
         id: true,
         email: true,
         name: true,
+        image: true,
         role: true,
         createdAt: true,
       },

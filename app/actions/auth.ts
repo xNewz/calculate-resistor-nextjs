@@ -104,6 +104,7 @@ export async function registerAction(
       userId: user.id,
       email: user.email,
       name: user.name,
+      image: user.image || undefined,
       role: user.role,
     });
 
@@ -175,6 +176,10 @@ export async function loginAction(
       return { success: false, error: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" };
     }
 
+    if (!user.password) {
+      return { success: false, error: "บัญชีนี้เชื่อมต่อกับ Google โปรดเข้าสู่ระบบด้วย Google หรือตั้งรหัสผ่านใหม่" };
+    }
+
     // Compare password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -193,6 +198,7 @@ export async function loginAction(
       userId: user.id,
       email: user.email,
       name: user.name,
+      image: user.image || undefined,
       role: user.role,
     });
 
@@ -236,6 +242,7 @@ export async function getSessionAction() {
     userId: session.userId,
     email: session.email,
     name: session.name,
+    image: session.image,
     role: session.role,
   };
 }
@@ -305,18 +312,24 @@ export async function updateProfileAction(
 
     let hashedPassword = user.password;
 
-    // If changing password, currentPassword must match
+    // If changing password
     if (newPassword && newPassword.trim().length > 0) {
       if (newPassword.length < 6) {
         return { success: false, error: "รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร" };
       }
-      if (!currentPassword) {
-        return { success: false, error: "กรุณากรอกรหัสผ่านปัจจุบันเพื่อยืนยันการเปลี่ยนรหัสผ่าน" };
+      
+      if (user.password) {
+        // Has existing password, requires current password
+        if (!currentPassword) {
+          return { success: false, error: "กรุณากรอกรหัสผ่านปัจจุบันเพื่อยืนยันการเปลี่ยนรหัสผ่าน" };
+        }
+        const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isPasswordValid) {
+          return { success: false, error: "รหัสผ่านปัจจุบันไม่ถูกต้อง" };
+        }
       }
-      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-      if (!isPasswordValid) {
-        return { success: false, error: "รหัสผ่านปัจจุบันไม่ถูกต้อง" };
-      }
+      // If user.password is null, we just set the new password without checking current
+      
       hashedPassword = await bcrypt.hash(newPassword, 10);
     }
 
@@ -335,6 +348,7 @@ export async function updateProfileAction(
       userId: updatedUser.id,
       email: updatedUser.email,
       name: updatedUser.name,
+      image: updatedUser.image || undefined,
       role: updatedUser.role,
     });
 
