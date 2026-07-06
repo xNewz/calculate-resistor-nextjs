@@ -423,10 +423,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-8 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/10 rounded-lg shrink-0 cursor-pointer focus-visible:ring-0">
-                  <UserCog className="size-4" />
-                </Button>
+              <DropdownMenuTrigger className="flex items-center justify-center size-8 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/10 rounded-lg shrink-0 cursor-pointer focus-visible:ring-0">
+                <UserCog className="size-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
                 <DropdownMenuLabel className="text-xs text-zinc-900 dark:text-zinc-100 font-bold">บัญชีของฉัน</DropdownMenuLabel>
@@ -605,10 +603,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
 
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="size-8 text-zinc-500 hover:text-indigo-400 rounded-lg cursor-pointer focus-visible:ring-0">
-                      <Menu className="size-4" />
-                    </Button>
+                  <DropdownMenuTrigger className="flex items-center justify-center size-8 text-zinc-500 hover:text-indigo-400 rounded-lg cursor-pointer focus-visible:ring-0">
+                    <Menu className="size-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
                     <DropdownMenuItem onClick={() => { setMobileMenuOpen(false); setShowProfileModal(true); }} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 focus:text-zinc-900 dark:focus:text-zinc-100">
