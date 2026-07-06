@@ -45,7 +45,7 @@ if pm2 show practice-lab > /dev/null; then
   pm2 restart practice-lab
 else
   echo "Starting new PM2 process..."
-  pm2 start npm --name "practice-lab" -- run start
+  pm2 start npm --name "practice-lab" -- run start -p 8080
 fi
 
 echo "========================================="
