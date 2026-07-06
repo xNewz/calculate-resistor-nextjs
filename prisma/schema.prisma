@@ -27,6 +27,7 @@ model User {
   submissions       Submission[]
   systemLogs        SystemLog[]
   examViolations    ExamViolation[]
+  bannedIPs         BannedIP[]
 }
 
 model Classroom {
@@ -124,4 +125,13 @@ model SystemSetting {
   announcementEnabled Boolean  @default(false)
   announcementType    String   @default("INFO") // INFO, WARNING, ERROR, SUCCESS
   updatedAt           DateTime @updatedAt
+}
+
+model BannedIP {
+  ip          String    @id
+  reason      String    // e.g. "SYSTEM_BRUTE_FORCE", "MANUAL_BAN"
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime? // null for permanent ban
+  bannedById  String?   // User id of admin who banned, null if system
+  bannedBy    User?     @relation(fields: [bannedById], references: [id], onDelete: SetNull)
 }

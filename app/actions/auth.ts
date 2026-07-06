@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { encrypt, getSession } from "@/lib/auth";
 import { logSystemEvent } from "@/lib/logger";
 import { checkRateLimit, recordFailedAttempt, clearAttempts } from "@/lib/rateLimit";
-
+import { checkIPBanStatus, autoBanIP } from "./security";
 
 export type AuthState = {
   success: boolean;
@@ -31,6 +31,12 @@ export async function registerAction(
 
   const reqHeaders = await headers();
   const ip = reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "unknown-ip";
+  
+  const isBannedDB = await checkIPBanStatus(ip);
+  if (isBannedDB) {
+    return { success: false, error: "IP ของคุณถูกระงับการใช้งานชั่วคราว" };
+  }
+
   const rateLimitKey = `register:${ip}`;
 
   const limit = checkRateLimit(rateLimitKey);
@@ -69,6 +75,7 @@ export async function registerAction(
     if (existingUser) {
       const justBlocked = recordFailedAttempt(rateLimitKey);
       if (justBlocked) {
+        await autoBanIP(ip);
         await logSystemEvent("REGISTER_BRUTE_FORCE", "ERROR", `ตรวจพบสแปมการสมัครสมาชิกจาก IP: ${ip} (อีเมล: ${email})`);
       } else {
         await logSystemEvent("REGISTER_FAILED", "WARNING", `สมัครสมาชิกไม่สำเร็จ: อีเมล ${email} มีในระบบแล้ว (IP: ${ip})`);
@@ -138,6 +145,12 @@ export async function loginAction(
 
   const reqHeaders = await headers();
   const ip = reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "unknown-ip";
+  
+  const isBannedDB = await checkIPBanStatus(ip);
+  if (isBannedDB) {
+    return { success: false, error: "IP ของคุณถูกระงับการใช้งานชั่วคราว" };
+  }
+
   const rateLimitKey = `login:${email}:${ip}`;
 
   const limit = checkRateLimit(rateLimitKey);
@@ -154,6 +167,7 @@ export async function loginAction(
     if (!user) {
       const justBlocked = recordFailedAttempt(rateLimitKey);
       if (justBlocked) {
+        await autoBanIP(ip);
         await logSystemEvent("LOGIN_BRUTE_FORCE", "ERROR", `ตรวจพบการสุ่มรหัสผ่าน (Brute Force) สำหรับอีเมล ${email} จาก IP: ${ip}`);
       } else {
         await logSystemEvent("LOGIN_FAILED", "WARNING", `เข้าสู่ระบบไม่สำเร็จ: ไม่พบผู้ใช้งาน ${email} (IP: ${ip})`);
@@ -166,6 +180,7 @@ export async function loginAction(
     if (!isPasswordValid) {
       const justBlocked = recordFailedAttempt(rateLimitKey);
       if (justBlocked) {
+        await autoBanIP(ip);
         await logSystemEvent("LOGIN_BRUTE_FORCE", "ERROR", `ตรวจพบการสุ่มรหัสผ่าน (Brute Force) สำหรับอีเมล ${email} จาก IP: ${ip}`);
       } else {
         await logSystemEvent("LOGIN_FAILED", "WARNING", `เข้าสู่ระบบไม่สำเร็จ: รหัสผ่านผิดสำหรับ ${email} (IP: ${ip})`);

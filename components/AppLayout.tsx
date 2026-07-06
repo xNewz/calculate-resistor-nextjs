@@ -204,6 +204,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       label: "ตั้งค่าระบบ",
       icon: Settings,
       description: "System Settings"
+    }] : []),
+    ...(user?.role === "ADMIN" ? [{
+      href: "/admin/security",
+      label: "ความปลอดภัย",
+      icon: ShieldAlert,
+      description: "Security & Banned IPs"
     }] : [])
   ];
 

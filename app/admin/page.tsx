@@ -141,6 +141,12 @@ export default function AdminDashboardPage() {
                 บันทึกระบบ
               </Button>
             </Link>
+            <Link href="/admin/security">
+              <Button variant="outline" className="border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/10 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
+                <ShieldAlert className="size-4 text-red-400" />
+                ความปลอดภัย (IP)
+              </Button>
+            </Link>
             <Link href="/admin/settings">
               <Button variant="outline" className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
                 <Settings className="size-4 text-orange-400" />
