@@ -188,6 +188,17 @@ export async function createAssignmentAction(
   const allowMobileStr = formData.get("allowMobile") as string;
   const showSolutionsStr = formData.get("showSolutions") as string;
   const questionMode = formData.get("questionMode") as string || "INPUT";
+  
+  const customQuestionsStr = formData.get("customQuestions") as string;
+  let customQuestions = null;
+  if (assignmentType === "CUSTOM" && customQuestionsStr) {
+    try {
+      customQuestions = JSON.parse(customQuestionsStr);
+    } catch (e) {
+      return { success: false, error: "ข้อมูลข้อสอบแบบอิสระไม่ถูกต้อง" };
+    }
+  }
+
   const isExam = isExamStr === "true" || isExamStr === "on";
   let timeLimit: number | null = null;
   if (isExam && timeLimitStr && timeLimitStr.trim() !== "") {
@@ -224,6 +235,7 @@ export async function createAssignmentAction(
         allowMobile,
         showSolutions,
         questionMode,
+        customQuestions,
         classroomId,
       },
     });
@@ -296,15 +308,20 @@ export async function submitQuizAction(
       return { success: false, error: "คุณไม่ได้อยู่ในห้องเรียนนี้" };
     }
 
-    // Re-generate questions on the server side dynamically based on student ID and assignment ID
-    const serverQuestions = generateSeededQuestions(
-      session.userId,
-      assignmentId,
-      assignment.assignmentType || "RESISTOR",
-      assignment.questionCount,
-      assignment.questionMode || "INPUT",
-      assignment.bandType
-    );
+    // Re-generate questions or use custom questions on the server side dynamically
+    let serverQuestions: any[] = [];
+    if (assignment.assignmentType === "CUSTOM") {
+      serverQuestions = (assignment.customQuestions as any[]) || [];
+    } else {
+      serverQuestions = generateSeededQuestions(
+        session.userId,
+        assignmentId,
+        assignment.assignmentType || "RESISTOR",
+        assignment.questionCount,
+        assignment.questionMode || "INPUT",
+        assignment.bandType
+      );
+    }
 
     // Re-grade each answer on the server to prevent score tampering
     let calculatedScore = 0;
@@ -316,7 +333,14 @@ export async function submitQuizAction(
       let isCorrect = false;
 
       if (cleanAnswer && !attempt.isTimeout) {
-        if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
+        if (assignment.assignmentType === "CUSTOM") {
+          const correctAns = currentQuestion.correctAnswer || "";
+          if (currentQuestion.type === "CHOICE") {
+            isCorrect = cleanAnswer === correctAns;
+          } else {
+            isCorrect = cleanAnswer.trim().toLowerCase() === correctAns.trim().toLowerCase();
+          }
+        } else if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
           const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
           if (parsed !== null) {
             const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
@@ -508,6 +532,16 @@ export async function updateAssignmentAction(
   const showSolutionsStr = formData.get("showSolutions") as string;
   const questionMode = formData.get("questionMode") as string || "INPUT";
 
+  const customQuestionsStr = formData.get("customQuestions") as string;
+  let customQuestions = null;
+  if (assignmentType === "CUSTOM" && customQuestionsStr) {
+    try {
+      customQuestions = JSON.parse(customQuestionsStr);
+    } catch (e) {
+      return { success: false, error: "ข้อมูลข้อสอบแบบอิสระไม่ถูกต้อง" };
+    }
+  }
+
   if (!title || title.trim().length < 2) {
     return { success: false, error: "กรุณากรอกหัวข้อแบบฝึกหัดอย่างน้อย 2 ตัวอักษร" };
   }
@@ -574,6 +608,7 @@ export async function updateAssignmentAction(
         allowMobile,
         showSolutions,
         questionMode,
+        customQuestions,
       },
     });
 

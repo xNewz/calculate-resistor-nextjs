@@ -71,6 +71,9 @@ model Assignment {
   showSolutions Boolean      @default(false)
   questionMode  String       @default("INPUT") // "INPUT" or "CHOICE"
 
+  // Custom Exam System
+  customQuestions Json?      // Structure: [{ id, text, type: "CHOICE"|"TEXT", options?: [], correctAnswer, points }]
+
   classroomId   String
   classroom     Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   createdAt     DateTime     @default(now())

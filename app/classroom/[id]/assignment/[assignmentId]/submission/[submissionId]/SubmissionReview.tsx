@@ -30,6 +30,11 @@ import {
 import { MultimeterQuestion } from "@/lib/multimeter";
 
 interface Question {
+  id?: string;
+  text?: string;
+  type?: "CHOICE" | "TEXT";
+  options?: string[];
+  correctAnswer?: string;
   bands?: 4 | 5;
   colors?: string[];
   resistance?: number;
@@ -121,6 +126,20 @@ export default function SubmissionReview({
               = <strong className="text-emerald-400">{q.multimeterData.value} {type}</strong>
             </p>
           )}
+        </div>
+      );
+    }
+
+    if (assignment.assignmentType === "CUSTOM") {
+      return (
+        <div className="space-y-3 text-[11px] text-zinc-400 bg-zinc-950/40 p-4 rounded-xl border border-zinc-850 mt-3">
+          <h4 className="font-semibold text-zinc-200 text-xs flex items-center gap-1.5">
+            <HelpCircle className="size-3.5 text-indigo-400" />
+            <span>คำอธิบายคำตอบ:</span>
+          </h4>
+          <p className="text-zinc-300">
+            คำตอบที่ถูกต้องคือ: <strong className="text-emerald-400">{q.correctAnswer}</strong>
+          </p>
         </div>
       );
     }
@@ -363,11 +382,17 @@ export default function SubmissionReview({
                         </div>
 
                         <span className="text-zinc-500 hidden sm:inline">
-                          แถบสี: {q.bands} สี
+                          {assignment.assignmentType === "CUSTOM" 
+                            ? (q.type === "CHOICE" ? "แบบปรนัย" : "แบบเติมคำ") 
+                            : `แถบสี: ${q.bands} สี`}
                         </span>
 
                         <div className="ml-auto pr-3 font-semibold text-zinc-300">
-                          เฉลย: <span className="font-mono text-zinc-200">{q.formatted} ±{q.tolerance}%</span>
+                          เฉลย: <span className="font-mono text-zinc-200">
+                            {assignment.assignmentType === "CUSTOM" 
+                              ? q.correctAnswer 
+                              : `${q.formatted} ${q.tolerance ? `±${q.tolerance}%` : ''}`}
+                          </span>
                         </div>
                       </div>
                     </AccordionTrigger>
@@ -375,9 +400,14 @@ export default function SubmissionReview({
                     <AccordionContent className="px-5 pb-5 border-t border-zinc-850/60 pt-4">
                       <div className="space-y-5">
                         
-                        {/* Interactive Visual */}
+                        {/* Interactive Visual or Question Text */}
                         <div>
-                          {assignment.assignmentType === "MULTIMETER" && q.multimeterData ? (
+                          {assignment.assignmentType === "CUSTOM" ? (
+                            <div className="bg-zinc-950 border border-zinc-800 p-4 rounded-xl mb-4">
+                              <span className="text-xs font-bold text-indigo-400 block mb-1">โจทย์คำถาม:</span>
+                              <span className="text-sm font-semibold text-zinc-200">{q.text}</span>
+                            </div>
+                          ) : assignment.assignmentType === "MULTIMETER" && q.multimeterData ? (
                             <MultimeterPreview range={q.multimeterData.range} pointerValue={q.multimeterData.pointerValue} />
                           ) : (
                             <ResistorPreview colors={q.colors!} />
@@ -395,7 +425,7 @@ export default function SubmissionReview({
                           <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
                             <span className="text-[10px] text-zinc-550 block">คำตอบที่ถูกต้อง</span>
                             <span className="font-mono font-bold text-emerald-400">
-                              {q.formatted}
+                              {assignment.assignmentType === "CUSTOM" ? q.correctAnswer : q.formatted}
                             </span>
                           </div>
                         </div>

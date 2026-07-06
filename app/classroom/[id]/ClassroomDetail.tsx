@@ -46,6 +46,7 @@ import {
 import { StudentStatsModal } from "@/components/StudentStatsModal";
 import ResistorPreview from "@/components/ResistorPreview";
 import MultimeterPreview from "@/components/MultimeterPreview";
+import { CustomQuestionBuilder, CustomQuestion } from "./CustomQuestionBuilder";
 import { downloadGradebookCsv } from "@/lib/exportCsv";
 import {
   BarChart as RechartsBarChart,
@@ -90,11 +91,13 @@ export default function ClassroomDetail({
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [isExamMode, setIsExamMode] = useState(false);
   const [assignmentType, setAssignmentType] = useState("RESISTOR");
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
 
   // Assignment Edit & Delete states
   const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
   const [editAssignmentType, setEditAssignmentType] = useState("RESISTOR");
+  const [editCustomQuestions, setEditCustomQuestions] = useState<CustomQuestion[]>([]);
   const [showDeleteAssignmentModal, setShowDeleteAssignmentModal] = useState(false);
   const [deletingAssignment, setDeletingAssignment] = useState<any>(null);
 
@@ -178,6 +181,11 @@ export default function ClassroomDetail({
 
     const formData = new FormData(e.currentTarget);
     formData.set("classroomId", classroom.id);
+    
+    if (assignmentType === "CUSTOM") {
+      formData.set("customQuestions", JSON.stringify(customQuestions));
+      formData.set("questionCount", customQuestions.length.toString());
+    }
 
     startTransition(async () => {
       const res = await createAssignmentAction(null, formData);
@@ -197,6 +205,10 @@ export default function ClassroomDetail({
     if (!editingAssignment) return;
 
     const formData = new FormData(e.currentTarget);
+    if (editAssignmentType === "CUSTOM") {
+      formData.set("customQuestions", JSON.stringify(editCustomQuestions));
+      formData.set("questionCount", editCustomQuestions.length.toString());
+    }
     startTransition(async () => {
       const res = await updateAssignmentAction(editingAssignment.id, formData);
       if (res.success) {
@@ -785,6 +797,11 @@ export default function ClassroomDetail({
                                       onClick={() => {
                                         setEditingAssignment(assignment);
                                         setEditAssignmentType(assignment.assignmentType || "RESISTOR");
+                                        if (assignment.assignmentType === "CUSTOM" && assignment.customQuestions) {
+                                          setEditCustomQuestions(assignment.customQuestions as CustomQuestion[]);
+                                        } else {
+                                          setEditCustomQuestions([]);
+                                        }
                                         setShowEditAssignmentModal(true);
                                       }}
                                       title="แก้ไข"
@@ -1055,6 +1072,7 @@ export default function ClassroomDetail({
                       >
                         <option value="RESISTOR">ตัวต้านทาน</option>
                         <option value="MULTIMETER">มัลติมิเตอร์</option>
+                        <option value="CUSTOM">ข้อสอบแบบอิสระ (Custom Exam)</option>
                       </select>
                     </div>
 
@@ -1074,21 +1092,32 @@ export default function ClassroomDetail({
                       <input type="hidden" name="bandType" value="4" />
                     )}
 
-                    <div className="space-y-1.5 col-span-2 sm:col-span-1">
-                      <Label htmlFor="questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
-                      <select
-                        id="questionCount"
-                        name="questionCount"
-                        className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
-                      >
-                        <option value="5">5 ข้อ</option>
-                        <option value="10">10 ข้อ</option>
-                        <option value="15">15 ข้อ</option>
-                        <option value="20">20 ข้อ</option>
-                        <option value="30">30 ข้อ</option>
-                      </select>
-                    </div>
+                    {assignmentType !== "CUSTOM" && (
+                      <div className="space-y-1.5 col-span-2 sm:col-span-1">
+                        <Label htmlFor="questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
+                        <select
+                          id="questionCount"
+                          name="questionCount"
+                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                        >
+                          <option value="5">5 ข้อ</option>
+                          <option value="10">10 ข้อ</option>
+                          <option value="15">15 ข้อ</option>
+                          <option value="20">20 ข้อ</option>
+                          <option value="30">30 ข้อ</option>
+                        </select>
+                      </div>
+                    )}
                   </div>
+                  
+                  {assignmentType === "CUSTOM" && (
+                    <div className="border border-zinc-800 rounded-xl p-4 bg-black/20">
+                      <Label className="text-xs font-semibold text-indigo-400 uppercase flex items-center gap-2">
+                        <BookOpen className="size-4" /> สร้างข้อสอบแบบอิสระ
+                      </Label>
+                      <CustomQuestionBuilder questions={customQuestions} onChange={setCustomQuestions} />
+                    </div>
+                  )}
 
                   <div className="space-y-1.5">
                     <Label htmlFor="dueDate" className="text-xs font-semibold text-zinc-400 uppercase">กำหนดส่ง (วันและเวลา)</Label>
@@ -1489,6 +1518,7 @@ export default function ClassroomDetail({
                       >
                         <option value="RESISTOR">ตัวต้านทาน</option>
                         <option value="MULTIMETER">มัลติมิเตอร์</option>
+                        <option value="CUSTOM">ข้อสอบแบบอิสระ (Custom Exam)</option>
                       </select>
                     </div>
 
@@ -1509,23 +1539,33 @@ export default function ClassroomDetail({
                       <input type="hidden" name="bandType" value={editingAssignment.bandType || "4"} />
                     )}
 
-                    <div className="space-y-1.5 col-span-2 sm:col-span-1">
-                      <Label htmlFor="edit-questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
-                      <select
-                        id="edit-questionCount"
-                        name="questionCount"
-                        defaultValue={editingAssignment.questionCount}
-                        className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
-                      >
-                        <option value="5">5 ข้อ</option>
-                        <option value="10">10 ข้อ</option>
-                        <option value="15">15 ข้อ</option>
-                        <option value="20">20 ข้อ</option>
-                        <option value="30">30 ข้อ</option>
-                      </select>
-                    </div>
+                    {editAssignmentType !== "CUSTOM" && (
+                      <div className="space-y-1.5 col-span-2 sm:col-span-1">
+                        <Label htmlFor="edit-questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
+                        <select
+                          id="edit-questionCount"
+                          name="questionCount"
+                          defaultValue={editingAssignment.questionCount}
+                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
+                        >
+                          <option value="5">5 ข้อ</option>
+                          <option value="10">10 ข้อ</option>
+                          <option value="15">15 ข้อ</option>
+                          <option value="20">20 ข้อ</option>
+                          <option value="30">30 ข้อ</option>
+                        </select>
+                      </div>
+                    )}
                   </div>
-
+                  
+                  {editAssignmentType === "CUSTOM" && (
+                    <div className="border border-zinc-800 rounded-xl p-4 bg-black/20">
+                      <Label className="text-xs font-semibold text-indigo-400 uppercase flex items-center gap-2">
+                        <BookOpen className="size-4" /> แก้ไขข้อสอบแบบอิสระ
+                      </Label>
+                      <CustomQuestionBuilder questions={editCustomQuestions} onChange={setEditCustomQuestions} />
+                    </div>
+                  )}
                   <div className="space-y-1.5">
                     <Label htmlFor="edit-dueDate" className="text-xs font-semibold text-zinc-400 uppercase">กำหนดส่ง</Label>
                     <Input
