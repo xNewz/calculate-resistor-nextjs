@@ -12,7 +12,8 @@ import {
   CheckCircle2, 
   XCircle,
   Search,
-  Filter
+  Filter,
+  AlertTriangle
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
@@ -143,6 +144,11 @@ export default function SystemLogsPage() {
                     <CheckCircle2 className="size-4" /> สำเร็จ (Success)
                   </div>
                 </SelectItem>
+                <SelectItem value="WARNING">
+                  <div className="flex items-center gap-2 text-amber-400">
+                    <AlertTriangle className="size-4" /> แจ้งเตือน (Warning)
+                  </div>
+                </SelectItem>
                 <SelectItem value="ERROR">
                   <div className="flex items-center gap-2 text-red-400">
                     <XCircle className="size-4" /> ข้อผิดพลาด (Error)
@@ -190,6 +196,10 @@ export default function SystemLogsPage() {
                         {log.status === "SUCCESS" ? (
                           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
                             <CheckCircle2 className="size-3" /> SUCCESS
+                          </span>
+                        ) : log.status === "WARNING" ? (
+                          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                            <AlertTriangle className="size-3" /> WARNING
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded">
