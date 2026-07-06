@@ -228,7 +228,8 @@ export async function createAssignmentAction(
       },
     });
 
-    await logSystemEvent("CREATE_ASSIGNMENT", "SUCCESS", `สร้างแบบฝึกหัด "${title}" ในห้องเรียนสำเร็จ`, session.userId);
+    const examText = isExam ? " (โหมดสอบ)" : "";
+    await logSystemEvent("CREATE_ASSIGNMENT", "SUCCESS", `สร้างแบบฝึกหัด "${title}"${examText} ในห้องเรียนสำเร็จ`, session.userId);
 
     revalidatePath(`/classroom/${classroomId}`);
     return { success: true, data: assignment };
@@ -255,6 +256,9 @@ export async function submitQuizAction(
   }
 
   try {
+    let assignmentTitle = "ไม่ทราบชื่อ";
+    let isExamMode = false;
+
     // Verify assignment exists and student is enrolled in its classroom
     const assignment = await prisma.assignment.findUnique({
       where: { id: assignmentId },
@@ -262,12 +266,17 @@ export async function submitQuizAction(
     });
 
     if (!assignment) {
+      await logSystemEvent("SUBMIT_QUIZ", "ERROR", `พยายามส่งแบบฝึกหัดที่ไม่มีอยู่ในระบบ (ID: ${assignmentId})`, session.userId);
       return { success: false, error: "ไม่พบการมอบหมายแบบฝึกหัดนี้" };
     }
+    
+    assignmentTitle = assignment.title;
+    isExamMode = assignment.isExam;
 
     // Verify due date and late submission allowance
     if (assignment.dueDate && new Date() > assignment.dueDate && !assignment.allowLate) {
-      await logSystemEvent("SUBMIT_QUIZ", "ERROR", `พยายามส่งแบบฝึกหัด "${assignment.title}" ล่าช้าแต่ระบบปิดรับแล้ว`, session.userId);
+      const examText = isExamMode ? " (โหมดสอบ)" : "";
+      await logSystemEvent("SUBMIT_QUIZ", "ERROR", `พยายามส่งแบบฝึกหัด "${assignmentTitle}"${examText} ล่าช้าแต่ระบบปิดรับแล้ว`, session.userId);
       return { success: false, error: "เลยกำหนดส่งแล้วและผู้สอนปิดรับการส่งล่าช้า" };
     }
 
@@ -282,7 +291,8 @@ export async function submitQuizAction(
     });
 
     if (!enrollment) {
-      await logSystemEvent("SUBMIT_QUIZ", "ERROR", `พยายามส่งแบบฝึกหัด "${assignment.title}" โดยไม่ได้อยู่ในห้องเรียนนี้`, session.userId);
+      const examText = isExamMode ? " (โหมดสอบ)" : "";
+      await logSystemEvent("SUBMIT_QUIZ", "ERROR", `พยายามส่งแบบฝึกหัด "${assignmentTitle}"${examText} โดยไม่ได้อยู่ในห้องเรียนนี้`, session.userId);
       return { success: false, error: "คุณไม่ได้อยู่ในห้องเรียนนี้" };
     }
 
@@ -345,13 +355,18 @@ export async function submitQuizAction(
       },
     });
 
-    await logSystemEvent("SUBMIT_QUIZ", "SUCCESS", `ส่งแบบฝึกหัด "${assignment.title}" สำเร็จ ได้คะแนน ${calculatedScore}/${assignment.questionCount}`, session.userId);
+    const examText = assignment.isExam ? " (โหมดสอบ)" : "";
+    const violationText = (assignment.isExam && violationCount > 0) ? ` [พบการละเมิดกฎ ${violationCount} ครั้ง]` : "";
+    await logSystemEvent("SUBMIT_QUIZ", "SUCCESS", `ส่งแบบฝึกหัด "${assignment.title}"${examText} สำเร็จ ได้คะแนน ${calculatedScore}/${assignment.questionCount}${violationText}`, session.userId);
 
     revalidatePath(`/classroom/${assignment.classroomId}`);
     return { success: true, data: submission };
   } catch (error) {
     console.error("Submit quiz error:", error);
-    await logSystemEvent("SUBMIT_QUIZ", "ERROR", `เกิดข้อผิดพลาดในการบันทึกคำตอบแบบฝึกหัด: ${error instanceof Error ? error.message : "Unknown error"}`, session.userId);
+    // Use the title and exam mode if we managed to fetch the assignment before the error
+    // If not, they default to "ไม่ทราบชื่อ" and false.
+    const examText = isExamMode ? " (โหมดสอบ)" : "";
+    await logSystemEvent("SUBMIT_QUIZ", "ERROR", `เกิดข้อผิดพลาดในการบันทึกคำตอบแบบฝึกหัด "${assignmentTitle}"${examText}: ${error instanceof Error ? error.message : "Unknown error"}`, session.userId);
     return { success: false, error: "ไม่สามารถบันทึกคำตอบได้เนื่องจากข้อผิดพลาดของระบบ" };
   }
 }

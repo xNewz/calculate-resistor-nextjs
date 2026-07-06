@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { logSystemEvent } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,9 +35,29 @@ export async function POST(req: NextRequest) {
       }
     });
 
+    await logSystemEvent(
+      "EXAM_VIOLATION",
+      "ERROR",
+      `พบการละเมิดกฎการสอบใน "${assignment.title}" (${type}): ${details || "ไม่มีรายละเอียด"}`,
+      session.userId
+    );
+
     return NextResponse.json({ success: true, violation });
   } catch (error) {
     console.error("Failed to log exam violation:", error);
+    // Get session if it hasn't failed there
+    let userId = undefined;
+    try {
+      const session = await getSession();
+      if (session) userId = session.userId;
+    } catch(e) {}
+    
+    await logSystemEvent(
+      "EXAM_VIOLATION",
+      "ERROR",
+      `เกิดข้อผิดพลาดในการบันทึกการละเมิดกฎการสอบ: ${error instanceof Error ? error.message : "Unknown error"}`,
+      userId
+    );
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

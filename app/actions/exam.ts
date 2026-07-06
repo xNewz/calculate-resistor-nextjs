@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { logSystemEvent } from "@/lib/logger";
 
 export async function getExamViolationsAction(assignmentId: string) {
   const session = await getSession();
@@ -92,6 +93,13 @@ export async function sendExamWarningAction(
         details: message
       }
     });
+
+    await logSystemEvent(
+      "EXAM_WARNING",
+      "SUCCESS",
+      `ส่งคำเตือนการสอบใน "${assignment.title}": ${message}`,
+      session.userId
+    );
 
     return { success: true, data: violation };
   } catch (error) {
