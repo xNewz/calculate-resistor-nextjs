@@ -85,7 +85,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
   const handleImageLoad = useCallback(() => {
     setIsImageLoaded(true);
   }, []);
-  
+
   const [error, setError] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -149,7 +149,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
           const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
           if (parsed !== null) {
             const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
-            isCorrect = diff <= 0.001; 
+            isCorrect = diff <= 0.001;
           }
         } else {
           const parsed = parseTextAnswer(cleanAnswer);
@@ -240,7 +240,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
-        
+
         {/* IDLE STATE */}
         {gameState === "idle" && (
           <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden">
@@ -260,11 +260,11 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                 <div className="bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
                   <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">ประเภทแบบฝึกหัด</span>
                   <span className="text-sm font-bold text-zinc-200 mt-1">
-                    {assignment.assignmentType === "CUSTOM" 
-                      ? "ข้อสอบแบบอิสระ" 
+                    {assignment.assignmentType === "CUSTOM"
+                      ? "-"
                       : assignment.assignmentType === "MULTIMETER"
-                      ? "มัลติมิเตอร์"
-                      : `ตัวต้านทาน ${assignment.bandType} แถบสี`}
+                        ? "มัลติมิเตอร์"
+                        : `ตัวต้านทาน ${assignment.bandType} แถบสี`}
                   </span>
                 </div>
                 <div className="bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
@@ -317,7 +317,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
         {/* PLAYING STATE */}
         {gameState === "playing" && currentQuestion && (
           <div className="space-y-6">
-            
+
             {/* Header progress & timer */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
               <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -343,7 +343,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
             {/* Quiz Box */}
             <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-visible">
               <CardContent className="pt-6 space-y-8">
-                
+
                 {/* Visual Resistor */}
                 {assignment.assignmentType !== "CUSTOM" && (
                   <div className="py-4 min-h-[180px] flex flex-col justify-center relative">
@@ -369,9 +369,9 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                     <Label htmlFor="answer-input" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block text-center">
                       {assignment.assignmentType === "CUSTOM"
                         ? currentQuestion.text
-                        : assignment.assignmentType === "MULTIMETER" 
-                        ? (currentQuestion.multimeterData?.range.type === "OHM" ? "เลือกคำตอบจากเข็ม (หน่วย: โอห์ม Ω)" : "เลือกคำตอบจากเข็ม (หน่วย: โวลต์ V)")
-                        : "เลือกค่าความต้านทานที่ถูกต้อง (หน่วย: โอห์ม Ω)"}
+                        : assignment.assignmentType === "MULTIMETER"
+                          ? (currentQuestion.multimeterData?.range.type === "OHM" ? "เลือกคำตอบจากเข็ม (หน่วย: โอห์ม Ω)" : "เลือกคำตอบจากเข็ม (หน่วย: โวลต์ V)")
+                          : "เลือกค่าความต้านทานที่ถูกต้อง (หน่วย: โอห์ม Ω)"}
                     </Label>
 
                     {((assignment.questionMode === "CHOICE" && currentQuestion.choices) || (assignment.assignmentType === "CUSTOM" && currentQuestion.type === "CHOICE" && currentQuestion.options)) ? (
@@ -384,11 +384,10 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                               type="button"
                               variant="outline"
                               onClick={() => setUserAnswer(choice)}
-                              className={`min-h-14 text-sm font-mono font-bold rounded-xl border transition-all duration-200 cursor-pointer text-wrap h-auto py-2 ${
-                                isSelected 
-                                  ? "bg-indigo-500/25 border-indigo-500 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)]" 
-                                  : "bg-zinc-950/60 border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-zinc-200"
-                              }`}
+                              className={`min-h-14 text-sm font-mono font-bold rounded-xl border transition-all duration-200 cursor-pointer text-wrap h-auto py-2 ${isSelected
+                                ? "bg-indigo-500/25 border-indigo-500 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)]"
+                                : "bg-zinc-950/60 border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-zinc-200"
+                                }`}
                               disabled={isPending}
                             >
                               {choice}
