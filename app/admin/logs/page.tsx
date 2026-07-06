@@ -13,7 +13,8 @@ import {
   XCircle,
   Search,
   Filter,
-  AlertTriangle
+  AlertTriangle,
+  Download
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
@@ -66,6 +67,40 @@ export default function SystemLogsPage() {
     return matchSearch && matchStatus;
   });
 
+  const exportToCSV = () => {
+    if (filteredLogs.length === 0) return;
+    
+    const headers = ["ID", "วันที่-เวลา", "ประเภทกิจกรรม", "สถานะ", "รายละเอียด", "ชื่อผู้ดำเนินการ", "อีเมล", "สิทธิ์"];
+    
+    const rows = filteredLogs.map(log => [
+      log.id,
+      new Date(log.createdAt).toLocaleString("th-TH"),
+      log.action,
+      log.status,
+      `"${log.details.replace(/"/g, '""')}"`,
+      log.user ? `"${log.user.name.replace(/"/g, '""')}"` : "System",
+      log.user?.email || "-",
+      log.user?.role || "-"
+    ]);
+    
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(r => r.join(","))
+    ].join("\n");
+    
+    // Add BOM for UTF-8 Excel support
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `system_logs_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-zinc-500">
@@ -109,15 +144,27 @@ export default function SystemLogsPage() {
               </div>
             </div>
 
-            <Button
-              onClick={fetchLogs}
-              variant="outline"
-              size="sm"
-              className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 gap-2 h-9"
-            >
-              <RefreshCw className="size-3.5" />
-              รีเฟรชข้อมูลล่าสุด
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={exportToCSV}
+                variant="outline"
+                size="sm"
+                className="border-zinc-800 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 gap-2 h-9"
+                disabled={filteredLogs.length === 0}
+              >
+                <Download className="size-3.5" />
+                Export CSV
+              </Button>
+              <Button
+                onClick={fetchLogs}
+                variant="outline"
+                size="sm"
+                className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 gap-2 h-9"
+              >
+                <RefreshCw className="size-3.5" />
+                รีเฟรชข้อมูลล่าสุด
+              </Button>
+            </div>
           </div>
         </div>
 
