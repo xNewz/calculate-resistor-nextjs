@@ -131,7 +131,12 @@ export async function getAdminDashboardStatsAction() {
       totalAssignments,
       totalSubmissions,
       recentUsers,
-      recentClassrooms
+      recentClassrooms,
+      activeUsersToday,
+      bannedIPs,
+      recentViolations,
+      recentErrors,
+      systemSettings
     ] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { role: "ADMIN" } }),
@@ -150,6 +155,25 @@ export async function getAdminDashboardStatsAction() {
         take: 5,
         orderBy: { createdAt: "desc" },
         select: { id: true, name: true, createdAt: true, teacher: { select: { name: true } } }
+      }),
+      prisma.user.count({
+        where: { lastActive: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
+      }),
+      prisma.bannedIP.count({
+        where: { OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] }
+      }),
+      prisma.examViolation.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: { student: { select: { name: true, image: true, email: true } }, assignment: { select: { title: true } } }
+      }),
+      prisma.systemLog.findMany({
+        where: { status: "ERROR" },
+        take: 5,
+        orderBy: { createdAt: "desc" }
+      }),
+      prisma.systemSetting.findUnique({
+        where: { id: "global" }
       })
     ]);
 
@@ -167,7 +191,12 @@ export async function getAdminDashboardStatsAction() {
         assignments: totalAssignments,
         submissions: totalSubmissions,
         recentUsers,
-        recentClassrooms
+        recentClassrooms,
+        activeUsersToday,
+        bannedIPs,
+        recentViolations,
+        recentErrors,
+        systemSettings
       }
     };
   } catch (error: any) {

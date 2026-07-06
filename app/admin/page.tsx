@@ -18,7 +18,12 @@ import {
   RefreshCw,
   Clock,
   Settings,
-  ScrollText
+  ScrollText,
+  AlertTriangle,
+  XCircle,
+  Wifi,
+  Ban,
+  Megaphone
 } from "lucide-react";
 import {
   PieChart,
@@ -55,6 +60,28 @@ interface DashboardStats {
     createdAt: string | Date;
     teacher: { name: string };
   }>;
+  activeUsersToday: number;
+  bannedIPs: number;
+  recentViolations: Array<{
+    id: string;
+    type: string;
+    details: string | null;
+    createdAt: string | Date;
+    student: { name: string; image: string | null; email: string };
+    assignment: { title: string };
+  }>;
+  recentErrors: Array<{
+    id: string;
+    action: string;
+    details: string;
+    createdAt: string | Date;
+  }>;
+  systemSettings: {
+    maintenanceMode: boolean;
+    announcementEnabled: boolean;
+    announcementText: string | null;
+    announcementType: string;
+  } | null;
 }
 
 const COLORS = {
@@ -163,11 +190,53 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* System Status Banners */}
+        {(stats.systemSettings?.maintenanceMode || (stats.systemSettings?.announcementEnabled && stats.systemSettings.announcementText)) && (
+          <div className="flex flex-col gap-3">
+            {stats.systemSettings.maintenanceMode && (
+              <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-500/20 rounded-lg">
+                    <AlertTriangle className="size-5 text-red-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-red-400 font-bold text-sm">โหมดซ่อมบำรุงเปิดใช้งานอยู่ (Maintenance Mode)</h3>
+                    <p className="text-red-500/80 text-xs">ผู้ใช้งานทั่วไปจะไม่สามารถเข้าสู่ระบบหรือทำข้อสอบได้ในขณะนี้</p>
+                  </div>
+                </div>
+                <Link href="/admin/settings">
+                  <Button variant="outline" size="sm" className="border-red-500/30 text-red-400 hover:bg-red-500/20">ไปหน้าตั้งค่า</Button>
+                </Link>
+              </div>
+            )}
+            
+            {stats.systemSettings.announcementEnabled && stats.systemSettings.announcementText && (
+              <div className={`bg-blue-500/10 border border-blue-500/30 p-4 rounded-xl flex items-center justify-between`}>
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 bg-blue-500/20 rounded-lg`}>
+                    <Megaphone className="size-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-blue-400 font-bold text-sm">ประกาศระบบกำลังทำงาน (Announcement)</h3>
+                    <p className="text-blue-500/80 text-xs line-clamp-1">{stats.systemSettings.announcementText}</p>
+                  </div>
+                </div>
+                <Link href="/admin/settings">
+                  <Button variant="outline" size="sm" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/20">จัดการประกาศ</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Global Key Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-zinc-900/40 border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-700 transition-colors">
-            <div className="text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Users className="size-3.5 text-indigo-400" /> บัญชีทั้งหมด
+            <div className="text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center justify-between gap-1.5">
+              <span className="flex items-center gap-1.5"><Users className="size-3.5 text-indigo-400" /> บัญชีทั้งหมด</span>
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[9px] flex items-center gap-1">
+                <Wifi className="size-2.5" /> Active วันนี้: {stats.activeUsersToday.toLocaleString()}
+              </span>
             </div>
             <div className="text-3xl font-black text-zinc-100">
               {stats.users.total.toLocaleString()}
@@ -326,6 +395,80 @@ export default function AdminDashboardPage() {
             </Card>
 
           </div>
+        </div>
+
+        {/* Security & System Errors */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Security & Anti-Cheat */}
+          <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <CardHeader className="border-b border-zinc-800/60 pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-bold text-zinc-200 flex items-center gap-2">
+                  <ShieldAlert className="size-4 text-red-400" /> การทุจริต & ความปลอดภัย
+                </CardTitle>
+                <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded text-[9px] flex items-center gap-1 font-bold">
+                  <Ban className="size-2.5" /> Banned IPs: {stats.bannedIPs.toLocaleString()}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0 flex-1">
+              {stats.recentViolations.length === 0 ? (
+                <div className="p-6 text-center text-xs text-zinc-500">ไม่มีประวัติการทุจริตข้อสอบล่าสุด</div>
+              ) : (
+                <div className="divide-y divide-zinc-800/50">
+                  {stats.recentViolations.map((v) => (
+                    <div key={v.id} className="p-4 flex flex-col gap-2 hover:bg-zinc-800/30 transition-colors">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-2">
+                          <div className="size-6 rounded-full overflow-hidden bg-zinc-800 shrink-0">
+                            {v.student.image ? <img src={v.student.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-zinc-400">{v.student.name.charAt(0)}</div>}
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-zinc-200">{v.student.name}</p>
+                            <p className="text-[10px] text-zinc-500 truncate max-w-[120px]">{v.assignment.title}</p>
+                          </div>
+                        </div>
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
+                          {v.type}
+                        </span>
+                      </div>
+                      {v.details && <p className="text-[10px] text-zinc-400 italic">"{v.details}"</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* System Errors Snapshot */}
+          <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <CardHeader className="border-b border-zinc-800/60 pb-4">
+              <CardTitle className="text-sm font-bold text-zinc-200 flex items-center gap-2">
+                <XCircle className="size-4 text-orange-400" /> ข้อผิดพลาดระบบล่าสุด (Errors)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 flex-1">
+              {stats.recentErrors.length === 0 ? (
+                <div className="p-6 text-center text-xs text-zinc-500">ไม่พบข้อผิดพลาดระบบในขณะนี้ 🎉</div>
+              ) : (
+                <div className="divide-y divide-zinc-800/50">
+                  {stats.recentErrors.map((e) => (
+                    <div key={e.id} className="p-4 hover:bg-zinc-800/30 transition-colors flex flex-col gap-1">
+                      <div className="flex justify-between items-start gap-2">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 whitespace-nowrap">
+                          {e.action}
+                        </span>
+                        <span className="text-[9px] text-zinc-500 shrink-0">
+                          {new Date(e.createdAt).toLocaleString("th-TH")}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-red-400 mt-1 line-clamp-2">{e.details}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
       </div>
