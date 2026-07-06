@@ -32,6 +32,20 @@ import { getUserClassroomsAction } from "@/app/actions/classroom";
 import { Button } from "./ui/button";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "next-themes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent
+} from "@/components/ui/dropdown-menu";
+import { Moon, Sun, Laptop } from "lucide-react";
 
 interface UserSession {
   userId: string;
@@ -50,6 +64,7 @@ interface ClassroomShort {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<UserSession | null>(null);
   const [classrooms, setClassrooms] = useState<ClassroomShort[]>([]);
   const [loading, setLoading] = useState(true);
@@ -407,27 +422,49 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </span>
             </div>
 
-            <ThemeToggle />
-
-            <Button
-              onClick={() => setShowProfileModal(true)}
-              variant="ghost"
-              size="icon"
-              className="size-8 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/10 rounded-lg shrink-0 cursor-pointer"
-              title="แก้ไขโปรไฟล์"
-            >
-              <UserCog className="size-3.5" />
-            </Button>
-
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              size="icon"
-              className="size-8 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/10 rounded-lg shrink-0 cursor-pointer"
-              title="ออกจากระบบ"
-            >
-              <LogOut className="size-3.5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-8 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/10 rounded-lg shrink-0 cursor-pointer focus-visible:ring-0">
+                  <UserCog className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
+                <DropdownMenuLabel className="text-xs text-zinc-900 dark:text-zinc-100 font-bold">บัญชีของฉัน</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
+                <DropdownMenuItem onClick={() => setShowProfileModal(true)} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 focus:text-zinc-900 dark:focus:text-zinc-100">
+                  <UserCog className="mr-2 size-3.5" />
+                  <span>แก้ไขข้อมูลส่วนตัว</span>
+                </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 focus:text-zinc-900 dark:focus:text-zinc-100">
+                    <Sun className="mr-2 size-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
+                    <Moon className="mr-2 size-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <span>เปลี่ยนธีม</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
+                      <DropdownMenuItem onClick={() => setTheme("light")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                        <Sun className="mr-2 size-3.5" />
+                        <span>สว่าง (Light)</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme("dark")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                        <Moon className="mr-2 size-3.5" />
+                        <span>มืด (Dark)</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme("system")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                        <Laptop className="mr-2 size-3.5" />
+                        <span>ตามระบบ (System)</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+                <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
+                <DropdownMenuItem onClick={handleLogout} className="text-xs text-red-500 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-500/10 cursor-pointer">
+                  <LogOut className="mr-2 size-3.5" />
+                  <span>ออกจากระบบ</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -567,27 +604,47 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-0.5">
-                  <Button
-                    onClick={() => { setMobileMenuOpen(false); setShowProfileModal(true); }}
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 text-zinc-500 hover:text-indigo-400 rounded-lg cursor-pointer"
-                    title="แก้ไขโปรไฟล์"
-                  >
-                    <UserCog className="size-3.5" />
-                  </Button>
-
-                  <Button
-                    onClick={handleLogout}
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 hover:bg-red-500/10 hover:text-red-400 rounded-lg cursor-pointer"
-                    title="ออกจากระบบ"
-                  >
-                    <LogOut className="size-3.5" />
-                  </Button>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="size-8 text-zinc-500 hover:text-indigo-400 rounded-lg cursor-pointer focus-visible:ring-0">
+                      <Menu className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
+                    <DropdownMenuItem onClick={() => { setMobileMenuOpen(false); setShowProfileModal(true); }} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 focus:text-zinc-900 dark:focus:text-zinc-100">
+                      <UserCog className="mr-2 size-3.5" />
+                      <span>แก้ไขข้อมูลส่วนตัว</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 focus:text-zinc-900 dark:focus:text-zinc-100">
+                        <Sun className="mr-2 size-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
+                        <Moon className="mr-2 size-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                        <span>เปลี่ยนธีม</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
+                          <DropdownMenuItem onClick={() => setTheme("light")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                            <Sun className="mr-2 size-3.5" />
+                            <span>สว่าง (Light)</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setTheme("dark")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                            <Moon className="mr-2 size-3.5" />
+                            <span>มืด (Dark)</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setTheme("system")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                            <Laptop className="mr-2 size-3.5" />
+                            <span>ตามระบบ (System)</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                    <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
+                    <DropdownMenuItem onClick={handleLogout} className="text-xs text-red-500 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-500/10 cursor-pointer">
+                      <LogOut className="mr-2 size-3.5" />
+                      <span>ออกจากระบบ</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 
