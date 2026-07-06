@@ -225,7 +225,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-zinc-400">
         <Loader2 className="size-8 text-indigo-400 animate-spin mb-3" />
-        <span className="text-xs uppercase tracking-wider font-semibold">กำลังโหลดโครงสร้างระบบ...</span>
+        <span className="text-xs uppercase tracking-wider font-semibold">กำลังโหลด...</span>
       </div>
     );
   }
@@ -714,11 +714,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </Button>
                 </div>
               </form>
-              
+
               <div className="mt-6 pt-6 border-t border-zinc-800">
                 <h4 className="text-xs font-semibold text-zinc-400 uppercase mb-3">การเชื่อมต่อบัญชี</h4>
-                <GoogleLoginButton 
-                  mode="link" 
+                <GoogleLoginButton
+                  mode="link"
                   onSuccess={async () => {
                     const session = await getSessionAction();
                     setUser(session);
