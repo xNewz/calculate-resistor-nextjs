@@ -44,7 +44,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] bg-zinc-950 text-zinc-100 flex items-center justify-center p-4 overflow-hidden py-10">
+    <div className="relative min-h-[calc(100vh-4rem)] bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex items-center justify-center p-4 overflow-hidden py-10">
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
       
@@ -58,12 +58,12 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <Card className="bg-zinc-900/80 backdrop-blur-xl border-zinc-800/80 shadow-2xl rounded-2xl overflow-hidden">
+        <Card className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-zinc-200 dark:border-zinc-800/80 shadow-2xl rounded-2xl overflow-hidden">
           <CardHeader className="space-y-2 pb-6 text-center">
-            <CardTitle className="text-2xl font-bold tracking-tight text-zinc-100">
+            <CardTitle className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
               สร้างบัญชีใหม่
             </CardTitle>
-            <CardDescription className="text-sm text-zinc-400">
+            <CardDescription className="text-sm text-zinc-500 dark:text-zinc-400">
               ลงทะเบียนเพื่อเข้าใช้งานระบบเครื่องคำนวณและห้องเรียน
             </CardDescription>
           </CardHeader>
@@ -88,7 +88,7 @@ export default function RegisterPage() {
                     name="name"
                     type="text"
                     placeholder="นายเรียนดี ขยันยิ่ง"
-                    className="pl-11 h-12 rounded-xl bg-zinc-950/50 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-900 transition-all duration-200 shadow-inner"
+                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner"
                     required
                   />
                 </div>
@@ -109,7 +109,7 @@ export default function RegisterPage() {
                     name="email"
                     type="email"
                     placeholder="student@school.ac.th"
-                    className="pl-11 h-12 rounded-xl bg-zinc-950/50 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-900 transition-all duration-200 shadow-inner"
+                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner"
                     required
                   />
                 </div>
@@ -130,7 +130,7 @@ export default function RegisterPage() {
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className="pl-11 h-12 rounded-xl bg-zinc-950/50 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-900 transition-all duration-200 shadow-inner tracking-widest"
+                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner tracking-widest"
                     required
                   />
                 </div>
@@ -156,16 +156,16 @@ export default function RegisterPage() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-zinc-800" />
+                  <span className="w-full border-t border-zinc-300 dark:border-zinc-800" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-zinc-900/80 px-2 text-zinc-500 font-medium">หรือลงทะเบียนด้วย</span>
+                  <span className="bg-white dark:bg-zinc-900/80 px-2 text-zinc-500 font-medium">หรือลงทะเบียนด้วย</span>
                 </div>
               </div>
 
               <GoogleLoginButton mode="login" />
 
-              <div className="text-center pt-4 text-sm text-zinc-500 border-t border-zinc-800/80 mt-2">
+              <div className="text-center pt-4 text-sm text-zinc-500 border-t border-zinc-200 dark:border-zinc-800/80 mt-2">
                 มีบัญชีอยู่แล้ว?{" "}
                 <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium hover:underline transition-all">
                   เข้าสู่ระบบที่นี่
