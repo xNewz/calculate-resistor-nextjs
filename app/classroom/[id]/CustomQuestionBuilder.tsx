@@ -83,10 +83,9 @@ export function CustomQuestionBuilder({ questions, onChange }: Props) {
   };
 
   return (
-  return (
     <div className="space-y-4 mt-4">
       <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-        <Accordion type="multiple" className="space-y-4">
+        <Accordion className="space-y-4">
           {questions.map((q, qIndex) => (
             <AccordionItem key={q.id} value={q.id} className="bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 overflow-hidden border-b-0">
               <AccordionTrigger className="hover:no-underline py-4">

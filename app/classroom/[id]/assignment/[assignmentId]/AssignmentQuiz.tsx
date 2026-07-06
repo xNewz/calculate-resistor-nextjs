@@ -199,7 +199,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
 
   // Timer countdown
   useEffect(() => {
-    if (gameState !== "playing" || !isImageLoaded) return;
+    if (gameState !== "playing" || (!isImageLoaded && assignment.assignmentType !== "CUSTOM")) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
