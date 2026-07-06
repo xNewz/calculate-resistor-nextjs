@@ -268,7 +268,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors">
                   <Zap className="size-5 text-indigo-400" />
                 </div>
-                <span className="font-extrabold text-lg bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-zinc-100 dark:to-zinc-400 text-transparent bg-clip-text">
+                <span className="font-extrabold text-lg bg-gradient-to-r from-zinc-400 to-zinc-100 dark:from-zinc-100 dark:to-zinc-400 text-transparent bg-clip-text">
                   Practice-Lab
                 </span>
               </Link>
@@ -432,30 +432,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="relative" ref={desktopMenuRef}>
-              <Button 
+              <Button
                 onClick={(e: React.MouseEvent) => { e.stopPropagation(); setDesktopMenuOpen(!desktopMenuOpen); setMobileUserMenuOpen(false); }}
-                variant="ghost" 
-                size="icon" 
+                variant="ghost"
+                size="icon"
                 className="size-8 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/10 rounded-lg shrink-0 cursor-pointer focus-visible:ring-0"
               >
                 <UserCog className="size-4" />
               </Button>
-              
+
               {desktopMenuOpen && (
-                <div 
+                <div
                   onClick={(e: React.MouseEvent) => e.stopPropagation()}
                   className="absolute bottom-full mb-2 right-0 w-48 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl z-50 overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100"
                 >
                   <div className="px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 font-bold border-b border-zinc-200 dark:border-zinc-800">บัญชีของฉัน</div>
-                  
+
                   <button onClick={() => { setDesktopMenuOpen(false); setShowProfileModal(true); }} className="w-full flex items-center px-3 py-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
                     <UserCog className="mr-2 size-3.5" />
                     <span>แก้ไขข้อมูลส่วนตัว</span>
                   </button>
-                  
+
                   <div className="border-t border-zinc-200 dark:border-zinc-800 my-1" />
                   <div className="px-3 py-1.5 text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">เปลี่ยนธีม</div>
-                  
+
                   <button onClick={() => setTheme("light")} className="w-full flex items-center px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
                     <Sun className="mr-2 size-3.5" />
                     <span>สว่าง (Light)</span>
@@ -470,7 +470,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </button>
 
                   <div className="border-t border-zinc-200 dark:border-zinc-800 my-1" />
-                  
+
                   <button onClick={handleLogout} className="w-full flex items-center px-3 py-2.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                     <LogOut className="mr-2 size-3.5" />
                     <span>ออกจากระบบ</span>
@@ -618,17 +618,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
 
                 <div className="relative" ref={mobileUserMenuRef}>
-                  <Button 
+                  <Button
                     onClick={(e: React.MouseEvent) => { e.stopPropagation(); setMobileUserMenuOpen(!mobileUserMenuOpen); setDesktopMenuOpen(false); }}
-                    variant="ghost" 
-                    size="icon" 
+                    variant="ghost"
+                    size="icon"
                     className="size-8 text-zinc-500 hover:text-indigo-400 rounded-lg cursor-pointer focus-visible:ring-0"
                   >
                     <Menu className="size-4" />
                   </Button>
 
                   {mobileUserMenuOpen && (
-                    <div 
+                    <div
                       onClick={(e: React.MouseEvent) => e.stopPropagation()}
                       className="absolute bottom-full mb-2 right-0 w-48 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl z-50 overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100"
                     >
@@ -636,10 +636,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <UserCog className="mr-2 size-3.5" />
                         <span>แก้ไขข้อมูลส่วนตัว</span>
                       </button>
-                      
+
                       <div className="border-t border-zinc-200 dark:border-zinc-800 my-1" />
                       <div className="px-3 py-1.5 text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">เปลี่ยนธีม</div>
-                      
+
                       <button onClick={() => setTheme("light")} className="w-full flex items-center px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
                         <Sun className="mr-2 size-3.5" />
                         <span>สว่าง (Light)</span>
@@ -654,7 +654,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       </button>
 
                       <div className="border-t border-zinc-200 dark:border-zinc-800 my-1" />
-                      
+
                       <button onClick={handleLogout} className="w-full flex items-center px-3 py-2.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                         <LogOut className="mr-2 size-3.5" />
                         <span>ออกจากระบบ</span>
