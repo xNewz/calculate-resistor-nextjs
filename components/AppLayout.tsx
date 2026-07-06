@@ -268,7 +268,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors">
                   <Zap className="size-5 text-indigo-400" />
                 </div>
-                <span className="font-extrabold text-lg bg-gradient-to-r from-zinc-100 to-zinc-400 text-transparent bg-clip-text">
+                <span className="font-extrabold text-lg bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-zinc-100 dark:to-zinc-400 text-transparent bg-clip-text">
                   Practice-Lab
                 </span>
               </Link>
@@ -337,7 +337,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors">
               <Zap className="size-5 text-indigo-400 animate-pulse" />
             </div>
-            <span className="font-black text-base bg-gradient-to-r from-zinc-100 via-zinc-200 to-zinc-400 text-transparent bg-clip-text font-heading uppercase tracking-wider">
+            <span className="font-black text-base bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 dark:from-zinc-100 dark:via-zinc-200 dark:to-zinc-400 text-transparent bg-clip-text font-heading uppercase tracking-wider">
               Practice-Lab
             </span>
           </Link>
