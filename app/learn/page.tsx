@@ -88,7 +88,7 @@ export default function LearnPage() {
   const score = QUIZ.filter((q, i) => quizAnswers[i] === q.correct).length;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
       <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -98,16 +98,16 @@ export default function LearnPage() {
               <BookOpen className="size-5 text-indigo-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-zinc-100">สื่อการสอน (Learn)</h1>
+              <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100">สื่อการสอน (Learn)</h1>
               <p className="text-xs text-zinc-500 mt-0.5">เลือกหัวข้อที่คุณต้องการศึกษา</p>
             </div>
           </div>
           
-          <div className="mt-6 flex flex-wrap gap-2 p-1 bg-zinc-900/50 border border-zinc-800 rounded-xl w-fit">
+          <div className="mt-6 flex flex-wrap gap-2 p-1 bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl w-fit">
             <Link href="/learn" className="px-5 py-2.5 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-sm border border-indigo-500/30">
               ตัวต้านทาน (Resistor)
             </Link>
-            <Link href="/learn/multimeter" className="px-5 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 font-bold text-sm transition-colors">
+            <Link href="/learn/multimeter" className="px-5 py-2.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-bold text-sm transition-colors">
               มัลติมิเตอร์ (Multimeter)
             </Link>
           </div>
@@ -125,12 +125,12 @@ export default function LearnPage() {
                   "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer text-left",
                   activeLesson === l.id
                     ? "bg-indigo-500/15 border border-indigo-500/25 text-indigo-300"
-                    : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/40"
+                    : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100/40 dark:hover:bg-zinc-800/40"
                 )}
               >
                 <span className={cn(
                   "size-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0",
-                  activeLesson === l.id ? "bg-indigo-500/30 text-indigo-300" : "bg-zinc-800 text-zinc-500"
+                  activeLesson === l.id ? "bg-indigo-500/30 text-indigo-300" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
                 )}>
                   {idx + 1}
                 </span>
@@ -148,8 +148,8 @@ export default function LearnPage() {
                 className={cn(
                   "shrink-0 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all",
                   activeLesson === l.id
-                    ? "bg-indigo-600 text-white"
-                    : "bg-zinc-800/60 text-zinc-400 hover:text-zinc-200"
+                    ? "bg-indigo-600 text-zinc-900 dark:text-white"
+                    : "bg-zinc-100/60 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
                 )}
               >
                 {l.label}
@@ -163,15 +163,15 @@ export default function LearnPage() {
             {/* ── INTRO ── */}
             {activeLesson === "intro" && (
               <div className="space-y-6">
-                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6 space-y-4">
-                  <h2 className="text-xl font-black text-zinc-100 flex items-center gap-2">
+                <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4">
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                     <Zap className="size-5 text-indigo-400" /> ตัวต้านทาน (Resistor) คืออะไร?
                   </h2>
-                  <p className="text-zinc-300 text-sm leading-relaxed">
-                    <strong className="text-white">ตัวต้านทาน</strong> เป็นอุปกรณ์อิเล็กทรอนิกส์ที่ทำหน้าที่ <strong className="text-indigo-400">ต้านการไหลของกระแสไฟฟ้า</strong> มีหน่วยวัดคือ <strong className="text-amber-400">โอห์ม (Ω)</strong> พบได้ในวงจรอิเล็กทรอนิกส์ทุกประเภท
+                  <p className="text-zinc-700 dark:text-zinc-300 text-sm leading-relaxed">
+                    <strong className="text-zinc-900 dark:text-white">ตัวต้านทาน</strong> เป็นอุปกรณ์อิเล็กทรอนิกส์ที่ทำหน้าที่ <strong className="text-indigo-400">ต้านการไหลของกระแสไฟฟ้า</strong> มีหน่วยวัดคือ <strong className="text-amber-400">โอห์ม (Ω)</strong> พบได้ในวงจรอิเล็กทรอนิกส์ทุกประเภท
                   </p>
-                  <p className="text-zinc-400 text-sm leading-relaxed">
-                    เนื่องจากตัวต้านทานมีขนาดเล็กมาก จึงใช้ <strong className="text-white">รหัสสี</strong> แทนการพิมพ์ตัวเลขลงบนตัวชิ้นงาน
+                  <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
+                    เนื่องจากตัวต้านทานมีขนาดเล็กมาก จึงใช้ <strong className="text-zinc-900 dark:text-white">รหัสสี</strong> แทนการพิมพ์ตัวเลขลงบนตัวชิ้นงาน
                     โดยแต่ละแถบสีจะแทนค่าตัวเลขหรือตัวคูณที่กำหนดไว้ตามมาตรฐาน IEC 60062
                   </p>
                   <div className="flex justify-center py-4">
@@ -185,16 +185,16 @@ export default function LearnPage() {
                     { icon: <Layers className="size-4 text-amber-400" />, t: "ระบบ 4 แถบสี", d: "แถบ 1-2: ตัวเลข, แถบ 3: ตัวคูณ, แถบ 4: ค่าความผิดพลาด — ใช้กับตัวต้านทานทั่วไป" },
                     { icon: <Layers className="size-4 text-emerald-400" />, t: "ระบบ 5 แถบสี", d: "แถบ 1-3: ตัวเลข, แถบ 4: ตัวคูณ, แถบ 5: ค่าความผิดพลาด — ใช้กับตัวต้านทานความแม่นยำสูง" },
                   ].map((c) => (
-                    <div key={c.t} className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5">
-                      <div className="flex items-center gap-2 mb-2">{c.icon}<span className="font-bold text-zinc-200 text-sm">{c.t}</span></div>
-                      <p className="text-xs text-zinc-400 leading-relaxed">{c.d}</p>
+                    <div key={c.t} className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-2">{c.icon}<span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">{c.t}</span></div>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">{c.d}</p>
                     </div>
                   ))}
                 </div>
 
                 <button
                   onClick={() => setActiveLesson("colors")}
-                  className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors"
                 >
                   เริ่มเรียนบทถัดไป: ตารางสี <ChevronRight className="size-4" />
                 </button>
@@ -204,14 +204,14 @@ export default function LearnPage() {
             {/* ── COLOR TABLE ── */}
             {activeLesson === "colors" && (
               <div className="space-y-6">
-                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6">
-                  <h2 className="text-xl font-black text-zinc-100 mb-1">ตารางรหัสสีมาตรฐาน</h2>
+                <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 mb-1">ตารางรหัสสีมาตรฐาน</h2>
                   <p className="text-sm text-zinc-500 mb-6">แต่ละสีมีค่าตัวเลข ตัวคูณ และค่าความผิดพลาดที่แน่นอนตามมาตรฐาน IEC</p>
 
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-zinc-800 text-zinc-500 text-xs font-bold uppercase tracking-wider">
+                        <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 text-xs font-bold uppercase tracking-wider">
                           <th className="pb-3 text-left pl-2">สี</th>
                           <th className="pb-3 text-center">แถบสี</th>
                           <th className="pb-3 text-center">ตัวเลข</th>
@@ -221,9 +221,9 @@ export default function LearnPage() {
                       </thead>
                       <tbody className="divide-y divide-zinc-800/60">
                         {COLORS.map((c) => (
-                          <tr key={c.key} className="hover:bg-zinc-800/20 transition-colors">
+                          <tr key={c.key} className="hover:bg-zinc-100/20 dark:hover:bg-zinc-800/20 transition-colors">
                             <td className="py-2.5 pl-2">
-                              <span className="font-bold text-zinc-200">{c.th}</span>
+                              <span className="font-bold text-zinc-800 dark:text-zinc-200">{c.th}</span>
                               <span className="text-zinc-500 text-xs ml-2">{c.key}</span>
                             </td>
                             <td className="py-2.5 text-center">
@@ -234,7 +234,7 @@ export default function LearnPage() {
                                 />
                               </div>
                             </td>
-                            <td className="py-2.5 text-center font-mono font-bold text-zinc-200">
+                            <td className="py-2.5 text-center font-mono font-bold text-zinc-800 dark:text-zinc-200">
                               {c.digit !== null ? c.digit : <span className="text-zinc-600">—</span>}
                             </td>
                             <td className="py-2.5 text-center font-mono text-indigo-400 font-semibold text-xs">
@@ -252,12 +252,12 @@ export default function LearnPage() {
 
                 <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 flex gap-3">
                   <AlertCircle className="size-4 text-indigo-400 shrink-0 mt-0.5" />
-                  <p className="text-sm text-zinc-300">
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300">
                     <strong className="text-indigo-300">เคล็ดลับจำสี:</strong> B-B-ROY of Great Britain has a Very Good Wife — Black, Brown, Red, Orange, Yellow, Green, Blue, Violet(Purple), Gray, White
                   </p>
                 </div>
 
-                <button onClick={() => setActiveLesson("4band")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
+                <button onClick={() => setActiveLesson("4band")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
                   บทถัดไป: การอ่านตัวต้านทาน 4 แถบสี <ChevronRight className="size-4" />
                 </button>
               </div>
@@ -266,8 +266,8 @@ export default function LearnPage() {
             {/* ── 4-BAND ── */}
             {activeLesson === "4band" && (
               <div className="space-y-6">
-                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6 space-y-5">
-                  <h2 className="text-xl font-black text-zinc-100">การอ่านค่าตัวต้านทาน 4 แถบสี</h2>
+                <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-5">
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100">การอ่านค่าตัวต้านทาน 4 แถบสี</h2>
 
                   <div className="flex justify-center py-2">
                     <ResistorBands bands={["brown","green","red","gold"]} />
@@ -280,22 +280,22 @@ export default function LearnPage() {
                       { num: "แถบ 3", role: "ตัวคูณ", color: "text-indigo-400" },
                       { num: "แถบ 4", role: "ค่าความผิดพลาด", color: "text-emerald-400" },
                     ].map((b) => (
-                      <div key={b.num} className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-3">
+                      <div key={b.num} className="bg-white/60 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3">
                         <div className={`font-black ${b.color}`}>{b.num}</div>
                         <div className="text-zinc-500 mt-1 leading-snug">{b.role}</div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="bg-zinc-950/60 border border-zinc-800 rounded-xl p-4 space-y-2">
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">สูตรการคำนวณ</p>
-                    <div className="font-mono text-center text-base font-bold text-zinc-100">
+                  <div className="bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-2">
+                    <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">สูตรการคำนวณ</p>
+                    <div className="font-mono text-center text-base font-bold text-zinc-900 dark:text-zinc-100">
                       ค่าความต้านทาน = (แถบ 1 <span className="text-amber-400">×10</span> + แถบ 2) <span className="text-indigo-400">× ตัวคูณ</span>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-sm font-bold text-zinc-300">ตัวอย่างการอ่านค่า: น้ำตาล-เขียว-แดง-ทอง</p>
+                    <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">ตัวอย่างการอ่านค่า: น้ำตาล-เขียว-แดง-ทอง</p>
                     {[
                       { step: "1", text: "น้ำตาล = 1 (ตัวเลขหลักแรก)" },
                       { step: "2", text: "เขียว = 5 (ตัวเลขหลักสอง)" },
@@ -307,13 +307,13 @@ export default function LearnPage() {
                         <div className="size-6 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
                           {s.step}
                         </div>
-                        <span className="text-zinc-300">{s.text}</span>
+                        <span className="text-zinc-700 dark:text-zinc-300">{s.text}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <button onClick={() => setActiveLesson("5band")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
+                <button onClick={() => setActiveLesson("5band")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
                   บทถัดไป: การอ่านตัวต้านทาน 5 แถบสี <ChevronRight className="size-4" />
                 </button>
               </div>
@@ -322,8 +322,8 @@ export default function LearnPage() {
             {/* ── 5-BAND ── */}
             {activeLesson === "5band" && (
               <div className="space-y-6">
-                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6 space-y-5">
-                  <h2 className="text-xl font-black text-zinc-100">การอ่านค่าตัวต้านทาน 5 แถบสี</h2>
+                <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-5">
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100">การอ่านค่าตัวต้านทาน 5 แถบสี</h2>
 
                   <div className="flex justify-center py-2">
                     <ResistorBands bands={["red","purple","black","brown","gold"]} />
@@ -337,22 +337,22 @@ export default function LearnPage() {
                       { num: "แถบ 4", role: "ตัวคูณ", color: "text-indigo-400" },
                       { num: "แถบ 5", role: "ค่าความผิดพลาด", color: "text-emerald-400" },
                     ].map((b) => (
-                      <div key={b.num} className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-2">
+                      <div key={b.num} className="bg-white/60 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-2">
                         <div className={`font-black ${b.color} text-[10px]`}>{b.num}</div>
                         <div className="text-zinc-500 mt-0.5 text-[9px] leading-snug">{b.role}</div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="bg-zinc-950/60 border border-zinc-800 rounded-xl p-4">
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">สูตรการคำนวณ</p>
-                    <div className="font-mono text-center text-sm font-bold text-zinc-100">
+                  <div className="bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
+                    <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">สูตรการคำนวณ</p>
+                    <div className="font-mono text-center text-sm font-bold text-zinc-900 dark:text-zinc-100">
                       ค่าต้านทาน = (แถบ 1 <span className="text-amber-400">×100</span> + แถบ 2 <span className="text-amber-400">×10</span> + แถบ 3) <span className="text-indigo-400">× ตัวคูณ</span>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-sm font-bold text-zinc-300">ความแตกต่างจากระบบ 4 แถบสี</p>
+                    <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">ความแตกต่างจากระบบ 4 แถบสี</p>
                     <div className="space-y-2">
                       {[
                         "มีตัวเลขหลักที่ 3 เพิ่มขึ้น ทำให้ระบุค่าได้แม่นยำกว่า",
@@ -360,7 +360,7 @@ export default function LearnPage() {
                         "แถบค่าความผิดพลาดมักเป็น ทอง(±5%) หรือ เงิน(±10%)",
                         "แถบสีจะอยู่ชิดกันที่ด้านซ้าย เพื่อแยกออกจากแถบค่าความผิดพลาด",
                       ].map((t) => (
-                        <div key={t} className="flex items-start gap-2 text-sm text-zinc-300">
+                        <div key={t} className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                           <CheckCircle2 className="size-4 text-indigo-400 shrink-0 mt-0.5" />
                           <span>{t}</span>
                         </div>
@@ -369,7 +369,7 @@ export default function LearnPage() {
                   </div>
                 </div>
 
-                <button onClick={() => setActiveLesson("examples")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
+                <button onClick={() => setActiveLesson("examples")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
                   บทถัดไป: ตัวอย่างจริง <ChevronRight className="size-4" />
                 </button>
               </div>
@@ -378,17 +378,17 @@ export default function LearnPage() {
             {/* ── EXAMPLES ── */}
             {activeLesson === "examples" && (
               <div className="space-y-6">
-                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6">
-                  <h2 className="text-xl font-black text-zinc-100 mb-5">ตัวอย่างการอ่านค่าจริง</h2>
+                <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 mb-5">ตัวอย่างการอ่านค่าจริง</h2>
 
                   <div className="space-y-4">
                     <p className="text-sm font-bold text-indigo-300 uppercase tracking-wider">ระบบ 4 แถบสี</p>
                     {EXAMPLES_4.map((ex, i) => (
-                      <div key={i} className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div key={i} className="bg-white/60 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <ResistorBands bands={ex.bands} size="sm" />
                         <div className="flex-1">
                           <div className="text-xs text-zinc-500 mb-1">{ex.label}</div>
-                          <div className="font-mono text-xs text-zinc-400">{ex.calc}</div>
+                          <div className="font-mono text-xs text-zinc-500 dark:text-zinc-400">{ex.calc}</div>
                         </div>
                         <div className="font-black text-lg text-indigo-400 shrink-0">{ex.answer}</div>
                       </div>
@@ -398,11 +398,11 @@ export default function LearnPage() {
                   <div className="space-y-4 mt-6">
                     <p className="text-sm font-bold text-emerald-300 uppercase tracking-wider">ระบบ 5 แถบสี</p>
                     {EXAMPLES_5.map((ex, i) => (
-                      <div key={i} className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div key={i} className="bg-white/60 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <ResistorBands bands={ex.bands} size="sm" />
                         <div className="flex-1">
                           <div className="text-xs text-zinc-500 mb-1">{ex.label}</div>
-                          <div className="font-mono text-xs text-zinc-400">{ex.calc}</div>
+                          <div className="font-mono text-xs text-zinc-500 dark:text-zinc-400">{ex.calc}</div>
                         </div>
                         <div className="font-black text-lg text-emerald-400 shrink-0">{ex.answer}</div>
                       </div>
@@ -410,7 +410,7 @@ export default function LearnPage() {
                   </div>
                 </div>
 
-                <button onClick={() => setActiveLesson("quiz")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
+                <button onClick={() => setActiveLesson("quiz")} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-sm py-3 rounded-xl cursor-pointer transition-colors">
                   บทสุดท้าย: ทดสอบความเข้าใจ <ChevronRight className="size-4" />
                 </button>
               </div>
@@ -419,8 +419,8 @@ export default function LearnPage() {
             {/* ── QUIZ ── */}
             {activeLesson === "quiz" && (
               <div className="space-y-5">
-                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-6">
-                  <h2 className="text-xl font-black text-zinc-100 mb-1">ทดสอบความเข้าใจ</h2>
+                <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 mb-1">ทดสอบความเข้าใจ</h2>
                   <p className="text-zinc-500 text-sm mb-6">เลือกคำตอบที่ถูกต้องสำหรับตัวต้านทานแต่ละตัว</p>
 
                   <div className="space-y-8">
@@ -435,11 +435,11 @@ export default function LearnPage() {
                           {q.options.map((opt, oi) => {
                             const selected = quizAnswers[qi] === oi;
                             const isCorrect = oi === q.correct;
-                            let cls = "bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700";
+                            let cls = "bg-white/60 dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700";
                             if (quizSubmitted) {
                               if (isCorrect) cls = "bg-emerald-500/15 border-emerald-500/40 text-emerald-300";
                               else if (selected && !isCorrect) cls = "bg-red-500/15 border-red-500/40 text-red-300";
-                              else cls = "bg-zinc-900/40 border-zinc-800 text-zinc-500";
+                              else cls = "bg-white/40 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-zinc-500";
                             } else if (selected) {
                               cls = "bg-indigo-500/15 border-indigo-500/30 text-indigo-300";
                             }
@@ -475,8 +475,8 @@ export default function LearnPage() {
                       className={cn(
                         "mt-8 w-full py-3 rounded-xl font-bold text-sm transition-all cursor-pointer",
                         Object.keys(quizAnswers).length < QUIZ.length
-                          ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                          : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                          ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                          : "bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white"
                       )}
                     >
                       ส่งคำตอบ ({Object.keys(quizAnswers).length}/{QUIZ.length} ข้อ)
@@ -489,8 +489,8 @@ export default function LearnPage() {
                       <div className="text-4xl font-black mb-2">
                         {score === QUIZ.length ? "🎉" : score >= 2 ? "👍" : "📚"}
                       </div>
-                      <p className="font-black text-xl text-zinc-100">{score} / {QUIZ.length} คะแนน</p>
-                      <p className="text-zinc-400 text-sm mt-1">
+                      <p className="font-black text-xl text-zinc-900 dark:text-zinc-100">{score} / {QUIZ.length} คะแนน</p>
+                      <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
                         {score === QUIZ.length
                           ? "เยี่ยมมาก! คุณเข้าใจการอ่านรหัสสีตัวต้านทานแล้ว"
                           : score >= 2
@@ -500,7 +500,7 @@ export default function LearnPage() {
                       <Button
                         onClick={() => { setQuizAnswers({}); setQuizSubmitted(false); }}
                         variant="outline"
-                        className="mt-4 border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer text-sm"
+                        className="mt-4 border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer text-sm"
                       >
                         ทำใหม่อีกครั้ง
                       </Button>

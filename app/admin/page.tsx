@@ -137,7 +137,7 @@ export default function AdminDashboardPage() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-zinc-500">
         <ShieldAlert className="size-12 text-red-500/50" />
         <p className="text-sm text-red-400">{error}</p>
-        <Button onClick={() => fetchStats(false)} variant="outline" size="sm" className="border-zinc-800 hover:bg-zinc-800">ลองใหม่</Button>
+        <Button onClick={() => fetchStats(false)} variant="outline" size="sm" className="border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800">ลองใหม่</Button>
       </div>
     );
   }
@@ -149,7 +149,7 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
 
         {/* Header */}
@@ -160,19 +160,19 @@ export default function AdminDashboardPage() {
                 <Activity className="size-6 text-indigo-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-zinc-100 tracking-tight">ภาพรวมระบบ (Admin Dashboard)</h1>
+                <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">ภาพรวมระบบ (Admin Dashboard)</h1>
                 <p className="text-xs text-zinc-500 mt-0.5">สรุปข้อมูลสถิติทั้งหมดภายในแพลตฟอร์ม</p>
               </div>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1 h-9">
-              <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Auto-Refresh:</span>
+            <div className="flex items-center gap-1.5 bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg px-2 py-1 h-9">
+              <span className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Auto-Refresh:</span>
               <Select value={refreshInterval.toString()} onValueChange={(val) => setRefreshInterval(Number(val))}>
-                <SelectTrigger className="h-6 w-24 border-none bg-transparent shadow-none text-xs text-zinc-200 focus:ring-0 p-0 pr-1">
+                <SelectTrigger className="h-6 w-24 border-none bg-transparent shadow-none text-xs text-zinc-800 dark:text-zinc-200 focus:ring-0 p-0 pr-1">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200 text-xs">
+                <SelectContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs">
                   <SelectItem value="0">ปิด (Off)</SelectItem>
                   <SelectItem value="5">ทุก 5 วินาที</SelectItem>
                   <SelectItem value="15">ทุก 15 วินาที</SelectItem>
@@ -186,13 +186,13 @@ export default function AdminDashboardPage() {
               onClick={() => fetchStats(false)}
               variant="ghost"
               size="icon"
-              className="text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer h-9 w-9"
+              className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer h-9 w-9"
               title="รีเฟรชข้อมูล"
             >
               <RefreshCw className="size-4" />
             </Button>
             <Link href="/admin/logs">
-              <Button variant="outline" className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
+              <Button variant="outline" className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
                 <ScrollText className="size-4 text-blue-400" />
                 บันทึกระบบ
               </Button>
@@ -204,13 +204,13 @@ export default function AdminDashboardPage() {
               </Button>
             </Link>
             <Link href="/admin/settings">
-              <Button variant="outline" className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
+              <Button variant="outline" className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
                 <Settings className="size-4 text-orange-400" />
                 ตั้งค่าระบบ
               </Button>
             </Link>
             <Link href="/admin/users">
-              <Button className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
+              <Button className="bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
                 <Users className="size-4 text-emerald-400" />
                 จัดการผู้ใช้
               </Button>
@@ -259,41 +259,41 @@ export default function AdminDashboardPage() {
 
         {/* Global Key Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-zinc-900/40 border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-700 transition-colors">
-            <div className="text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center justify-between gap-1.5">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+            <div className="text-zinc-500 dark:text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center justify-between gap-1.5">
               <span className="flex items-center gap-1.5"><Users className="size-3.5 text-indigo-400" /> บัญชีทั้งหมด</span>
               <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[9px] flex items-center gap-1">
                 <Wifi className="size-2.5" /> Active วันนี้: {stats.activeUsersToday.toLocaleString()}
               </span>
             </div>
-            <div className="text-3xl font-black text-zinc-100">
+            <div className="text-3xl font-black text-zinc-900 dark:text-zinc-100">
               {stats.users.total.toLocaleString()}
             </div>
           </Card>
 
-          <Card className="bg-zinc-900/40 border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-700 transition-colors">
-            <div className="text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+            <div className="text-zinc-500 dark:text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <FolderClosed className="size-3.5 text-emerald-400" /> ห้องเรียนทั้งหมด
             </div>
-            <div className="text-3xl font-black text-zinc-100">
+            <div className="text-3xl font-black text-zinc-900 dark:text-zinc-100">
               {stats.classrooms.toLocaleString()}
             </div>
           </Card>
 
-          <Card className="bg-zinc-900/40 border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-700 transition-colors">
-            <div className="text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+            <div className="text-zinc-500 dark:text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <BookOpen className="size-3.5 text-yellow-400" /> งานที่ถูกมอบหมาย
             </div>
-            <div className="text-3xl font-black text-zinc-100">
+            <div className="text-3xl font-black text-zinc-900 dark:text-zinc-100">
               {stats.assignments.toLocaleString()}
             </div>
           </Card>
 
-          <Card className="bg-zinc-900/40 border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-700 transition-colors">
-            <div className="text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 p-4 flex flex-col justify-center rounded-xl shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+            <div className="text-zinc-500 dark:text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5 text-blue-400" /> การส่งงาน
             </div>
-            <div className="text-3xl font-black text-zinc-100">
+            <div className="text-3xl font-black text-zinc-900 dark:text-zinc-100">
               {stats.submissions.toLocaleString()}
             </div>
           </Card>
@@ -303,10 +303,10 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           {/* User Roles Pie Chart */}
-          <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden flex flex-col shadow-sm">
-            <CardHeader className="border-b border-zinc-800/60 pb-4">
-              <CardTitle className="text-sm font-bold text-zinc-200">สัดส่วนผู้ใช้งาน</CardTitle>
-              <CardDescription className="text-xs text-zinc-400">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 rounded-xl overflow-hidden flex flex-col shadow-sm">
+            <CardHeader className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
+              <CardTitle className="text-sm font-bold text-zinc-800 dark:text-zinc-200">สัดส่วนผู้ใช้งาน</CardTitle>
+              <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                 แบ่งตามประเภทบัญชีของระบบ
               </CardDescription>
             </CardHeader>
@@ -346,9 +346,9 @@ export default function AdminDashboardPage() {
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
 
             {/* Newest Users */}
-            <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
-              <CardHeader className="border-b border-zinc-800/60 pb-4">
-                <CardTitle className="text-sm font-bold text-zinc-200 flex items-center gap-2">
+            <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
+              <CardHeader className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
+                <CardTitle className="text-sm font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                   <UserIcon className="size-4 text-emerald-400" /> สมาชิกล่าสุด
                 </CardTitle>
               </CardHeader>
@@ -358,7 +358,7 @@ export default function AdminDashboardPage() {
                 ) : (
                   <div className="divide-y divide-zinc-800/50">
                     {stats.recentUsers.map((u) => (
-                      <div key={u.id} className="p-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors">
+                      <div key={u.id} className="p-4 flex items-center justify-between hover:bg-zinc-100/30 dark:hover:bg-zinc-800/30 transition-colors">
                         <div className="flex items-center gap-3 overflow-hidden">
                           <div className={`size-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden ${u.role === "ADMIN" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
                               u.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" :
@@ -367,7 +367,7 @@ export default function AdminDashboardPage() {
                             {u.image ? <img src={u.image} alt={u.name} className="w-full h-full object-cover" /> : u.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="truncate">
-                            <div className="font-semibold text-zinc-200 text-xs truncate">{u.name}</div>
+                            <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs truncate">{u.name}</div>
                             <div className="text-[10px] text-zinc-500 truncate">{u.email}</div>
                           </div>
                         </div>
@@ -391,9 +391,9 @@ export default function AdminDashboardPage() {
             </Card>
 
             {/* Newest Classrooms */}
-            <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
-              <CardHeader className="border-b border-zinc-800/60 pb-4">
-                <CardTitle className="text-sm font-bold text-zinc-200 flex items-center gap-2">
+            <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
+              <CardHeader className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
+                <CardTitle className="text-sm font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                   <FolderClosed className="size-4 text-indigo-400" /> ห้องเรียนล่าสุด
                 </CardTitle>
               </CardHeader>
@@ -403,15 +403,15 @@ export default function AdminDashboardPage() {
                 ) : (
                   <div className="divide-y divide-zinc-800/50">
                     {stats.recentClassrooms.map((c) => (
-                      <div key={c.id} className="p-4 flex flex-col gap-1.5 hover:bg-zinc-800/30 transition-colors">
+                      <div key={c.id} className="p-4 flex flex-col gap-1.5 hover:bg-zinc-100/30 dark:hover:bg-zinc-800/30 transition-colors">
                         <div className="flex items-start justify-between gap-2">
-                          <div className="font-semibold text-zinc-200 text-sm truncate">{c.name}</div>
+                          <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm truncate">{c.name}</div>
                           <div className="flex items-center gap-1 text-[9px] text-zinc-500 shrink-0">
                             <Clock className="size-2.5" />
                             {new Date(c.createdAt).toLocaleDateString("th-TH")}
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                           <GraduationCap className="size-3.5 text-zinc-500" />
                           <span className="truncate">สอนโดย {c.teacher.name}</span>
                         </div>
@@ -428,10 +428,10 @@ export default function AdminDashboardPage() {
         {/* Security & System Errors */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Security & Anti-Cheat */}
-          <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
-            <CardHeader className="border-b border-zinc-800/60 pb-4">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <CardHeader className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-bold text-zinc-200 flex items-center gap-2">
+                <CardTitle className="text-sm font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                   <ShieldAlert className="size-4 text-red-400" /> การทุจริต & ความปลอดภัย
                 </CardTitle>
                 <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded text-[9px] flex items-center gap-1 font-bold">
@@ -445,14 +445,14 @@ export default function AdminDashboardPage() {
               ) : (
                 <div className="divide-y divide-zinc-800/50">
                   {stats.recentViolations.map((v) => (
-                    <div key={v.id} className="p-4 flex flex-col gap-2 hover:bg-zinc-800/30 transition-colors">
+                    <div key={v.id} className="p-4 flex flex-col gap-2 hover:bg-zinc-100/30 dark:hover:bg-zinc-800/30 transition-colors">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
-                          <div className="size-6 rounded-full overflow-hidden bg-zinc-800 shrink-0">
-                            {v.student.image ? <img src={v.student.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-zinc-400">{v.student.name.charAt(0)}</div>}
+                          <div className="size-6 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0">
+                            {v.student.image ? <img src={v.student.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{v.student.name.charAt(0)}</div>}
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-zinc-200">{v.student.name}</p>
+                            <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{v.student.name}</p>
                             <p className="text-[10px] text-zinc-500 truncate max-w-[120px]">{v.assignment.title}</p>
                           </div>
                         </div>
@@ -460,7 +460,7 @@ export default function AdminDashboardPage() {
                           {v.type}
                         </span>
                       </div>
-                      {v.details && <p className="text-[10px] text-zinc-400 italic">"{v.details}"</p>}
+                      {v.details && <p className="text-[10px] text-zinc-500 dark:text-zinc-400 italic">"{v.details}"</p>}
                     </div>
                   ))}
                 </div>
@@ -469,9 +469,9 @@ export default function AdminDashboardPage() {
           </Card>
 
           {/* System Errors Snapshot */}
-          <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
-            <CardHeader className="border-b border-zinc-800/60 pb-4">
-              <CardTitle className="text-sm font-bold text-zinc-200 flex items-center gap-2">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <CardHeader className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
+              <CardTitle className="text-sm font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                 <XCircle className="size-4 text-orange-400" /> ข้อผิดพลาดระบบล่าสุด (Errors)
               </CardTitle>
             </CardHeader>
@@ -481,9 +481,9 @@ export default function AdminDashboardPage() {
               ) : (
                 <div className="divide-y divide-zinc-800/50">
                   {stats.recentErrors.map((e) => (
-                    <div key={e.id} className="p-4 hover:bg-zinc-800/30 transition-colors flex flex-col gap-1">
+                    <div key={e.id} className="p-4 hover:bg-zinc-100/30 dark:hover:bg-zinc-800/30 transition-colors flex flex-col gap-1">
                       <div className="flex justify-between items-start gap-2">
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 whitespace-nowrap">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 whitespace-nowrap">
                           {e.action}
                         </span>
                         <span className="text-[9px] text-zinc-500 shrink-0">

@@ -65,25 +65,25 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
   };
 
   return (
-    <div className="min-h-screen bg-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         
         {/* Header */}
-        <div className="flex items-center justify-between bg-zinc-900/60 p-6 rounded-2xl border border-zinc-850">
+        <div className="flex items-center justify-between bg-white/60 dark:bg-zinc-900/60 p-6 rounded-2xl border border-zinc-850">
           <div className="space-y-1">
-            <Link href={`/classroom/${assignment.classroomId}`} className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 mb-2 w-fit">
+            <Link href={`/classroom/${assignment.classroomId}`} className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 mb-2 w-fit">
               <ArrowLeft className="size-3" /> กลับหน้าห้องเรียน
             </Link>
-            <h1 className="text-2xl font-black text-zinc-100 flex items-center gap-2">
+            <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
               <Activity className="size-6 text-red-500 animate-pulse" />
               Live Monitor: {assignment.title}
             </h1>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
               หน้าต่างสำหรับผู้สอนเพื่อตรวจสอบการทุจริตแบบเรียลไทม์
             </p>
           </div>
           {isExamEnded ? (
-            <Badge variant="outline" className="border-zinc-500/30 text-zinc-400 bg-zinc-500/10 px-3 py-1 font-bold">
+            <Badge variant="outline" className="border-zinc-500/30 text-zinc-500 dark:text-zinc-400 bg-zinc-500/10 px-3 py-1 font-bold">
               การสอบสิ้นสุดแล้ว
             </Badge>
           ) : (
@@ -96,9 +96,9 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Violations List */}
-          <Card className="bg-zinc-900/40 border-zinc-850 h-[500px] flex flex-col">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 h-[500px] flex flex-col">
           <CardHeader className="border-b border-zinc-850 pb-4">
-            <CardTitle className="text-sm font-bold text-zinc-300 flex items-center justify-between">
+            <CardTitle className="text-sm font-bold text-zinc-700 dark:text-zinc-300 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="size-4 text-orange-400" />
                 บันทึกการละเมิดกฎ (Real-time Logs)
@@ -130,7 +130,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                   return (
                     <div 
                       key={v.id} 
-                      className={`flex items-start gap-4 p-4 rounded-xl bg-zinc-950/60 border ${
+                      className={`flex items-start gap-4 p-4 rounded-xl bg-zinc-50/60 dark:bg-zinc-950/60 border ${
                         isWarning ? "border-amber-500/20" : "border-red-900/30"
                       }`}
                     >
@@ -141,14 +141,14 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                       </div>
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-zinc-200 text-sm">
+                          <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                             {isWarning ? `ส่งคำเตือนไปยัง: ${v.student.name}` : v.student.name}
                           </span>
                           <span className="text-[10px] text-zinc-500 font-mono">
                             {new Date(v.createdAt).toLocaleTimeString("th-TH")}
                           </span>
                         </div>
-                        <p className={`text-xs ${isWarning ? "text-amber-400 font-bold" : "text-zinc-400"}`}>
+                        <p className={`text-xs ${isWarning ? "text-amber-400 font-bold" : "text-zinc-500 dark:text-zinc-400"}`}>
                           {isWarning && "ส่งคำเตือนจากผู้สอน"}
                           {v.type === "TAB_SWITCH" && "สลับหน้าจอ (พับหน้าจอ / เปิดแท็บอื่น)"}
                           {v.type === "FULLSCREEN_EXIT" && "ออกจากโหมดเต็มจอ"}
@@ -158,7 +158,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                           {v.type === "PAGE_RELOAD" && "พยายามรีโหลดหน้าจอเว็บเพื่อเลี่ยงกลไกควบคุม"}
                         </p>
                         {v.details && (
-                          <p className={`text-[10px] mt-1 ${isWarning ? "text-zinc-300 italic font-bold" : "text-zinc-500"}`}>
+                          <p className={`text-[10px] mt-1 ${isWarning ? "text-zinc-700 dark:text-zinc-300 italic font-bold" : "text-zinc-500"}`}>
                             {isWarning ? `"${v.details}"` : v.details}
                           </p>
                         )}
@@ -183,9 +183,9 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
         </Card>
 
           {/* Submissions List */}
-          <Card className="bg-zinc-900/40 border-zinc-850 h-[500px] flex flex-col">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 h-[500px] flex flex-col">
             <CardHeader className="border-b border-zinc-850 pb-4">
-              <CardTitle className="text-sm font-bold text-zinc-300 flex items-center justify-between">
+              <CardTitle className="text-sm font-bold text-zinc-700 dark:text-zinc-300 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="size-4 text-emerald-400" />
                   ส่งข้อสอบแล้ว (Live Submissions)
@@ -202,11 +202,11 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                 </div>
               ) : submissions.length === 0 ? (
                 <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
-                  <div className="size-12 rounded-full bg-zinc-800 flex items-center justify-center">
+                  <div className="size-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                     <CheckCircle2 className="size-6 text-zinc-600" />
                   </div>
                   <div>
-                    <p className="text-zinc-400 font-semibold text-sm">ยังไม่มีผู้ส่งข้อสอบ</p>
+                    <p className="text-zinc-500 dark:text-zinc-400 font-semibold text-sm">ยังไม่มีผู้ส่งข้อสอบ</p>
                     <p className="text-zinc-500 text-xs mt-1">กำลังรอผู้เรียนทำข้อสอบ...</p>
                   </div>
                 </div>
@@ -216,20 +216,20 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                     const pct = Math.round((sub.score / assignment.questionCount) * 100);
                     const isPassed = pct >= 50;
                     return (
-                      <div key={sub.id} className="flex items-start gap-4 p-4 rounded-xl bg-zinc-950/60 border border-zinc-850 hover:border-zinc-800 transition-colors">
+                      <div key={sub.id} className="flex items-start gap-4 p-4 rounded-xl bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-850 hover:border-zinc-200 dark:hover:border-zinc-800 transition-colors">
                         <div className={`size-10 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold ${isPassed ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500"}`}>
                           {sub.score}
                         </div>
                         <div className="flex-1 space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-zinc-200 text-sm">{sub.student.name}</span>
+                            <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">{sub.student.name}</span>
                             <span className="text-[10px] text-zinc-500 font-mono">
                               {new Date(sub.createdAt).toLocaleTimeString("th-TH")}
                             </span>
                           </div>
                           
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-zinc-400">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
                               คะแนน {sub.score} / {assignment.questionCount}
                             </span>
                             {sub.isAutoSubmitted && (
@@ -256,9 +256,9 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
 
         {/* WARNING DIALOG MODAL */}
         {warningStudent && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-            <Card className="w-full max-w-md bg-zinc-950 border-zinc-800 shadow-2xl rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-zinc-850 pb-4 bg-zinc-900/40">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/85 dark:bg-black/85 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-zinc-850 pb-4 bg-white/40 dark:bg-zinc-900/40">
                 <CardTitle className="text-sm font-bold text-orange-400 flex items-center gap-2">
                   <Bell className="size-4 animate-bounce" />
                   <span>ส่งคำเตือนไปยัง {warningStudent.name}</span>
@@ -273,7 +273,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                     </div>
                   )}
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                       ข้อความคำเตือน (คำแจ้งเตือนจะแสดงบนหน้าจอของผู้เรียนทันที)
                     </label>
                     <textarea
@@ -282,7 +282,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                       value={warningMessage}
                       onChange={(e) => setWarningMessage(e.target.value)}
                       placeholder="เช่น โปรดทำข้อสอบอย่างสุจริต ห้ามแอบสลับหน้าจอไปเปิดแท็บอื่นเด็ดขาด"
-                      className="w-full p-3 text-xs rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:ring-1 focus:ring-orange-500/50 placeholder:text-zinc-650 focus:border-orange-500/30 transition-all font-semibold"
+                      className="w-full p-3 text-xs rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-orange-500/50 placeholder:text-zinc-650 focus:border-orange-500/30 transition-all font-semibold"
                     />
                   </div>
                   <div className="flex items-center justify-end gap-2 pt-2">
@@ -294,14 +294,14 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                         setWarningMessage("");
                         setModalError(null);
                       }}
-                      className="h-9 px-4 text-xs hover:bg-zinc-900 text-zinc-450 font-bold rounded-lg cursor-pointer"
+                      className="h-9 px-4 text-xs hover:bg-white dark:hover:bg-zinc-900 text-zinc-500 dark:text-zinc-450 font-bold rounded-lg cursor-pointer"
                     >
                       ยกเลิก
                     </Button>
                     <Button
                       type="submit"
                       disabled={isSending || !warningMessage.trim()}
-                      className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-lg cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                      className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-zinc-900 dark:text-white font-bold text-xs rounded-lg cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50"
                     >
                       {isSending ? (
                         <>

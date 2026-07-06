@@ -60,7 +60,7 @@ export default function MultimeterPreview({ range, pointerValue, onLoad }: Multi
           />
 
           {/* Needle pivot */}
-          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-10 h-10 bg-zinc-900 rounded-full shadow-lg z-10 flex items-center justify-center">
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-10 h-10 bg-white dark:bg-zinc-900 rounded-full shadow-lg z-10 flex items-center justify-center">
             <div className="w-2.5 h-2.5 bg-zinc-400 rounded-full" />
           </div>
 
@@ -75,8 +75,8 @@ export default function MultimeterPreview({ range, pointerValue, onLoad }: Multi
         </div>
 
         {/* Selected Range Display */}
-        <div className="mt-4 w-full bg-zinc-800 px-4 py-2 rounded-xl text-center border-2 border-zinc-700 shadow-md">
-          <div className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-0.5">ย่านวัด</div>
+        <div className="mt-4 w-full bg-zinc-100 dark:bg-zinc-800 px-4 py-2 rounded-xl text-center border-2 border-zinc-300 dark:border-zinc-700 shadow-md">
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest mb-0.5">ย่านวัด</div>
           <div className={cn(
             "text-xl font-black font-mono",
             range.type === "OHM" ? "text-blue-400" : "text-emerald-400"

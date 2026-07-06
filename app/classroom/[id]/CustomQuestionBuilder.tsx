@@ -87,29 +87,29 @@ export function CustomQuestionBuilder({ questions, onChange }: Props) {
       <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
         <Accordion className="space-y-4">
           {questions.map((q, qIndex) => (
-            <AccordionItem key={q.id} value={q.id} className="bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 overflow-hidden border-b-0">
+            <AccordionItem key={q.id} value={q.id} className="bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 overflow-hidden border-b-0">
               <AccordionTrigger className="hover:no-underline py-4">
                 <div className="flex items-center gap-3 text-left w-full pr-4">
-                  <span className="shrink-0 text-sm font-bold text-zinc-500 bg-zinc-950 px-2.5 py-1 rounded-md border border-zinc-800">
+                  <span className="shrink-0 text-sm font-bold text-zinc-500 bg-zinc-50 dark:bg-zinc-950 px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-800">
                     ข้อ {qIndex + 1}
                   </span>
-                  <span className="text-sm text-zinc-200 line-clamp-1 flex-1">
+                  <span className="text-sm text-zinc-800 dark:text-zinc-200 line-clamp-1 flex-1">
                     {q.text || "คำถามใหม่"}
                   </span>
-                  <Badge variant="outline" className="text-[10px] ml-auto shrink-0 bg-zinc-950 text-zinc-400">
+                  <Badge variant="outline" className="text-[10px] ml-auto shrink-0 bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400">
                     {q.type === "CHOICE" ? "ปรนัย" : "อัตนัย"}
                   </Badge>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="pt-2 pb-6 space-y-5 border-t border-zinc-800/50 mt-2">
+              <AccordionContent className="pt-2 pb-6 space-y-5 border-t border-zinc-200/50 dark:border-zinc-800/50 mt-2">
                 <div className="flex items-start justify-between gap-4 mt-4">
                   <div className="flex-1 space-y-1.5">
-                    <Label className="text-xs text-zinc-400">คำถาม</Label>
+                    <Label className="text-xs text-zinc-500 dark:text-zinc-400">คำถาม</Label>
                     <Input
                       value={q.text}
                       onChange={(e) => updateQuestion(qIndex, { text: e.target.value })}
                       placeholder="ระบุคำถาม..."
-                      className="w-full bg-zinc-950 border-zinc-800 text-sm"
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-sm"
                       required
                     />
                   </div>
@@ -127,11 +127,11 @@ export function CustomQuestionBuilder({ questions, onChange }: Props) {
 
                 <div className="flex items-center gap-4">
                   <div className="space-y-1.5 flex-1">
-                    <Label className="text-xs text-zinc-400">ประเภทคำถาม</Label>
+                    <Label className="text-xs text-zinc-500 dark:text-zinc-400">ประเภทคำถาม</Label>
                     <select
                       value={q.type}
                       onChange={(e) => updateQuestion(qIndex, { type: e.target.value as CustomQuestionType })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100"
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
                     >
                       <option value="CHOICE">ปรนัย (มีตัวเลือก)</option>
                       <option value="TEXT">อัตนัย (เติมคำ)</option>
@@ -141,7 +141,7 @@ export function CustomQuestionBuilder({ questions, onChange }: Props) {
 
                 {q.type === "CHOICE" ? (
                   <div className="space-y-3">
-                    <Label className="text-xs text-zinc-400">ตัวเลือก (คลิกที่ปุ่มวงกลมเพื่อเลือกข้อที่ถูก)</Label>
+                    <Label className="text-xs text-zinc-500 dark:text-zinc-400">ตัวเลือก (คลิกที่ปุ่มวงกลมเพื่อเลือกข้อที่ถูก)</Label>
                     {q.options.map((opt, optIndex) => (
                       <div key={optIndex} className="flex items-center gap-2">
                         <input
@@ -155,7 +155,7 @@ export function CustomQuestionBuilder({ questions, onChange }: Props) {
                           value={opt}
                           onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
                           placeholder={`ตัวเลือก ${optIndex + 1}`}
-                          className="flex-1 bg-zinc-950/50 border-zinc-800 h-9"
+                          className="flex-1 bg-zinc-50/50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 h-9"
                           required
                         />
                         {q.options.length > 2 && (
@@ -177,7 +177,7 @@ export function CustomQuestionBuilder({ questions, onChange }: Props) {
                         variant="outline"
                         size="sm"
                         onClick={() => addOption(qIndex)}
-                        className="text-xs border-dashed border-zinc-700 text-zinc-400 mt-2"
+                        className="text-xs border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 mt-2"
                       >
                         <Plus className="size-3 mr-1" /> เพิ่มตัวเลือก
                       </Button>
@@ -185,12 +185,12 @@ export function CustomQuestionBuilder({ questions, onChange }: Props) {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Label className="text-xs text-zinc-400">คำตอบที่ถูกต้อง (ผู้เรียนต้องพิมพ์ให้ตรงตามนี้)</Label>
+                    <Label className="text-xs text-zinc-500 dark:text-zinc-400">คำตอบที่ถูกต้อง (ผู้เรียนต้องพิมพ์ให้ตรงตามนี้)</Label>
                     <Input
                       value={q.correctAnswer}
                       onChange={(e) => updateQuestion(qIndex, { correctAnswer: e.target.value })}
                       placeholder="ระบุคำตอบ..."
-                      className="bg-zinc-950 border-zinc-800"
+                      className="bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
                       required
                     />
                   </div>

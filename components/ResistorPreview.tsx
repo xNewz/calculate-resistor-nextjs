@@ -51,7 +51,7 @@ export default function ResistorPreview({ colors, onLoad }: { colors: string[], 
   return (
     <div className="relative mx-auto w-full max-w-[800px] select-none">
       <div
-        className="relative w-full overflow-hidden rounded-2xl bg-zinc-900/50 backdrop-blur-sm p-4 border border-zinc-800 shadow-2xl transition-all duration-300"
+        className="relative w-full overflow-hidden rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm p-4 border border-zinc-200 dark:border-zinc-800 shadow-2xl transition-all duration-300"
         style={{ aspectRatio: "800/180" }}
       >
         <div

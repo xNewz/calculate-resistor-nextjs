@@ -364,30 +364,30 @@ export default function ClassroomDetail({
   }, [analyzingAssignment, submissions]);
 
   return (
-    <div className="min-h-screen lg:min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen lg:min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-900 dark:text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
 
         {/* Breadcrumbs */}
         <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-          <Link href="/classroom" className="hover:text-zinc-300">ห้องเรียน</Link>
+          <Link href="/classroom" className="hover:text-zinc-700 dark:hover:text-zinc-300">ห้องเรียน</Link>
           <ChevronRight className="size-3" />
-          <span className="text-zinc-300 truncate max-w-[200px]">{classroom.name}</span>
+          <span className="text-zinc-700 dark:text-zinc-300 truncate max-w-[200px]">{classroom.name}</span>
         </div>
 
         {/* Classroom Header Banner */}
-        <div className="relative bg-zinc-900/60 p-6 sm:p-8 rounded-2xl border border-zinc-850 backdrop-blur-md">
+        <div className="relative bg-white/60 dark:bg-zinc-900/60 p-6 sm:p-8 rounded-2xl border border-zinc-850 backdrop-blur-md">
           <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 size-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight font-heading">
+              <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight font-heading">
                 {classroom.name}
               </h1>
-              <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
+              <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-xl">
                 {classroom.description || "ไม่มีคำอธิบายห้องเรียน"}
               </p>
               <div className="flex items-center gap-1.5 text-xs text-zinc-500 pt-1">
-                <span>ผู้สอน: <span className="font-semibold text-zinc-300">{classroom.teacher.name}</span></span>
+                <span>ผู้สอน: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{classroom.teacher.name}</span></span>
                 <span>•</span>
                 <span>รหัสเข้าชั้นเรียน: <span className="font-mono font-bold text-indigo-400">{classroom.code}</span></span>
               </div>
@@ -399,7 +399,7 @@ export default function ClassroomDetail({
                 onClick={handleCopyCode}
                 variant="outline"
                 size="sm"
-                className="h-9 px-3 border-zinc-850 bg-zinc-900/50 text-zinc-300 hover:bg-zinc-800 text-xs font-semibold rounded-lg gap-1.5 cursor-pointer"
+                className="h-9 px-3 border-zinc-850 bg-white/50 dark:bg-zinc-900/50 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold rounded-lg gap-1.5 cursor-pointer"
               >
                 {copiedCode ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
                 <span>คัดลอกรหัส</span>
@@ -409,7 +409,7 @@ export default function ClassroomDetail({
                 onClick={() => setShowQrModal(true)}
                 variant="outline"
                 size="sm"
-                className="h-9 px-3 border-zinc-850 bg-zinc-900/50 text-zinc-300 hover:bg-zinc-800 text-xs font-semibold rounded-lg gap-1.5 cursor-pointer"
+                className="h-9 px-3 border-zinc-850 bg-white/50 dark:bg-zinc-900/50 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold rounded-lg gap-1.5 cursor-pointer"
               >
                 <QrCode className="size-3.5 text-indigo-400" />
                 <span>แสดง QR Code</span>
@@ -421,9 +421,9 @@ export default function ClassroomDetail({
                     onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
                     variant="outline"
                     size="sm"
-                    className="h-9 w-9 p-0 border-zinc-850 bg-zinc-900/50 text-zinc-300 hover:bg-zinc-800 rounded-lg flex items-center justify-center cursor-pointer"
+                    className="h-9 w-9 p-0 border-zinc-850 bg-white/50 dark:bg-zinc-900/50 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg flex items-center justify-center cursor-pointer"
                   >
-                    <MoreVertical className="size-4 text-zinc-400" />
+                    <MoreVertical className="size-4 text-zinc-500 dark:text-zinc-400" />
                   </Button>
 
                   {showSettingsDropdown && (
@@ -431,7 +431,7 @@ export default function ClassroomDetail({
                       {/* Overlay to handle click outside */}
                       <div className="fixed inset-0 z-10" onClick={() => setShowSettingsDropdown(false)}></div>
 
-                      <div className="absolute right-0 mt-2 w-44 rounded-xl border border-zinc-800 bg-zinc-950 p-1.5 shadow-2xl z-20 animate-[slideDown_0.15s_ease-out]">
+                      <div className="absolute right-0 mt-2 w-44 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-1.5 shadow-2xl z-20 animate-[slideDown_0.15s_ease-out]">
                         <button
                           type="button"
                           onClick={() => {
@@ -439,9 +439,9 @@ export default function ClassroomDetail({
                             setShowEditModal(true);
                             setShowSettingsDropdown(false);
                           }}
-                          className="w-full text-left px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/85 rounded-lg flex items-center gap-2 cursor-pointer transition-colors"
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white/85 dark:hover:bg-zinc-900/85 rounded-lg flex items-center gap-2 cursor-pointer transition-colors"
                         >
-                          <Settings className="size-3.5 text-zinc-450" />
+                          <Settings className="size-3.5 text-zinc-500 dark:text-zinc-450" />
                           <span>แก้ไขห้องเรียน</span>
                         </button>
                         <div className="h-px bg-zinc-850 my-1"></div>
@@ -469,7 +469,7 @@ export default function ClassroomDetail({
 
         {/* Tab Controls */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className={`bg-zinc-950 border border-zinc-850 p-1 rounded-xl h-11 w-full ${user.role === "TEACHER" || user.role === "ADMIN" ? "sm:w-[450px]" : "sm:w-[320px]"}`}>
+          <TabsList className={`bg-zinc-50 dark:bg-zinc-950 border border-zinc-850 p-1 rounded-xl h-11 w-full ${user.role === "TEACHER" || user.role === "ADMIN" ? "sm:w-[450px]" : "sm:w-[320px]"}`}>
             {(user.role === "TEACHER" || user.role === "ADMIN") && (
               <TabsTrigger value="dashboard" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
                 <PieChart className="size-3.5" />
@@ -492,19 +492,19 @@ export default function ClassroomDetail({
 
               {/* Top Stats Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-zinc-900/60 border-zinc-850 p-4 flex flex-col justify-center rounded-xl shadow-sm">
+                <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 p-4 flex flex-col justify-center rounded-xl shadow-sm">
                   <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <Users className="size-3" /> จำนวนผู้เรียน
                   </div>
-                  <div className="text-2xl font-black text-zinc-100">
+                  <div className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
                     {enrollments.length} <span className="text-sm text-zinc-500 font-medium">คน</span>
                   </div>
                 </Card>
-                <Card className="bg-zinc-900/60 border-zinc-850 p-4 flex flex-col justify-center rounded-xl shadow-sm">
+                <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 p-4 flex flex-col justify-center rounded-xl shadow-sm">
                   <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <BookOpen className="size-3" /> แบบฝึกหัดทั้งหมด
                   </div>
-                  <div className="text-2xl font-black text-zinc-100">
+                  <div className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
                     {assignments.length} <span className="text-sm text-zinc-500 font-medium">ชุด</span>
                   </div>
                 </Card>
@@ -530,10 +530,10 @@ export default function ClassroomDetail({
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* Left: Bar Chart */}
-                <Card className="lg:col-span-2 bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                <Card className="lg:col-span-2 bg-white/40 dark:bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden flex flex-col shadow-sm">
                   <CardHeader className="border-b border-zinc-850 pb-4">
-                    <CardTitle className="text-sm font-bold text-zinc-200">กราฟคะแนนเฉลี่ยแยกตามแบบฝึกหัด</CardTitle>
-                    <CardDescription className="text-xs text-zinc-400">
+                    <CardTitle className="text-sm font-bold text-zinc-800 dark:text-zinc-200">กราฟคะแนนเฉลี่ยแยกตามแบบฝึกหัด</CardTitle>
+                    <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                       แสดงเป็นเปอร์เซ็นต์คะแนนเฉลี่ยของทั้งชั้นเรียน
                     </CardDescription>
                   </CardHeader>
@@ -554,14 +554,14 @@ export default function ClassroomDetail({
                               if (active && payload && payload.length) {
                                 const data = payload[0].payload;
                                 return (
-                                  <div className="bg-zinc-950 border border-zinc-800 shadow-xl rounded-lg p-3 text-xs">
-                                    <div className="font-bold text-zinc-200 mb-2">{data.fullTitle}</div>
+                                  <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-lg p-3 text-xs">
+                                    <div className="font-bold text-zinc-800 dark:text-zinc-200 mb-2">{data.fullTitle}</div>
                                     <div className="flex justify-between gap-4 mb-1">
-                                      <span className="text-zinc-400">ส่งแล้ว:</span>
-                                      <span className="text-zinc-200">{data.submissions} / {data.totalEnrolled} คน</span>
+                                      <span className="text-zinc-500 dark:text-zinc-400">ส่งแล้ว:</span>
+                                      <span className="text-zinc-800 dark:text-zinc-200">{data.submissions} / {data.totalEnrolled} คน</span>
                                     </div>
                                     <div className="flex justify-between gap-4">
-                                      <span className="text-zinc-400">คะแนนเฉลี่ย:</span>
+                                      <span className="text-zinc-500 dark:text-zinc-400">คะแนนเฉลี่ย:</span>
                                       <span className="font-bold text-indigo-400">{data.avgPercent}%</span>
                                     </div>
                                   </div>
@@ -578,7 +578,7 @@ export default function ClassroomDetail({
                 </Card>
 
                 {/* Right: Common Mistakes */}
-                <Card className="bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden shadow-sm flex flex-col py-0 gap-0">
+                <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden shadow-sm flex flex-col py-0 gap-0">
                   <CardHeader className="border-b border-zinc-850 pt-4 pb-4 bg-red-500/5">
                     <CardTitle className="text-sm font-bold text-red-400 flex items-center gap-2">
                       <AlertTriangle className="size-4" /> ข้อผิดพลาดที่พบบ่อย
@@ -596,9 +596,9 @@ export default function ClassroomDetail({
                     ) : (
                       <div className="divide-y divide-zinc-850 text-xs">
                         {commonMistakes.map((mistake, idx) => (
-                          <div key={mistake.formatted} className="p-4 flex items-center justify-between hover:bg-zinc-900/50">
+                          <div key={mistake.formatted} className="p-4 flex items-center justify-between hover:bg-white/50 dark:hover:bg-zinc-900/50">
                             <div className="space-y-1.5">
-                              <div className="font-bold text-zinc-200 font-mono text-sm">
+                              <div className="font-bold text-zinc-800 dark:text-zinc-200 font-mono text-sm">
                                 {mistake.formatted}
                               </div>
                               <div className="flex gap-1">
@@ -608,7 +608,7 @@ export default function ClassroomDetail({
                                   return (
                                     <div
                                       key={cIdx}
-                                      className="w-3.5 h-3.5 rounded-full border border-zinc-900 shadow-sm"
+                                      className="w-3.5 h-3.5 rounded-full border border-zinc-200 dark:border-zinc-900 shadow-sm"
                                       style={{ backgroundColor: hex }}
                                       title={thName}
                                     />
@@ -635,7 +635,7 @@ export default function ClassroomDetail({
 
             {/* Header section with Create button for teacher */}
             <div className="flex justify-between items-center pb-2">
-              <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">
+              <h2 className="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                 แบบฝึกหัดทั้งหมด ({assignments.length})
               </h2>
 
@@ -651,9 +651,9 @@ export default function ClassroomDetail({
             </div>
 
             {assignments.length === 0 ? (
-              <Card className="bg-zinc-900/20 border-dashed border-zinc-800 text-center p-12 rounded-xl">
+              <Card className="bg-white/20 dark:bg-zinc-900/20 border-dashed border-zinc-200 dark:border-zinc-800 text-center p-12 rounded-xl">
                 <BookOpen className="size-10 text-zinc-700 mx-auto mb-2" />
-                <h3 className="text-sm font-semibold text-zinc-400">ยังไม่มีการมอบหมายแบบฝึกหัด</h3>
+                <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">ยังไม่มีการมอบหมายแบบฝึกหัด</h3>
                 <p className="text-xs text-zinc-500 mt-1 max-w-[280px] mx-auto">
                   {user.role === "TEACHER"
                     ? "มอบหมายโจทย์แบบทดสอบชุดแรกให้นักเรียนเพื่อวัดทักษะความต้านทาน"
@@ -668,11 +668,11 @@ export default function ClassroomDetail({
                   const isPastDue = assignment.dueDate ? new Date() > new Date(assignment.dueDate) : false;
 
                   return (
-                    <Card key={assignment.id} className="bg-zinc-900/50 border-zinc-850 hover:border-zinc-800/80 transition-all rounded-xl overflow-hidden shadow-sm">
+                    <Card key={assignment.id} className="bg-white/50 dark:bg-zinc-900/50 border-zinc-850 hover:border-zinc-200/80 dark:hover:border-zinc-800/80 transition-all rounded-xl overflow-hidden shadow-sm">
                       <div className="p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-bold text-sm text-zinc-100 flex items-center gap-1.5">
+                            <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
                               {assignment.isExam && <span title="โหมดสอบ"><ShieldAlert className="size-4 text-red-400" /></span>}
                               {assignment.title}
                             </h3>
@@ -684,10 +684,10 @@ export default function ClassroomDetail({
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
                               {assignment.assignmentType === "MULTIMETER" ? "มัลติมิเตอร์" : `${assignment.bandType} แถบสี`}
                             </Badge>
-                            <Badge variant="outline" className="border-zinc-700 bg-zinc-800/30 text-zinc-300 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
+                            <Badge variant="outline" className="border-zinc-300 dark:border-zinc-700 bg-zinc-100/30 dark:bg-zinc-800/30 text-zinc-700 dark:text-zinc-300 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
                               {assignment.questionMode === "CHOICE" ? "4 ตัวเลือก" : "แบบกรอก"}
                             </Badge>
-                            <Badge variant="secondary" className="bg-zinc-950 text-zinc-400 text-[10px] py-0 px-2 h-5 rounded-full">
+                            <Badge variant="secondary" className="bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 text-[10px] py-0 px-2 h-5 rounded-full">
                               โจทย์ {assignment.questionCount} ข้อ
                             </Badge>
                             {assignment.dueDate && (
@@ -705,7 +705,7 @@ export default function ClassroomDetail({
                             )}
                           </div>
 
-                          <p className="text-xs text-zinc-400 line-clamp-2">
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
                             {assignment.description || "ไม่มีรายละเอียดคำชี้แจงงาน"}
                           </p>
 
@@ -723,8 +723,8 @@ export default function ClassroomDetail({
 
                             {assignment.dueDate && (
                               <div className="text-[10px] flex items-center gap-1.5 font-semibold">
-                                <Clock className={`size-3 ${isPastDue ? "text-red-400" : "text-zinc-400"}`} />
-                                <span className={isPastDue ? "text-red-400" : "text-zinc-300"}>
+                                <Clock className={`size-3 ${isPastDue ? "text-red-400" : "text-zinc-500 dark:text-zinc-400"}`} />
+                                <span className={isPastDue ? "text-red-400" : "text-zinc-700 dark:text-zinc-300"}>
                                   กำหนดส่ง: {new Date(assignment.dueDate).toLocaleDateString("th-TH", {
                                     day: "numeric",
                                     month: "short",
@@ -747,7 +747,7 @@ export default function ClassroomDetail({
                           {user.role === "TEACHER" || user.role === "ADMIN" ? (
                             <div className="flex items-center gap-4">
                               <div className="text-right">
-                                <span className="text-xs font-semibold block text-zinc-400">
+                                <span className="text-xs font-semibold block text-zinc-500 dark:text-zinc-400">
                                   ส่งแล้ว {subCount.length} จาก {enrollments.length} คน
                                 </span>
                                 <span className="text-[10px] text-zinc-500">
@@ -756,7 +756,7 @@ export default function ClassroomDetail({
                                     : "0"}/{assignment.questionCount}
                                 </span>
                               </div>
-                              <div className="flex gap-1.5 border-l border-zinc-800 pl-4 flex-wrap">
+                              <div className="flex gap-1.5 border-l border-zinc-200 dark:border-zinc-800 pl-4 flex-wrap">
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -783,7 +783,7 @@ export default function ClassroomDetail({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="size-7 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 cursor-pointer"
+                                      className="size-7 text-zinc-500 dark:text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 cursor-pointer"
                                       onClick={() => {
                                         setEditingAssignment(assignment);
                                         setEditAssignmentType(assignment.assignmentType || "RESISTOR");
@@ -796,7 +796,7 @@ export default function ClassroomDetail({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="size-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
+                                      className="size-7 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
                                       onClick={() => {
                                         setDeletingAssignment(assignment);
                                         setShowDeleteAssignmentModal(true);
@@ -818,15 +818,15 @@ export default function ClassroomDetail({
                                       <CheckCircle2 className="size-3.5" />
                                       <span>เสร็จสิ้น</span>
                                     </div>
-                                    <span className="text-[11px] text-zinc-400 flex flex-col items-end">
-                                      <span>คะแนน: <strong className="text-zinc-200">{mySub.score}</strong>/{assignment.questionCount}</span>
+                                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 flex flex-col items-end">
+                                      <span>คะแนน: <strong className="text-zinc-800 dark:text-zinc-200">{mySub.score}</strong>/{assignment.questionCount}</span>
                                       {assignment.dueDate && new Date(mySub.createdAt) > new Date(assignment.dueDate) && (
                                         <span className="text-[8px] text-red-400 font-bold block mt-0.5">ส่งล่าช้า (ส่งเกินเวลา)</span>
                                       )}
                                     </span>
                                   </div>
                                   <Link href={`/classroom/${classroom.id}/assignment/${assignment.id}/submission/${mySub.id}`}>
-                                    <Button variant="outline" size="sm" className="h-8 text-xs border-zinc-800 hover:bg-zinc-800 font-semibold cursor-pointer">
+                                    <Button variant="outline" size="sm" className="h-8 text-xs border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold cursor-pointer">
                                       ดูเฉลย
                                     </Button>
                                   </Link>
@@ -838,7 +838,7 @@ export default function ClassroomDetail({
                                 </Button>
                               ) : (
                                 <Link href={`/classroom/${classroom.id}/${assignment.isExam ? 'exam' : 'assignment'}/${assignment.id}`}>
-                                  <Button className={`h-8 text-primary-foreground hover:bg-primary/90 font-bold text-xs rounded-lg gap-1 px-3 cursor-pointer shadow-sm ${assignment.isExam ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-primary'}`}>
+                                  <Button className={`h-8 text-primary-foreground hover:bg-primary/90 font-bold text-xs rounded-lg gap-1 px-3 cursor-pointer shadow-sm ${assignment.isExam ? 'bg-red-600 hover:bg-red-700 text-zinc-900 dark:text-white' : 'bg-primary'}`}>
                                     <Play className="size-3 fill-current" />
                                     <span>{assignment.isExam ? 'เข้าห้องสอบ' : 'ทำแบบทดสอบ'}{isPastDue ? " (ส่งเกินเวลา)" : ""}</span>
                                   </Button>
@@ -859,13 +859,13 @@ export default function ClassroomDetail({
           <TabsContent value="members" className="space-y-4 outline-none">
             {user.role === "TEACHER" ? (
               // Teacher Gradebook View
-              <Card className="bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden">
+              <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 rounded-xl overflow-hidden">
                 <CardHeader className="border-b border-zinc-850 pb-4 flex flex-row items-start justify-between">
                   <div>
-                    <CardTitle className="text-sm font-bold text-zinc-200">
+                    <CardTitle className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
                       สมุดบันทึกผลคะแนน (Gradebook)
                     </CardTitle>
-                    <CardDescription className="text-xs text-zinc-400 mt-1">
+                    <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                       แสดงคะแนนที่ผู้เรียนทั้งหมดส่งคำตอบในแต่ละแบบฝึกหัด
                     </CardDescription>
                   </div>
@@ -873,7 +873,7 @@ export default function ClassroomDetail({
                     onClick={() => downloadGradebookCsv(classroom.name, enrollments, assignments, submissions)}
                     variant="outline"
                     size="sm"
-                    className="h-8 border-zinc-700 bg-zinc-800/50 hover:bg-zinc-800 text-xs text-zinc-300 font-semibold rounded-lg gap-1.5 cursor-pointer"
+                    className="h-8 border-zinc-300 dark:border-zinc-700 bg-zinc-100/50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 font-semibold rounded-lg gap-1.5 cursor-pointer"
                   >
                     <Download className="size-3.5" />
                     <span className="hidden sm:inline">ส่งออกคะแนนรวม (Excel/CSV)</span>
@@ -887,7 +887,7 @@ export default function ClassroomDetail({
                   ) : (
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="border-b border-zinc-850 bg-zinc-950/60 text-zinc-400 font-semibold">
+                        <tr className="border-b border-zinc-850 bg-zinc-50/60 dark:bg-zinc-950/60 text-zinc-500 dark:text-zinc-400 font-semibold">
                           <th className="p-3.5 pl-5">ผู้เรียน</th>
                           {assignments.map((asg) => (
                             <th key={asg.id} className="p-3.5 text-center font-bold">
@@ -901,13 +901,13 @@ export default function ClassroomDetail({
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-zinc-850 text-zinc-300">
+                      <tbody className="divide-y divide-zinc-850 text-zinc-700 dark:text-zinc-300">
                         {enrollments.map((enr) => (
-                          <tr key={enr.id} className="hover:bg-zinc-900/10">
+                          <tr key={enr.id} className="hover:bg-white/10 dark:hover:bg-zinc-900/10">
                             <td className="p-3.5 pl-5">
                               <div className="flex items-center gap-2">
                                 <div>
-                                  <div className="font-semibold text-zinc-200">{enr.user.name}</div>
+                                  <div className="font-semibold text-zinc-800 dark:text-zinc-200">{enr.user.name}</div>
                                   <div className="text-[10px] text-zinc-500">{enr.user.email}</div>
                                 </div>
                                 <Button
@@ -955,21 +955,21 @@ export default function ClassroomDetail({
               // Student Classroom Members List View
               <div className="space-y-4">
                 {/* Teacher section */}
-                <Card className="bg-zinc-900/40 border-zinc-850 p-4 rounded-xl">
+                <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 p-4 rounded-xl">
                   <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">อาจารย์ผู้สอน</h3>
                   <div className="flex items-center gap-3">
                     <div className="size-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-black text-indigo-400 text-xs overflow-hidden">
                       {classroom.teacher.image ? <img src={classroom.teacher.image} alt={classroom.teacher.name} className="w-full h-full object-cover" /> : classroom.teacher.name.charAt(0)}
                     </div>
                     <div>
-                      <div className="font-bold text-sm text-zinc-200">{classroom.teacher.name}</div>
+                      <div className="font-bold text-sm text-zinc-800 dark:text-zinc-200">{classroom.teacher.name}</div>
                       <div className="text-[10px] text-zinc-500">ผู้สอน / ครูแอดมิน</div>
                     </div>
                   </div>
                 </Card>
 
                 {/* Classmates */}
-                <Card className="bg-zinc-900/40 border-zinc-850 p-5 rounded-xl space-y-4">
+                <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 p-5 rounded-xl space-y-4">
                   <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
                     เพื่อนร่วมชั้นเรียนทั้งหมด ({enrollments.length})
                   </h3>
@@ -982,13 +982,13 @@ export default function ClassroomDetail({
                       {enrollments.map((enr) => (
                         <div key={enr.id} className="py-3 flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2.5">
-                            <div className="size-7 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-zinc-400 text-xs overflow-hidden">
+                            <div className="size-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-zinc-500 dark:text-zinc-400 text-xs overflow-hidden">
                               {enr.user.image ? <img src={enr.user.image} alt={enr.user.name} className="w-full h-full object-cover" /> : enr.user.name.charAt(0)}
                             </div>
-                            <span className="font-medium text-zinc-300">{enr.user.name}</span>
+                            <span className="font-medium text-zinc-700 dark:text-zinc-300">{enr.user.name}</span>
                           </div>
                           {enr.userId === user.id && (
-                            <Badge className="bg-zinc-950 text-zinc-400 border border-zinc-800 text-[9px] py-0 px-2 rounded-full">
+                            <Badge className="bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 text-[9px] py-0 px-2 rounded-full">
                               คุณ
                             </Badge>
                           )}
@@ -1004,14 +1004,14 @@ export default function ClassroomDetail({
 
         {/* MODAL: ASSIGN NEW QUIZ */}
         {showAssignModal && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-            <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
-              <CardHeader className="border-b border-zinc-800 pb-4">
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/75 dark:bg-black/75 backdrop-blur-sm p-4">
+            <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
                 <CardTitle className="text-base font-bold text-indigo-400 flex items-center gap-2">
                   <BookOpen className="size-5" />
                   <span>มอบหมายงานแบบฝึกหัดใหม่</span>
                 </CardTitle>
-                <CardDescription className="text-xs text-zinc-400">
+                <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                   ตั้งค่าความยากและปริมาณข้อทดสอบสำหรับสุ่มแถบสีตัวต้านทาน
                 </CardDescription>
               </CardHeader>
@@ -1024,36 +1024,36 @@ export default function ClassroomDetail({
                     </div>
                   )}
                   <div className="space-y-1.5">
-                    <Label htmlFor="title" className="text-xs font-semibold text-zinc-400 uppercase">หัวข้อแบบฝึกหัด</Label>
+                    <Label htmlFor="title" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">หัวข้อแบบฝึกหัด</Label>
                     <Input
                       id="title"
                       name="title"
                       placeholder="เช่น แบบทดสอบรหัสสีตัวต้านทาน 4 แถบสี ชุดที่ 1"
-                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs"
+                      className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-10 text-xs"
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="description" className="text-xs font-semibold text-zinc-400 uppercase">คำชี้แจง / รายละเอียดเพิ่มเติม</Label>
+                    <Label htmlFor="description" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">คำชี้แจง / รายละเอียดเพิ่มเติม</Label>
                     <textarea
                       id="description"
                       name="description"
                       placeholder="เช่น ให้นักเรียนคำนวณค่าตัวต้านทานตามรูปภาพ มีเวลาข้อละ 30 วินาที"
                       rows={2}
-                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-white/60 dark:hover:bg-zinc-900/60 transition-all duration-200"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="assignmentType" className="text-xs font-semibold text-zinc-400 uppercase">ประเภทแบบฝึกหัด</Label>
+                      <Label htmlFor="assignmentType" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">ประเภทแบบฝึกหัด</Label>
                       <select
                         id="assignmentType"
                         name="assignmentType"
                         value={assignmentType}
                         onChange={(e) => setAssignmentType(e.target.value)}
-                        className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                        className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
                       >
                         <option value="RESISTOR">ตัวต้านทาน</option>
                         <option value="MULTIMETER">มัลติมิเตอร์</option>
@@ -1062,11 +1062,11 @@ export default function ClassroomDetail({
 
                     {assignmentType === "RESISTOR" ? (
                       <div className="space-y-1.5">
-                        <Label htmlFor="bandType" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบสีตัวต้านทาน</Label>
+                        <Label htmlFor="bandType" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">รูปแบบสีตัวต้านทาน</Label>
                         <select
                           id="bandType"
                           name="bandType"
-                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                          className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
                         >
                           <option value="4">4 แถบสี (4-Band)</option>
                           <option value="5">5 แถบสี (5-Band)</option>
@@ -1077,11 +1077,11 @@ export default function ClassroomDetail({
                     )}
 
                       <div className="space-y-1.5 col-span-2 sm:col-span-1">
-                        <Label htmlFor="questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
+                        <Label htmlFor="questionCount" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">จำนวนโจทย์</Label>
                         <select
                           id="questionCount"
                           name="questionCount"
-                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                          className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
                         >
                           <option value="5">5 ข้อ</option>
                           <option value="10">10 ข้อ</option>
@@ -1094,30 +1094,30 @@ export default function ClassroomDetail({
                   
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="dueDate" className="text-xs font-semibold text-zinc-400 uppercase">กำหนดส่ง (วันและเวลา)</Label>
+                    <Label htmlFor="dueDate" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">กำหนดส่ง (วันและเวลา)</Label>
                     <Input
                       id="dueDate"
                       name="dueDate"
                       type="datetime-local"
-                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100 scheme-dark"
+                      className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-10 text-xs w-full text-zinc-900 dark:text-zinc-100 scheme-dark"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="questionMode" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบคำตอบ (Question Mode)</Label>
+                    <Label htmlFor="questionMode" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">รูปแบบคำตอบ (Question Mode)</Label>
                     <select
                       id="questionMode"
                       name="questionMode"
-                      className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                      className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
                     >
                       <option value="INPUT">พิมพ์คำตอบเอง (Text Input)</option>
                       <option value="CHOICE">ตัวเลือก 4 ตัวเลือก (Multiple Choice)</option>
                     </select>
                   </div>
 
-                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-850">
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850">
                     <div className="space-y-0.5 pr-2">
-                      <Label htmlFor="allowLate" className="text-xs font-bold text-zinc-300 cursor-pointer">อนุญาตให้ส่งช้ากว่ากำหนด (Late Submission)</Label>
+                      <Label htmlFor="allowLate" className="text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer">อนุญาตให้ส่งช้ากว่ากำหนด (Late Submission)</Label>
                       <span className="text-[9px] text-zinc-550 block">เปิดการใช้งานเพื่อให้ผู้เรียนเข้าทำแบบทดสอบล่าช้ากว่าที่กำหนดส่งได้</span>
                     </div>
                     <label htmlFor="allowLate" className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -1129,7 +1129,7 @@ export default function ClassroomDetail({
                         defaultChecked
                         className="sr-only peer"
                       />
-                      <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary peer-checked:after:bg-primary-foreground peer-checked:after:border-primary-foreground"></div>
+                      <div className="w-9 h-5 bg-zinc-100 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary peer-checked:after:bg-primary-foreground peer-checked:after:border-primary-foreground"></div>
                     </label>
                   </div>
 
@@ -1139,7 +1139,7 @@ export default function ClassroomDetail({
                         <Label htmlFor="isExam" className="text-xs font-bold text-red-400 cursor-pointer flex items-center gap-1.5">
                           <ShieldAlert className="size-3.5" /> โหมดสอบ (Exam Mode)
                         </Label>
-                        <span className="text-[9px] text-zinc-400 block">เปิดการป้องกันการโกง บังคับเต็มจอ และห้ามเปิดแท็บอื่น</span>
+                        <span className="text-[9px] text-zinc-500 dark:text-zinc-400 block">เปิดการป้องกันการโกง บังคับเต็มจอ และห้ามเปิดแท็บอื่น</span>
                       </div>
                       <label htmlFor="isExam" className="relative inline-flex items-center cursor-pointer shrink-0">
                         <input
@@ -1151,15 +1151,15 @@ export default function ClassroomDetail({
                           onChange={(e) => setIsExamMode(e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600 peer-checked:after:bg-white peer-checked:after:border-white"></div>
+                        <div className="w-9 h-5 bg-zinc-100 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600 peer-checked:after:bg-white peer-checked:after:border-white"></div>
                       </label>
                     </div>
 
                     {isExamMode && (
                       <div className="space-y-4 pt-2 border-t border-red-500/20">
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-950/40 border border-zinc-850">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850">
                           <div className="space-y-0.5 pr-2">
-                            <Label htmlFor="allowMobile" className="text-xs font-bold text-zinc-300 cursor-pointer">อนุญาตให้ทำสอบบนมือถือ</Label>
+                            <Label htmlFor="allowMobile" className="text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer">อนุญาตให้ทำสอบบนมือถือ</Label>
                             <span className="text-[9px] text-zinc-500 block">เปิดเพื่อยินยอมการทำข้อสอบผ่านเบราว์เซอร์ของโทรศัพท์มือถือ</span>
                           </div>
                           <label htmlFor="allowMobile" className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -1171,12 +1171,12 @@ export default function ClassroomDetail({
                               defaultChecked
                               className="sr-only peer"
                             />
-                            <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
+                            <div className="w-9 h-5 bg-zinc-100 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
                           </label>
                         </div>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-950/40 border border-zinc-850">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850">
                           <div className="space-y-0.5 pr-2">
-                            <Label htmlFor="showSolutions" className="text-xs font-bold text-zinc-300 cursor-pointer">แสดงเฉลยและคำอธิบายหลังส่งข้อสอบ</Label>
+                            <Label htmlFor="showSolutions" className="text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer">แสดงเฉลยและคำอธิบายหลังส่งข้อสอบ</Label>
                             <span className="text-[9px] text-zinc-500 block">เปิดเพื่อให้ผู้เรียนสามารถดูข้อที่ตอบผิดและคำอธิบายการคำนวณหลังส่งข้อสอบได้</span>
                           </div>
                           <label htmlFor="showSolutions" className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -1187,7 +1187,7 @@ export default function ClassroomDetail({
                               value="true"
                               className="sr-only peer"
                             />
-                            <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
+                            <div className="w-9 h-5 bg-zinc-100 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
                           </label>
                         </div>
                       </div>
@@ -1199,7 +1199,7 @@ export default function ClassroomDetail({
                       type="button"
                       variant="ghost"
                       onClick={() => setShowAssignModal(false)}
-                      className="h-9 px-4 text-xs hover:bg-zinc-800"
+                      className="h-9 px-4 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     >
                       ยกเลิก
                     </Button>
@@ -1226,21 +1226,21 @@ export default function ClassroomDetail({
 
         {/* MODAL: QR CODE INVITE */}
         {showQrModal && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-            <Card className="w-full max-w-sm bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
-              <CardHeader className="border-b border-zinc-800 pb-4 text-center">
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/75 dark:bg-black/75 backdrop-blur-sm p-4">
+            <Card className="w-full max-w-sm bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-200 dark:border-zinc-800 pb-4 text-center">
                 <CardTitle className="text-base font-bold text-indigo-400 flex items-center justify-center gap-2">
                   <QrCode className="size-5" />
                   <span>เชิญเข้าร่วมชั้นเรียน</span>
                 </CardTitle>
-                <CardDescription className="text-xs text-zinc-400">
+                <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                   สแกนรหัสคิวอาร์โค้ดนี้เพื่อลงทะเบียนเข้าเรียนโดยอัตโนมัติ
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6 flex flex-col items-center justify-center gap-4">
 
                 {/* QR Image Box */}
-                <div className="p-3 bg-white rounded-xl border border-zinc-800 shadow-inner">
+                <div className="p-3 bg-white rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
                   {joinUrl ? (
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(joinUrl)}`}
@@ -1258,7 +1258,7 @@ export default function ClassroomDetail({
 
                 <div className="text-center w-full space-y-1">
                   <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">รหัสเชิญห้องเรียน</span>
-                  <div className="text-xl font-mono font-bold text-zinc-100 tracking-wider">
+                  <div className="text-xl font-mono font-bold text-zinc-900 dark:text-zinc-100 tracking-wider">
                     {classroom.code}
                   </div>
                 </div>
@@ -1267,14 +1267,14 @@ export default function ClassroomDetail({
                   <Button
                     onClick={handleCopyLink}
                     variant="outline"
-                    className="flex-1 h-9 text-xs border-zinc-800 hover:bg-zinc-850 gap-1.5 cursor-pointer"
+                    className="flex-1 h-9 text-xs border-zinc-200 dark:border-zinc-800 hover:bg-zinc-850 gap-1.5 cursor-pointer"
                   >
                     {copiedLink ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
                     <span>คัดลอกลิงก์</span>
                   </Button>
                   <Button
                     onClick={() => setShowQrModal(false)}
-                    className="flex-1 h-9 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 cursor-pointer"
+                    className="flex-1 h-9 text-xs bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 cursor-pointer"
                   >
                     ปิดหน้าต่าง
                   </Button>
@@ -1287,10 +1287,10 @@ export default function ClassroomDetail({
 
         {/* EDIT CLASSROOM MODAL */}
         {showEditModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-            <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
-              <CardHeader className="border-b border-zinc-800 pb-4">
-                <CardTitle className="text-base font-bold text-zinc-200 flex items-center gap-2">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 dark:bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
+                <CardTitle className="text-base font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                   <Settings className="size-5 text-indigo-400" />
                   <span>แก้ไขข้อมูลห้องเรียน</span>
                 </CardTitle>
@@ -1305,26 +1305,26 @@ export default function ClassroomDetail({
                   )}
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="editName" className="text-xs font-semibold text-zinc-400 uppercase">ชื่อห้องเรียน</Label>
+                    <Label htmlFor="editName" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">ชื่อห้องเรียน</Label>
                     <Input
                       id="editName"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="กรอกชื่อห้องเรียน เช่น วิทยาการคำนวณ ม.3/1"
-                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs"
+                      className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-10 text-xs"
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="editDescription" className="text-xs font-semibold text-zinc-400 uppercase">คำอธิบายห้องเรียน</Label>
+                    <Label htmlFor="editDescription" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">คำอธิบายห้องเรียน</Label>
                     <textarea
                       id="editDescription"
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}
                       placeholder="กรอกคำอธิบาย เช่น รายวิชาคอมพิวเตอร์และรหัสสีตัวต้านทาน"
                       rows={3}
-                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-white/60 dark:hover:bg-zinc-900/60 transition-all duration-200"
                     />
                   </div>
 
@@ -1333,7 +1333,7 @@ export default function ClassroomDetail({
                       type="button"
                       variant="ghost"
                       onClick={() => setShowEditModal(false)}
-                      className="h-9 px-4 text-xs hover:bg-zinc-800"
+                      className="h-9 px-4 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     >
                       ยกเลิก
                     </Button>
@@ -1360,8 +1360,8 @@ export default function ClassroomDetail({
 
         {/* DELETE CLASSROOM MODAL */}
         {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-            <Card className="w-full max-w-md bg-zinc-900 border-red-950/30 shadow-2xl rounded-2xl">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 dark:bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border-red-950/30 shadow-2xl rounded-2xl">
               <CardHeader className="border-b border-red-950/20 pb-4">
                 <CardTitle className="text-base font-bold text-red-400 flex items-center gap-2">
                   <Trash2 className="size-5" />
@@ -1378,7 +1378,7 @@ export default function ClassroomDetail({
 
                 <div className="p-3.5 bg-red-500/5 border border-red-500/10 rounded-xl space-y-2">
                   <span className="text-xs font-bold text-red-400 block">⚠️ คำเตือนการดำเนินการลบ:</span>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
                     การลบห้องเรียน <strong>"{classroom.name}"</strong> จะเป็นการทำลายข้อมูลการมอบหมายแบบฝึกหัด รายการนักเรียน และประวัติการบันทึกคะแนนทั้งหมดออกจากระบบอย่างถาวร โดยไม่สามารถกู้คืนข้อมูลกลับมาได้
                   </p>
                 </div>
@@ -1392,7 +1392,7 @@ export default function ClassroomDetail({
                     value={deleteConfirmText}
                     onChange={(e) => setDeleteConfirmText(e.target.value)}
                     placeholder="พิมพ์ DELETE ที่นี่"
-                    className="bg-zinc-950/60 border-zinc-800 h-10 text-xs text-center font-mono font-bold tracking-wider focus:border-red-900"
+                    className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-10 text-xs text-center font-mono font-bold tracking-wider focus:border-red-900"
                   />
                 </div>
 
@@ -1401,14 +1401,14 @@ export default function ClassroomDetail({
                     type="button"
                     variant="ghost"
                     onClick={() => setShowDeleteModal(false)}
-                    className="h-9 px-4 text-xs hover:bg-zinc-800"
+                    className="h-9 px-4 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   >
                     ยกเลิก
                   </Button>
                   <Button
                     onClick={handleDeleteClassroom}
                     disabled={isPending || deleteConfirmText !== "DELETE"}
-                    className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-xs cursor-pointer rounded-lg shadow-sm disabled:bg-zinc-850 disabled:text-zinc-650 disabled:cursor-not-allowed border border-red-900/10"
+                    className="h-9 px-4 bg-red-600 hover:bg-red-700 text-zinc-900 dark:text-white font-bold text-xs cursor-pointer rounded-lg shadow-sm disabled:bg-zinc-850 disabled:text-zinc-650 disabled:cursor-not-allowed border border-red-900/10"
                   >
                     {isPending ? (
                       <span className="flex items-center gap-1.5">
@@ -1442,9 +1442,9 @@ export default function ClassroomDetail({
 
         {/* EDIT ASSIGNMENT MODAL */}
         {showEditAssignmentModal && editingAssignment && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-            <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
-              <CardHeader className="border-b border-zinc-800 pb-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
                 <CardTitle className="text-base font-bold text-indigo-400 flex items-center gap-2">
                   <Settings className="size-5" />
                   <span>แก้ไขแบบฝึกหัด</span>
@@ -1459,36 +1459,36 @@ export default function ClassroomDetail({
                     </div>
                   )}
                   <div className="space-y-1.5">
-                    <Label htmlFor="edit-title" className="text-xs font-semibold text-zinc-400 uppercase">หัวข้อแบบฝึกหัด</Label>
+                    <Label htmlFor="edit-title" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">หัวข้อแบบฝึกหัด</Label>
                     <Input
                       id="edit-title"
                       name="title"
                       defaultValue={editingAssignment.title}
-                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs"
+                      className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-10 text-xs"
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="edit-description" className="text-xs font-semibold text-zinc-400 uppercase">คำชี้แจง / รายละเอียด</Label>
+                    <Label htmlFor="edit-description" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">คำชี้แจง / รายละเอียด</Label>
                     <textarea
                       id="edit-description"
                       name="description"
                       defaultValue={editingAssignment.description || ""}
                       rows={2}
-                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-750/50"
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-750/50"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="edit-assignmentType" className="text-xs font-semibold text-zinc-400 uppercase">ประเภทแบบฝึกหัด</Label>
+                      <Label htmlFor="edit-assignmentType" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">ประเภทแบบฝึกหัด</Label>
                       <select
                         id="edit-assignmentType"
                         name="assignmentType"
                         value={editAssignmentType}
                         onChange={(e) => setEditAssignmentType(e.target.value)}
-                        className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
+                        className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg"
                       >
                         <option value="RESISTOR">ตัวต้านทาน</option>
                         <option value="MULTIMETER">มัลติมิเตอร์</option>
@@ -1498,12 +1498,12 @@ export default function ClassroomDetail({
 
                     {editAssignmentType === "RESISTOR" ? (
                       <div className="space-y-1.5">
-                        <Label htmlFor="edit-bandType" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบสี</Label>
+                        <Label htmlFor="edit-bandType" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">รูปแบบสี</Label>
                         <select
                           id="edit-bandType"
                           name="bandType"
                           defaultValue={editingAssignment.bandType}
-                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
+                          className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg"
                         >
                           <option value="4">4 แถบสี (4-Band)</option>
                           <option value="5">5 แถบสี (5-Band)</option>
@@ -1514,12 +1514,12 @@ export default function ClassroomDetail({
                     )}
 
                       <div className="space-y-1.5 col-span-2 sm:col-span-1">
-                        <Label htmlFor="edit-questionCount" className="text-xs font-semibold text-zinc-400 uppercase">จำนวนโจทย์</Label>
+                        <Label htmlFor="edit-questionCount" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">จำนวนโจทย์</Label>
                         <select
                           id="edit-questionCount"
                           name="questionCount"
                           defaultValue={editingAssignment.questionCount}
-                          className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg"
+                          className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg"
                         >
                           <option value="5">5 ข้อ</option>
                           <option value="10">10 ข้อ</option>
@@ -1530,32 +1530,32 @@ export default function ClassroomDetail({
                       </div>
                     </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="edit-dueDate" className="text-xs font-semibold text-zinc-400 uppercase">กำหนดส่ง</Label>
+                    <Label htmlFor="edit-dueDate" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">กำหนดส่ง</Label>
                     <Input
                       id="edit-dueDate"
                       name="dueDate"
                       type="datetime-local"
                       defaultValue={editingAssignment.dueDate ? new Date(new Date(editingAssignment.dueDate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
-                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs w-full text-zinc-100 scheme-dark"
+                      className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-10 text-xs w-full text-zinc-900 dark:text-zinc-100 scheme-dark"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="edit-questionMode" className="text-xs font-semibold text-zinc-400 uppercase">รูปแบบคำตอบ (Question Mode)</Label>
+                    <Label htmlFor="edit-questionMode" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">รูปแบบคำตอบ (Question Mode)</Label>
                     <select
                       id="edit-questionMode"
                       name="questionMode"
                       defaultValue={editingAssignment.questionMode || "INPUT"}
-                      className="w-full h-10 px-2 bg-zinc-950/60 border border-zinc-800 text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                      className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
                     >
                       <option value="INPUT">พิมพ์คำตอบเอง (Text Input)</option>
                       <option value="CHOICE">ตัวเลือก 4 ตัวเลือก (Multiple Choice)</option>
                     </select>
                   </div>
 
-                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-850">
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850">
                     <div className="space-y-0.5 pr-2">
-                      <Label htmlFor="edit-allowLate" className="text-xs font-bold text-zinc-300">อนุญาตให้ส่งช้าได้</Label>
+                      <Label htmlFor="edit-allowLate" className="text-xs font-bold text-zinc-700 dark:text-zinc-300">อนุญาตให้ส่งช้าได้</Label>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -1566,15 +1566,15 @@ export default function ClassroomDetail({
                         defaultChecked={editingAssignment.allowLate}
                         className="sr-only peer"
                       />
-                      <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
+                      <div className="w-9 h-5 bg-zinc-100 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
                     </label>
                   </div>
 
                   {editingAssignment.isExam && (
                     <div className="flex flex-col gap-3 p-3.5 rounded-xl bg-red-950/20 border border-red-500/20">
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-950/40 border border-zinc-850">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850">
                         <div className="space-y-0.5 pr-2">
-                          <Label htmlFor="edit-allowMobile" className="text-xs font-bold text-zinc-300 cursor-pointer">อนุญาตให้ทำสอบบนมือถือ</Label>
+                          <Label htmlFor="edit-allowMobile" className="text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer">อนุญาตให้ทำสอบบนมือถือ</Label>
                           <span className="text-[9px] text-zinc-550 block">เปิดเพื่อยินยอมการทำข้อสอบผ่านเบราว์เซอร์ของโทรศัพท์มือถือ</span>
                         </div>
                         <label htmlFor="edit-allowMobile" className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -1586,7 +1586,7 @@ export default function ClassroomDetail({
                             defaultChecked={editingAssignment.allowMobile ?? true}
                             className="sr-only peer"
                           />
-                          <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
+                          <div className="w-9 h-5 bg-zinc-100 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-300 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-650 peer-checked:after:bg-white peer-checked:after:border-white"></div>
                         </label>
                       </div>
                     </div>
@@ -1596,7 +1596,7 @@ export default function ClassroomDetail({
                     <Button type="button" variant="ghost" onClick={() => setShowEditAssignmentModal(false)} className="h-9 px-4 text-xs">
                       ยกเลิก
                     </Button>
-                    <Button type="submit" disabled={isPending} className="h-9 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg">
+                    <Button type="submit" disabled={isPending} className="h-9 px-4 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-xs rounded-lg">
                       {isPending ? <Loader2 className="size-3.5 animate-spin" /> : "บันทึกข้อมูล"}
                     </Button>
                   </div>
@@ -1608,14 +1608,14 @@ export default function ClassroomDetail({
 
         {/* DELETE ASSIGNMENT MODAL */}
         {showDeleteAssignmentModal && deletingAssignment && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-            <Card className="w-full max-w-sm bg-zinc-900 border border-red-900/50 shadow-2xl rounded-2xl">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+            <Card className="w-full max-w-sm bg-white dark:bg-zinc-900 border border-red-900/50 shadow-2xl rounded-2xl">
               <CardHeader className="text-center pb-2">
                 <div className="mx-auto size-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
                   <ShieldAlert className="size-6 text-red-500" />
                 </div>
-                <CardTitle className="text-lg font-bold text-zinc-100">ยืนยันการลบแบบฝึกหัด?</CardTitle>
-                <CardDescription className="text-xs text-zinc-400">
+                <CardTitle className="text-lg font-bold text-zinc-900 dark:text-zinc-100">ยืนยันการลบแบบฝึกหัด?</CardTitle>
+                <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                   คุณกำลังจะลบ <strong>{deletingAssignment.title}</strong><br />
                   คะแนนและการส่งงานทั้งหมดที่เกี่ยวข้องจะถูกลบทิ้งอย่างถาวร
                 </CardDescription>
@@ -1624,7 +1624,7 @@ export default function ClassroomDetail({
                 {error && <div className="text-red-400 text-xs mb-4 text-center">{error}</div>}
                 <div className="flex gap-2 justify-center">
                   <Button type="button" variant="ghost" onClick={() => setShowDeleteAssignmentModal(false)} className="h-9 text-xs">ยกเลิก</Button>
-                  <Button onClick={handleDeleteAssignment} disabled={isPending} className="h-9 bg-red-600 hover:bg-red-700 text-white text-xs">
+                  <Button onClick={handleDeleteAssignment} disabled={isPending} className="h-9 bg-red-600 hover:bg-red-700 text-zinc-900 dark:text-white text-xs">
                     {isPending ? <Loader2 className="size-3.5 animate-spin" /> : "ลบทิ้งถาวร"}
                   </Button>
                 </div>
@@ -1635,20 +1635,20 @@ export default function ClassroomDetail({
 
         {/* ASSIGNMENT MISTAKE ANALYTICS MODAL */}
         {showAnalysisModal && analyzingAssignment && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-            <div className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 shadow-2xl rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/85 dark:bg-black/85 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+            <div className="w-full max-w-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
               
               {/* Header */}
-              <div className="p-5 border-b border-zinc-800 flex items-center justify-between shrink-0 bg-zinc-900/40">
+              <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between shrink-0 bg-white/40 dark:bg-zinc-900/40">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
                     <BarChart className="size-5 text-indigo-400" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-zinc-100">
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                       วิเคราะห์คำตอบผิดพลาด: <span className="text-indigo-400">{analyzingAssignment.title}</span>
                     </h3>
-                    <p className="text-xs text-zinc-400 mt-0.5">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       เจาะลึกข้อผิดพลาดยอดฮิตเพื่ออธิบายเนื้อหาหน้าชั้นเรียน
                     </p>
                   </div>
@@ -1661,7 +1661,7 @@ export default function ClassroomDetail({
                   }}
                   variant="ghost"
                   size="icon"
-                  className="size-8 rounded-full text-zinc-450 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                  className="size-8 rounded-full text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
                 >
                   <X className="size-4" />
                 </Button>
@@ -1670,14 +1670,14 @@ export default function ClassroomDetail({
               {/* Content */}
               <div className="p-6 overflow-y-auto space-y-6 animate-[fadeIn_0.3s_ease-out]">
                 {mistakeAnalysis.length === 0 ? (
-                  <div className="py-12 flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20 rounded-xl border border-zinc-800/50 border-dashed">
+                  <div className="py-12 flex flex-col items-center justify-center text-zinc-500 bg-white/20 dark:bg-zinc-900/20 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 border-dashed">
                     <CheckCircle2 className="size-10 text-emerald-500/40 mb-3" />
                     <p className="text-sm font-semibold text-emerald-400">ยังไม่พบข้อผิดพลาดในบทเรียนนี้</p>
                     <p className="text-xs mt-1 text-zinc-550">นักเรียนทุกคนตอบคำถามได้ถูกต้องทั้งหมด หรือยังไม่มีใครเริ่มทำการส่งงาน</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80 text-xs text-zinc-450">
+                    <div className="p-3 bg-white/60 dark:bg-zinc-900/60 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs text-zinc-500 dark:text-zinc-450">
                       พบปัญหาทั้งหมด <span className="text-red-400 font-bold">{mistakeAnalysis.length} ข้อ</span> ที่มีนักเรียนตอบผิด (เรียงตามลำดับความถี่ในการตอบผิด)
                     </div>
 
@@ -1688,9 +1688,9 @@ export default function ClassroomDetail({
                           .sort((a, b) => b[1] - a[1]);
 
                         return (
-                          <div key={idx} className="p-4 rounded-xl bg-zinc-900/30 border border-zinc-850 space-y-4 text-left">
+                          <div key={idx} className="p-4 rounded-xl bg-white/30 dark:bg-zinc-900/30 border border-zinc-850 space-y-4 text-left">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                              <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                                 ข้อวิเคราะห์อันดับที่ {idx + 1}
                               </span>
                               <Badge variant="destructive" className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 h-5 text-[10px] font-bold">
@@ -1699,8 +1699,8 @@ export default function ClassroomDetail({
                             </div>
 
                             {/* Visual Preview */}
-                            <div className="flex flex-col sm:flex-row items-center gap-4 bg-zinc-950/60 p-4 rounded-xl border border-zinc-850/80">
-                              <div className="w-full sm:w-1/2 flex items-center justify-center bg-zinc-900/40 p-2.5 rounded-lg border border-zinc-850">
+                            <div className="flex flex-col sm:flex-row items-center gap-4 bg-zinc-50/60 dark:bg-zinc-950/60 p-4 rounded-xl border border-zinc-850/80">
+                              <div className="w-full sm:w-1/2 flex items-center justify-center bg-white/40 dark:bg-zinc-900/40 p-2.5 rounded-lg border border-zinc-850">
                                 {q.colors ? (
                                   <ResistorPreview colors={q.colors} />
                                 ) : q.multimeterData ? (
@@ -1716,7 +1716,7 @@ export default function ClassroomDetail({
                               </div>
 
                               <div className="w-full sm:w-1/2 space-y-2 text-xs">
-                                <div className="text-zinc-400">
+                                <div className="text-zinc-500 dark:text-zinc-400">
                                   คำเฉลยที่ถูกต้อง:
                                   <span className="ml-2 font-mono font-bold text-sm text-emerald-400">
                                     {q.formatted}
@@ -1743,9 +1743,9 @@ export default function ClassroomDetail({
                               </span>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                                 {sortedWrong.map(([wrongAns, count]) => (
-                                  <div key={wrongAns} className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-950/40 border border-zinc-850/50 hover:border-zinc-800 transition-colors">
+                                  <div key={wrongAns} className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850/50 hover:border-zinc-200 dark:hover:border-zinc-800 transition-colors">
                                     <span className="font-mono text-red-350 font-bold">{wrongAns}</span>
-                                    <span className="text-[10px] text-zinc-400 font-semibold bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                                    <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold bg-white dark:bg-zinc-900 px-2 py-0.5 rounded border border-zinc-200 dark:border-zinc-800">
                                       ตอบผิด {count} คน
                                     </span>
                                   </div>
@@ -1761,13 +1761,13 @@ export default function ClassroomDetail({
               </div>
 
               {/* Footer */}
-              <div className="p-4 border-t border-zinc-800 bg-zinc-900/20 flex justify-end shrink-0">
+              <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white/20 dark:bg-zinc-900/20 flex justify-end shrink-0">
                 <Button
                   onClick={() => {
                     setShowAnalysisModal(false);
                     setAnalyzingAssignment(null);
                   }}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-9 font-semibold"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white text-xs h-9 font-semibold"
                 >
                   ปิดหน้าต่างนี้
                 </Button>

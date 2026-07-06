@@ -12,7 +12,7 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="size-8 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg shrink-0 cursor-pointer"
+      className="size-8 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg shrink-0 cursor-pointer"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
       title="สลับโหมดหน้าจอ"
     >

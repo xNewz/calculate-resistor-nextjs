@@ -224,7 +224,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // Loading spinner during initial load to prevent layout flashes
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-zinc-400">
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400">
         <Loader2 className="size-8 text-indigo-400 animate-spin mb-3" />
         <span className="text-xs uppercase tracking-wider font-semibold">กำลังโหลด...</span>
       </div>
@@ -234,9 +234,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // 1. LANDING PAGE LAYOUT (Logged out users)
   if (!user) {
     return (
-      <div className="min-h-screen bg-black text-zinc-100 flex flex-col">
+      <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 flex flex-col">
         {/* Transparent top navbar */}
-        <header className="sticky top-0 z-50 w-full border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md">
+        <header className="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-900 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
 
@@ -262,7 +262,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         "flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border border-transparent transition-all",
                         isActive
                           ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-md"
-                          : "text-zinc-450 hover:text-zinc-100 hover:bg-zinc-900/40"
+                          : "text-zinc-500 dark:text-zinc-450 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white/40 dark:hover:bg-zinc-900/40"
                       )}
                     >
                       <Icon className="size-4" />
@@ -276,7 +276,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center gap-2">
                 <ThemeToggle />
                 <Link href="/login">
-                  <Button variant="ghost" className="h-9 px-3.5 text-xs text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/50 cursor-pointer">
+                  <Button variant="ghost" className="h-9 px-3.5 text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white/50 dark:hover:bg-zinc-900/50 cursor-pointer">
                     เข้าสู่ระบบ
                   </Button>
                 </Link>
@@ -301,10 +301,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // 2. DASHBOARD LAYOUT (Logged in users - Sidebar Workspace Layout)
   return (
-    <div className="min-h-screen bg-black text-zinc-100 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 flex flex-col lg:flex-row">
 
       {/* DESKTOP SIDEBAR */}
-      <aside className="hidden lg:flex w-[260px] border-r border-zinc-900 bg-zinc-950/60 backdrop-blur-md flex-col justify-between shrink-0 h-screen sticky top-0 z-30">
+      <aside className="hidden lg:flex w-[260px] border-r border-zinc-200 dark:border-zinc-900 bg-zinc-50/60 dark:bg-zinc-950/60 backdrop-blur-md flex-col justify-between shrink-0 h-screen sticky top-0 z-30">
 
         {/* Top brand & navigation */}
         <div className="p-4 space-y-6 overflow-y-auto flex-1">
@@ -337,7 +337,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border border-transparent group",
                         isActive
                           ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.08)]"
-                          : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/30"
+                          : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-white/30 dark:hover:bg-zinc-900/30"
                       )}
                     >
                       <Icon className={cn("size-4 shrink-0 transition-transform", isActive ? "text-indigo-400 scale-110" : "text-zinc-500 group-hover:text-zinc-350")} />
@@ -353,10 +353,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Quick Classroom access in sidebar */}
           {classrooms.length > 0 && (
-            <div className="space-y-1 pt-2 border-t border-zinc-900/60">
+            <div className="space-y-1 pt-2 border-t border-zinc-200/60 dark:border-zinc-900/60">
               <button
                 onClick={() => setShowClassesDropdown(!showClassesDropdown)}
-                className="w-full flex items-center justify-between px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 cursor-pointer hover:text-zinc-300 transition-colors"
+                className="w-full flex items-center justify-between px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
               >
                 <span>ห้องเรียนทั้งหมด ({classrooms.length})</span>
                 <ChevronDown className={cn("size-3 transition-transform", showClassesDropdown ? "" : "transform -rotate-90")} />
@@ -373,8 +373,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         className={cn(
                           "flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-all border border-transparent",
                           isActive
-                            ? "bg-zinc-900/80 border-zinc-800 text-zinc-100 font-bold"
-                            : "text-zinc-450 hover:text-zinc-250 hover:bg-zinc-900/20"
+                            ? "bg-white/80 dark:bg-zinc-900/80 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold"
+                            : "text-zinc-500 dark:text-zinc-450 hover:text-zinc-250 hover:bg-white/20 dark:hover:bg-zinc-900/20"
                         )}
                         title={cls.name}
                       >
@@ -390,15 +390,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* User Info & Profile at Bottom */}
-        <div className="p-4 border-t border-zinc-900 bg-zinc-950/20">
-          <div className="flex items-center gap-2.5 p-1 rounded-xl bg-zinc-900/40 border border-zinc-900 px-3 py-2.5">
+        <div className="p-4 border-t border-zinc-200 dark:border-zinc-900 bg-zinc-50/20 dark:bg-zinc-950/20">
+          <div className="flex items-center gap-2.5 p-1 rounded-xl bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-900 px-3 py-2.5">
             <div className={`size-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 overflow-hidden ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
               }`}>
               {user.image ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" /> : user.name.charAt(0)}
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="font-bold text-xs text-zinc-200 truncate" title={user.name}>{user.name}</div>
+              <div className="font-bold text-xs text-zinc-800 dark:text-zinc-200 truncate" title={user.name}>{user.name}</div>
               <span className={cn(
                 "inline-block text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md border mt-0.5",
                 user.role === "TEACHER" ? "bg-indigo-500/5 text-indigo-400 border-indigo-500/20" : "bg-emerald-500/5 text-emerald-400 border-emerald-500/20"
@@ -434,20 +434,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* MOBILE HEADER */}
-      <header className="lg:hidden h-14 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md flex items-center justify-between px-4 sticky top-0 z-40">
+      <header className="lg:hidden h-14 border-b border-zinc-200 dark:border-zinc-900 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md flex items-center justify-between px-4 sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <Button
             onClick={toggleMobileMenu}
             variant="ghost"
             size="icon"
-            className="size-9 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/50 cursor-pointer"
+            className="size-9 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white/50 dark:hover:bg-zinc-900/50 cursor-pointer"
           >
             <Menu className="size-5" />
           </Button>
 
           <Link href="/classroom" className="flex items-center gap-1.5">
             <Zap className="size-4 text-indigo-400" />
-            <span className="font-extrabold text-sm uppercase tracking-wider text-zinc-200">
+            <span className="font-extrabold text-sm uppercase tracking-wider text-zinc-800 dark:text-zinc-200">
               Practice-Lab
             </span>
           </Link>
@@ -469,24 +469,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Backdrop overlay */}
           <div
             onClick={toggleMobileMenu}
-            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-300"
+            className="fixed inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-xs transition-opacity duration-300"
           />
 
           {/* Drawer container */}
-          <div className="relative w-64 bg-zinc-950 border-r border-zinc-900 h-full flex flex-col justify-between z-10 shadow-2xl p-4">
+          <div className="relative w-64 bg-zinc-50 dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-900 h-full flex flex-col justify-between z-10 shadow-2xl p-4">
 
             <div className="space-y-6">
               {/* Header inside drawer */}
-              <div className="flex items-center justify-between pb-2 border-b border-zinc-900">
+              <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-900">
                 <div className="flex items-center gap-1.5">
                   <Zap className="size-4 text-indigo-400" />
-                  <span className="font-extrabold text-xs uppercase tracking-wider text-zinc-200">Menu</span>
+                  <span className="font-extrabold text-xs uppercase tracking-wider text-zinc-800 dark:text-zinc-200">Menu</span>
                 </div>
                 <Button
                   onClick={toggleMobileMenu}
                   variant="ghost"
                   size="icon"
-                  className="size-8 rounded-full text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900"
+                  className="size-8 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-900"
                 >
                   <X className="size-4" />
                 </Button>
@@ -511,7 +511,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border border-transparent",
                             isActive
                               ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
-                              : "text-zinc-450 hover:text-zinc-200 hover:bg-zinc-900/30"
+                              : "text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-white/30 dark:hover:bg-zinc-900/30"
                           )}
                         >
                           <Icon className="size-4" />
@@ -525,7 +525,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
               {/* Classrooms quick links on mobile */}
               {classrooms.length > 0 && (
-                <div className="space-y-1 pt-2 border-t border-zinc-900">
+                <div className="space-y-1 pt-2 border-t border-zinc-200 dark:border-zinc-900">
                   <span className="px-2.5 text-[9px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">ห้องเรียนของคุณ</span>
                   <div className="space-y-0.5 max-h-[180px] overflow-y-auto">
                     {classrooms.map((cls) => {
@@ -538,8 +538,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           className={cn(
                             "flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-all border border-transparent",
                             isActive
-                              ? "bg-zinc-900 text-zinc-100 font-bold"
-                              : "text-zinc-450 hover:text-zinc-200 hover:bg-zinc-900/20"
+                              ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-bold"
+                              : "text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-white/20 dark:hover:bg-zinc-900/20"
                           )}
                         >
                           <FolderClosed className="size-3.5 text-zinc-650" />
@@ -553,14 +553,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Profile & Logout in Mobile drawer */}
-            <div className="pt-4 border-t border-zinc-900">
-              <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900/40 border border-zinc-900/60">
+            <div className="pt-4 border-t border-zinc-200 dark:border-zinc-900">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/40 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-900/60">
                 <div className="flex items-center gap-2">
-                  <div className="size-7 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-300 overflow-hidden">
+                  <div className="size-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-700 dark:text-zinc-300 overflow-hidden">
                     {user.image ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" /> : user.name.charAt(0)}
                   </div>
                   <div className="min-w-0">
-                    <div className="font-bold text-[11px] text-zinc-200 truncate w-[100px]">{user.name}</div>
+                    <div className="font-bold text-[11px] text-zinc-800 dark:text-zinc-200 truncate w-[100px]">{user.name}</div>
                     <span className="text-[8px] font-bold text-zinc-500 uppercase">
                       {user.role === "TEACHER" ? "ผู้สอน" : user.role === "ADMIN" ? "แอดมิน" : "ผู้เรียน"}
                     </span>
@@ -602,19 +602,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* EDIT PROFILE MODAL */}
       {showProfileModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-          <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 shadow-2xl rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 dark:bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <UserCog className="size-5 text-indigo-400" />
-                <h3 className="text-base font-bold text-zinc-100">แก้ไขข้อมูลส่วนตัว</h3>
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">แก้ไขข้อมูลส่วนตัว</h3>
               </div>
               <Button
                 type="button"
                 onClick={() => setShowProfileModal(false)}
                 variant="ghost"
                 size="icon"
-                className="size-8 rounded-full text-zinc-450 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                className="size-8 rounded-full text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 <X className="size-4" />
               </Button>
@@ -637,36 +637,36 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 )}
 
                 <div className="space-y-1.5">
-                  <label htmlFor="profileName" className="text-xs font-semibold text-zinc-400 uppercase">ชื่อ-นามสกุล</label>
+                  <label htmlFor="profileName" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">ชื่อ-นามสกุล</label>
                   <input
                     id="profileName"
                     name="name"
                     type="text"
                     value={profileName}
                     onChange={(e) => setProfileName(e.target.value)}
-                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-white/60 dark:hover:bg-zinc-900/60 transition-all duration-200"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="profileEmail" className="text-xs font-semibold text-zinc-400 uppercase">อีเมล</label>
+                  <label htmlFor="profileEmail" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">อีเมล</label>
                   <input
                     id="profileEmail"
                     name="email"
                     type="email"
                     value={profileEmail}
                     onChange={(e) => setProfileEmail(e.target.value)}
-                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-white/60 dark:hover:bg-zinc-900/60 transition-all duration-200"
                     required
                   />
                 </div>
 
-                <div className="h-px bg-zinc-800 my-4" />
+                <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-4" />
 
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <label htmlFor="newPassword" className="text-xs font-semibold text-zinc-400 uppercase">รหัสผ่านใหม่ (หากต้องการเปลี่ยน)</label>
+                    <label htmlFor="newPassword" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">รหัสผ่านใหม่ (หากต้องการเปลี่ยน)</label>
                   </div>
                   <input
                     id="newPassword"
@@ -675,7 +675,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="อย่างน้อย 6 ตัวอักษร"
-                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                    className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-white/60 dark:hover:bg-zinc-900/60 transition-all duration-200"
                   />
                 </div>
 
@@ -689,7 +689,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="กรอกรหัสผ่านปัจจุบันของคุณ (ถ้ามี)"
-                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-white/60 dark:hover:bg-zinc-900/60 transition-all duration-200"
                     />
                   </div>
                 )}
@@ -699,7 +699,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     type="button"
                     variant="ghost"
                     onClick={() => setShowProfileModal(false)}
-                    className="h-9 px-4 text-xs hover:bg-zinc-800 cursor-pointer"
+                    className="h-9 px-4 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
                   >
                     ปิด
                   </Button>
@@ -720,8 +720,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               </form>
 
-              <div className="mt-6 pt-6 border-t border-zinc-800">
-                <h4 className="text-xs font-semibold text-zinc-400 uppercase mb-3">การเชื่อมต่อบัญชี</h4>
+              <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+                <h4 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase mb-3">การเชื่อมต่อบัญชี</h4>
                 <GoogleLoginButton
                   mode="link"
                   onSuccess={async () => {

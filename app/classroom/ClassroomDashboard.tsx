@@ -110,11 +110,11 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
   };
 
   return (
-    <div className="min-h-screen lg:min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen lg:min-h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-900 dark:text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Profile Card / Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/40 p-6 rounded-2xl border border-zinc-850 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 dark:bg-zinc-900/40 p-6 rounded-2xl border border-zinc-850 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className={`p-3 rounded-xl ${
               user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" 
@@ -124,10 +124,10 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
               {user.role === "TEACHER" ? <Presentation className="size-6" /> : user.role === "ADMIN" ? <ShieldAlert className="size-6" /> : <GraduationCap className="size-6" />}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
+              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <span>ยินดีต้อนรับ, {user.name}</span>
               </h1>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 สิทธิ์การใช้งาน: {user.role === "TEACHER" ? "ผู้สอน" : user.role === "ADMIN" ? "แอดมิน" : "นักเรียน"} | {user.email}
               </p>
             </div>
@@ -155,7 +155,7 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
         {/* Dashboard Title */}
         {(classrooms.length > 0 || user.role === "LEARNER") && (
           <div className="space-y-1">
-            <h2 className="text-lg font-bold text-zinc-200 uppercase tracking-wider flex items-center gap-2">
+            <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider flex items-center gap-2">
               <BookOpen className="size-5 text-indigo-400" />
               <span>
                 {user.role === "ADMIN" ? "ห้องเรียนทั้งหมดในระบบ"
@@ -163,7 +163,7 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                   : "ห้องเรียนของคุณ"} ({classrooms.length})
               </span>
             </h2>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {user.role === "TEACHER"
                 ? "คลิกห้องเรียนเพื่อสั่งแบบฝึกหัด หรือตรวจสอบคะแนนสะสมของนักเรียน"
                 : user.role === "ADMIN"
@@ -175,9 +175,9 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
 
         {/* Classrooms Grid */}
         {classrooms.length === 0 ? (
-            <Card className="bg-zinc-900/20 border-dashed border-zinc-800 text-center p-12 rounded-2xl">
+            <Card className="bg-white/20 dark:bg-zinc-900/20 border-dashed border-zinc-200 dark:border-zinc-800 text-center p-12 rounded-2xl">
               <FolderOpen className="size-12 text-zinc-600 mx-auto mb-3" />
-              <h3 className="text-base font-semibold text-zinc-400">ยังไม่มีห้องเรียนในตอนนี้</h3>
+              <h3 className="text-base font-semibold text-zinc-500 dark:text-zinc-400">ยังไม่มีห้องเรียนในตอนนี้</h3>
               <p className="text-xs text-zinc-500 mt-1 max-w-[340px] mx-auto">
                 {user.role === "TEACHER"
                   ? "เริ่มต้นด้วยการสร้างห้องเรียนใหม่ เพื่อแจกรหัสห้องเรียนให้แก่ผู้เรียนของคุณ"
@@ -187,15 +187,15 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
               </p>
               <div className="mt-5 flex justify-center">
                 {user.role === "TEACHER" ? (
-                  <Button onClick={() => setShowCreateModal(true)} variant="outline" className="border-zinc-800 hover:bg-zinc-900 text-xs">
+                  <Button onClick={() => setShowCreateModal(true)} variant="outline" className="border-zinc-200 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 text-xs">
                     สร้างห้องเรียนห้องแรก
                   </Button>
                 ) : user.role === "ADMIN" ? null : (
                   <div className="flex gap-2">
-                    <Button onClick={() => setShowJoinModal(true)} variant="outline" className="border-zinc-800 hover:bg-zinc-900 text-xs">
+                    <Button onClick={() => setShowJoinModal(true)} variant="outline" className="border-zinc-200 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 text-xs">
                       กรอกรหัสเข้าร่วม
                     </Button>
-                    <Button onClick={() => { setShowJoinModal(true); setShowScanner(true); }} variant="outline" className="border-zinc-800 hover:bg-zinc-900 text-xs gap-1">
+                    <Button onClick={() => { setShowJoinModal(true); setShowScanner(true); }} variant="outline" className="border-zinc-200 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 text-xs gap-1">
                       <QrCode className="size-3.5" />
                       <span>สแกนกล้อง</span>
                     </Button>
@@ -207,11 +207,11 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {classrooms.map((cls) => (
               <Link key={cls.id} href={`/classroom/${cls.id}`} className="group block">
-                <Card className="bg-zinc-900/50 hover:bg-zinc-900/80 border-zinc-850 group-hover:border-zinc-700/60 transition-all duration-300 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
+                <Card className="bg-white/50 dark:bg-zinc-900/50 hover:bg-white/80 dark:hover:bg-zinc-900/80 border-zinc-850 group-hover:border-zinc-300/60 dark:group-hover:hover:border-zinc-700/60 transition-all duration-300 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
                   <CardHeader className="pb-3 border-b border-zinc-850">
                     <div className="flex justify-between items-start gap-2">
                       <div>
-                        <CardTitle className="text-base font-bold text-zinc-100 group-hover:text-indigo-400 transition-colors">
+                        <CardTitle className="text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-400 transition-colors">
                           {cls.name}
                         </CardTitle>
                         <CardDescription className="text-zinc-500 text-[11px] mt-0.5 line-clamp-1">
@@ -222,7 +222,7 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                       {user.role === "TEACHER" && (
                         <div
                           onClick={(e) => handleCopyCode(e, cls.code)}
-                          className="flex items-center gap-1 px-2 py-0.5 bg-zinc-950 border border-zinc-800 rounded-md text-[10px] font-mono font-bold text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                          className="flex items-center gap-1 px-2 py-0.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-[10px] font-mono font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors cursor-pointer"
                           title="คลิกเพื่อคัดลอกรหัสเข้าห้องเรียน"
                         >
                           <span>{cls.code}</span>
@@ -232,24 +232,24 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                     </div>
                   </CardHeader>
                   <CardContent className="pt-4 flex-grow flex flex-col justify-between gap-4 text-xs">
-                    <div className="flex flex-wrap gap-2 text-zinc-400">
+                    <div className="flex flex-wrap gap-2 text-zinc-500 dark:text-zinc-400">
                       {user.role === "TEACHER" ? (
                         <>
-                          <span className="flex items-center gap-1 bg-zinc-950/60 border border-zinc-850 py-1 px-2.5 rounded-full text-[10px]">
+                          <span className="flex items-center gap-1 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-850 py-1 px-2.5 rounded-full text-[10px]">
                             <Users className="size-3 text-zinc-500" />
                             <span>ผู้เรียน: {cls._count?.enrollments || 0} คน</span>
                           </span>
-                          <span className="flex items-center gap-1 bg-zinc-950/60 border border-zinc-850 py-1 px-2.5 rounded-full text-[10px]">
+                          <span className="flex items-center gap-1 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-850 py-1 px-2.5 rounded-full text-[10px]">
                             <BookOpen className="size-3 text-zinc-500" />
                             <span>แบบฝึก: {cls._count?.assignments || 0} ชิ้น</span>
                           </span>
                         </>
                       ) : (
                         <>
-                          <span className="text-[10px] text-zinc-400">
-                            ผู้สอน: <span className="font-semibold text-zinc-300">{cls.teacher?.name || "ไม่ระบุ"}</span>
+                          <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
+                            ผู้สอน: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{cls.teacher?.name || "ไม่ระบุ"}</span>
                           </span>
-                          <div className="ml-auto flex items-center gap-1 bg-zinc-950/60 border border-zinc-850 py-1 px-2.5 rounded-full text-[10px]">
+                          <div className="ml-auto flex items-center gap-1 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-850 py-1 px-2.5 rounded-full text-[10px]">
                             <BookOpen className="size-3 text-zinc-500" />
                             <span>แบบฝึก: {cls._count?.assignments || 0} ชิ้น</span>
                           </div>
@@ -270,14 +270,14 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
 
         {/* MODAL: CREATE CLASSROOM */}
         {showCreateModal && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-            <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
-              <CardHeader className="border-b border-zinc-800 pb-4">
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/75 dark:bg-black/75 backdrop-blur-sm p-4">
+            <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
                 <CardTitle className="text-base font-bold text-indigo-400 flex items-center gap-2">
                   <Presentation className="size-5" />
                   <span>สร้างห้องเรียนใหม่</span>
                 </CardTitle>
-                <CardDescription className="text-xs text-zinc-400">
+                <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                   ระบุรายละเอียดห้องเรียนเพื่อเชิญชวนผู้เรียนเข้าร่วม
                 </CardDescription>
               </CardHeader>
@@ -290,23 +290,23 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                     </div>
                   )}
                   <div className="space-y-1.5">
-                    <Label htmlFor="name" className="text-xs font-semibold text-zinc-400 uppercase">ชื่อห้องเรียน / วิชารหัสสี</Label>
+                    <Label htmlFor="name" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">ชื่อห้องเรียน / วิชารหัสสี</Label>
                     <Input
                       id="name"
                       name="name"
                       placeholder="เช่น แลปวงจรไฟฟ้า, อิเล็กทรอนิกส์เบื้องต้น"
-                      className="bg-zinc-950/60 border-zinc-800 h-10 text-xs focus:ring-zinc-750/50"
+                      className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-10 text-xs focus:ring-zinc-750/50"
                       required
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="description" className="text-xs font-semibold text-zinc-400 uppercase">รายละเอียด (ระบุหรือไม่ก็ได้)</Label>
+                    <Label htmlFor="description" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">รายละเอียด (ระบุหรือไม่ก็ได้)</Label>
                     <textarea
                       id="description"
                       name="description"
                       placeholder="เช่น ข้อมูลการเรียนแถบสีตัวต้านทาน 4/5 แถบสี"
                       rows={3}
-                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-950/60 border border-zinc-800 text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-zinc-900/60 transition-all duration-200"
+                      className="w-full p-2.5 text-xs rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-zinc-750/50 hover:bg-white/60 dark:hover:bg-zinc-900/60 transition-all duration-200"
                     />
                   </div>
 
@@ -315,7 +315,7 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                       type="button"
                       variant="ghost"
                       onClick={() => setShowCreateModal(false)}
-                      className="h-9 px-4 text-xs hover:bg-zinc-800"
+                      className="h-9 px-4 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     >
                       ยกเลิก
                     </Button>
@@ -342,14 +342,14 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
 
         {/* MODAL: JOIN CLASSROOM */}
         {showJoinModal && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-            <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl rounded-2xl">
-              <CardHeader className="border-b border-zinc-800 pb-4">
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/75 dark:bg-black/75 backdrop-blur-sm p-4">
+            <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl">
+              <CardHeader className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
                 <CardTitle className="text-base font-bold text-indigo-400 flex items-center gap-2">
                   <GraduationCap className="size-5" />
                   <span>เข้าร่วมชั้นเรียน</span>
                 </CardTitle>
-                <CardDescription className="text-xs text-zinc-400">
+                <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                   กรอกรหัสห้องเรียน 6 หลัก หรือ สแกน QR Code จากเครื่องอาจารย์ผู้สอน
                 </CardDescription>
               </CardHeader>
@@ -363,7 +363,7 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                   )}
                   
                   <div className="space-y-1.5">
-                    <Label htmlFor="code" className="text-xs font-semibold text-zinc-400 uppercase">รหัสเข้าห้องเรียน</Label>
+                    <Label htmlFor="code" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">รหัสเข้าห้องเรียน</Label>
                     <div className="flex gap-2">
                       <Input
                         id="code"
@@ -371,14 +371,14 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                         value={inviteCode}
                         onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                         maxLength={6}
-                        className="bg-zinc-950/60 border-zinc-800 h-11 text-center font-mono font-bold tracking-wider text-base focus:ring-zinc-750/50"
+                        className="bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 h-11 text-center font-mono font-bold tracking-wider text-base focus:ring-zinc-750/50"
                         required
                       />
                       <Button
                         type="button"
                         onClick={() => setShowScanner(true)}
                         variant="outline"
-                        className="h-11 px-3 border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 gap-1 text-xs"
+                        className="h-11 px-3 border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 gap-1 text-xs"
                         title="เปิดกล้องสแกนคิวอาร์โค้ด"
                       >
                         <QrCode className="size-4 text-indigo-400" />
@@ -392,7 +392,7 @@ export default function ClassroomDashboard({ user, classrooms }: ClassroomDashbo
                       type="button"
                       variant="ghost"
                       onClick={() => setShowJoinModal(false)}
-                      className="h-9 px-4 text-xs hover:bg-zinc-800"
+                      className="h-9 px-4 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     >
                       ยกเลิก
                     </Button>

@@ -228,41 +228,41 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 flex items-center justify-center p-4">
+    <div className="min-h-[calc(100vh-4rem)] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-900 dark:text-zinc-100 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
 
         {/* IDLE STATE */}
         {gameState === "idle" && (
-          <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden">
+          <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden">
             <CardHeader className="text-center pb-6 border-b border-zinc-850">
               <div className="mx-auto p-3.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 w-fit mb-3 text-indigo-400">
                 <GraduationCap className="size-10" />
               </div>
-              <CardTitle className="text-xl font-bold tracking-tight text-zinc-100">
+              <CardTitle className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
                 {assignment.title}
               </CardTitle>
-              <CardDescription className="text-zinc-400 text-xs mt-1.5">
+              <CardDescription className="text-zinc-500 dark:text-zinc-400 text-xs mt-1.5">
                 {assignment.description || "คำนวณค่าตัวต้านทานจากรหัสสีเพื่อสะสมคะแนน"}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-6 text-xs">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
+                <div className="bg-zinc-50/50 dark:bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
                   <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">ประเภทแบบฝึกหัด</span>
-                  <span className="text-sm font-bold text-zinc-200 mt-1">
+                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 mt-1">
                     {assignment.assignmentType === "MULTIMETER"
                         ? "มัลติมิเตอร์"
                         : `ตัวต้านทาน ${assignment.bandType} แถบสี`}
                   </span>
                 </div>
-                <div className="bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
+                <div className="bg-zinc-50/50 dark:bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
                   <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">จำนวนข้อสอบ</span>
-                  <span className="text-sm font-bold text-zinc-200 mt-1">{assignment.questionCount} ข้อ</span>
+                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 mt-1">{assignment.questionCount} ข้อ</span>
                 </div>
               </div>
 
-              <div className="bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-xl space-y-2 text-zinc-400">
-                <h4 className="font-semibold text-zinc-200 flex items-center gap-1.5 text-xs">
+              <div className="bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-xl space-y-2 text-zinc-500 dark:text-zinc-400">
+                <h4 className="font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 text-xs">
                   <Timer className="size-4 text-indigo-400" />
                   คำชี้แจงกติกาแบบฝึกหัด:
                 </h4>
@@ -304,10 +304,10 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
             {/* Header progress & timer */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                <span className="text-xs font-semibold text-zinc-400">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                   คำถามข้อที่ {currentIndex + 1}/{assignment.questionCount}
                 </span>
-                <div className="h-2 w-32 bg-zinc-900 border border-zinc-850 rounded-full overflow-hidden">
+                <div className="h-2 w-32 bg-white dark:bg-zinc-900 border border-zinc-850 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-indigo-400 to-violet-550 transition-all duration-300"
                     style={{ width: `${((currentIndex + 1) / assignment.questionCount) * 100}%` }}
@@ -315,16 +315,16 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-850 py-1.5 px-3 rounded-xl ml-auto">
+              <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-900 border border-zinc-850 py-1.5 px-3 rounded-xl ml-auto">
                 <Clock className={`size-4 ${timeLeft <= 10 ? "text-red-400 animate-pulse" : "text-indigo-400"}`} />
-                <span className={`font-mono text-xs font-bold ${timeLeft <= 10 ? "text-red-400" : "text-zinc-200"}`}>
+                <span className={`font-mono text-xs font-bold ${timeLeft <= 10 ? "text-red-400" : "text-zinc-800 dark:text-zinc-200"}`}>
                   {timeLeft} วินาที
                 </span>
               </div>
             </div>
 
             {/* Quiz Box */}
-            <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-visible">
+            <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-visible">
               <CardContent className="pt-6 space-y-8">
 
                 {/* Visual Resistor */}
@@ -347,7 +347,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                 {/* Input form or Choices Grid */}
                 <div className="space-y-4 max-w-md mx-auto">
                   <div className="space-y-2">
-                    <Label htmlFor="answer-input" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block text-center">
+                    <Label htmlFor="answer-input" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block text-center">
                       {assignment.assignmentType === "MULTIMETER"
                           ? (currentQuestion.multimeterData?.range.type === "OHM" ? "เลือกคำตอบจากเข็ม (หน่วย: โอห์ม Ω)" : "เลือกคำตอบจากเข็ม (หน่วย: โวลต์ V)")
                           : "เลือกค่าความต้านทานที่ถูกต้อง (หน่วย: โอห์ม Ω)"}
@@ -365,7 +365,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                               onClick={() => setUserAnswer(choice)}
                               className={`min-h-14 text-sm font-mono font-bold rounded-xl border transition-all duration-200 cursor-pointer text-wrap h-auto py-2 ${isSelected
                                 ? "bg-indigo-500/25 border-indigo-500 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)]"
-                                : "bg-zinc-950/60 border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-zinc-200"
+                                : "bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 text-zinc-350 hover:bg-white dark:hover:bg-zinc-900 hover:text-zinc-800 dark:hover:text-zinc-200"
                                 }`}
                               disabled={isPending}
                             >
@@ -383,7 +383,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                         value={userAnswer}
                         onChange={(e) => setUserAnswer(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="h-12 bg-zinc-950/70 border-zinc-800 focus:ring-zinc-750/50 text-center font-mono text-lg font-bold text-zinc-100 rounded-xl"
+                        className="h-12 bg-zinc-50/70 dark:bg-zinc-950/70 border-zinc-200 dark:border-zinc-800 focus:ring-zinc-750/50 text-center font-mono text-lg font-bold text-zinc-900 dark:text-zinc-100 rounded-xl"
                         disabled={isPending}
                         autoComplete="off"
                       />
@@ -394,7 +394,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                     <Button
                       onClick={() => saveAttemptAndProceed("ข้าม")}
                       variant="ghost"
-                      className="flex-1 h-11 text-xs text-zinc-450 hover:bg-zinc-800/80 hover:text-zinc-200 rounded-xl"
+                      className="flex-1 h-11 text-xs text-zinc-500 dark:text-zinc-450 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-xl"
                       disabled={isPending}
                     >
                       ข้ามข้อนี้
@@ -417,9 +417,9 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
 
         {/* SUBMITTING STATE */}
         {gameState === "submitting" && (
-          <Card className="bg-zinc-900/60 border-zinc-850 p-12 text-center rounded-2xl shadow-2xl">
+          <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 p-12 text-center rounded-2xl shadow-2xl">
             <Loader2 className="size-10 text-indigo-400 animate-spin mx-auto mb-4" />
-            <h3 className="font-bold text-base text-zinc-200">กำลังส่งและบันทึกคะแนน...</h3>
+            <h3 className="font-bold text-base text-zinc-800 dark:text-zinc-200">กำลังส่งและบันทึกคะแนน...</h3>
             <p className="text-xs text-zinc-500 mt-1">กรุณารอสักครู่ ระบบกำลังจัดเก็บข้อมูลส่งอาจารย์ผู้สอน</p>
             {error && (
               <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2 max-w-sm mx-auto">

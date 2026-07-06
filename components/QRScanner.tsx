@@ -123,10 +123,10 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/85 dark:bg-black/85 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/80">
+        <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80">
           <div className="flex items-center gap-2">
             <Camera className="size-5 text-amber-400" />
             <span className="font-semibold text-sm">สแกนรหัส QR Code</span>
@@ -135,20 +135,20 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
             onClick={onClose}
             variant="ghost"
             size="icon"
-            className="size-8 rounded-full text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
+            className="size-8 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
             <X className="size-4.5" />
           </Button>
         </div>
 
         {/* Video Area */}
-        <div className="relative aspect-square w-full bg-zinc-950 flex items-center justify-center overflow-hidden">
+        <div className="relative aspect-square w-full bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center overflow-hidden">
           <div id={containerId} className="w-full h-full object-cover [&_video]:w-full [&_video]:h-full [&_video]:object-cover" />
 
           {/* Scanner Overlay Line and Corners */}
           {isScanning && !error && (
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div className="relative w-[70%] h-[70%] border-2 border-dashed border-zinc-700/50 rounded-xl flex items-center justify-center">
+              <div className="relative w-[70%] h-[70%] border-2 border-dashed border-zinc-300/50 dark:border-zinc-700/50 rounded-xl flex items-center justify-center">
                 {/* QR box focus frame */}
                 <div className="absolute inset-0 border-2 border-amber-400 rounded-xl animate-pulse"></div>
                 
@@ -159,15 +159,15 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           )}
 
           {error && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-zinc-950/90 text-zinc-300">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-zinc-50/90 dark:bg-zinc-950/90 text-zinc-700 dark:text-zinc-300">
               <AlertCircle className="size-10 text-red-500 mb-3" />
-              <p className="text-sm font-semibold text-zinc-200 mb-1">เกิดข้อผิดพลาดในการโหลดกล้อง</p>
+              <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1">เกิดข้อผิดพลาดในการโหลดกล้อง</p>
               <p className="text-xs text-zinc-500 max-w-[280px]">{error}</p>
             </div>
           )}
 
           {!isScanning && !error && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950 text-zinc-400 text-xs">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 text-xs">
               <RefreshCw className="size-6 animate-spin text-zinc-500 mb-2" />
               กำลังเปิดกล้องถ่ายรูป...
             </div>
@@ -175,7 +175,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         </div>
 
         {/* Actions Footer */}
-        <div className="p-4 bg-zinc-900 border-t border-zinc-800 flex justify-between items-center">
+        <div className="p-4 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex justify-between items-center">
           <span className="text-[10px] text-zinc-500 uppercase tracking-wider">
             หันกล้องไปทางคิวอาร์โค้ดห้องเรียน
           </span>
@@ -184,7 +184,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
               onClick={switchCamera}
               variant="outline"
               size="sm"
-              className="gap-1.5 h-8 border-zinc-800 hover:bg-zinc-800 text-xs"
+              className="gap-1.5 h-8 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs"
             >
               <RefreshCw className="size-3.5" />
               <span>สลับกล้อง</span>

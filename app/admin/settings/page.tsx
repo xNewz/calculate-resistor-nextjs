@@ -66,13 +66,13 @@ export default function SystemSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
 
         {/* Navigation & Header */}
         <div className="space-y-4">
           <Link href="/admin">
-            <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 -ml-2 h-8 gap-1">
+            <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 -ml-2 h-8 gap-1">
               <ChevronLeft className="size-4" />
               กลับหน้าแผงควบคุม
             </Button>
@@ -84,7 +84,7 @@ export default function SystemSettingsPage() {
                 <Settings className="size-6 text-orange-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-zinc-100 tracking-tight">ตั้งค่าระบบ (System Settings)</h1>
+                <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">ตั้งค่าระบบ (System Settings)</h1>
                 <p className="text-xs text-zinc-500 mt-0.5">จัดการสถานะของเว็บไซต์และการแจ้งเตือนแบบโกลบอล</p>
               </div>
             </div>
@@ -98,43 +98,43 @@ export default function SystemSettingsPage() {
         )}
 
         <form onSubmit={handleSave} className="space-y-6">
-          <Card className="bg-zinc-900/50 border-zinc-800">
+          <Card className="bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-zinc-100">
+              <CardTitle className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100">
                 <ShieldAlert className="size-5 text-red-500" />
                 โหมดปิดปรับปรุง (Maintenance Mode)
               </CardTitle>
-              <CardDescription className="text-zinc-400 text-sm">
+              <CardDescription className="text-zinc-500 dark:text-zinc-400 text-sm">
                 เมื่อเปิดโหมดนี้ ผู้เรียนและผู้สอนทั่วไปจะไม่สามารถเข้าใช้งานระบบได้ จะมีเพียงผู้ดูแลระบบ (ADMIN) เท่านั้นที่เข้าใช้งานได้ตามปกติ
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center space-x-2 bg-zinc-950 p-4 rounded-xl border border-zinc-800/50">
+              <div className="flex items-center space-x-2 bg-zinc-50 dark:bg-zinc-950 p-4 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50">
                 <input
                   type="checkbox"
                   id="maintenance-mode"
                   checked={maintenanceMode}
                   onChange={(e) => setMaintenanceMode(e.target.checked)}
-                  className="size-4 rounded border-zinc-700 bg-zinc-900 text-red-500 focus:ring-red-500"
+                  className="size-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-red-500 focus:ring-red-500"
                 />
                 <Label htmlFor="maintenance-mode" className="text-sm font-semibold cursor-pointer">
                   {maintenanceMode ? (
                     <span className="text-red-400">ระบบกำลังปิดปรับปรุง (เปิดใช้งานอยู่)</span>
                   ) : (
-                    <span className="text-zinc-300">ปิดการใช้งาน</span>
+                    <span className="text-zinc-700 dark:text-zinc-300">ปิดการใช้งาน</span>
                   )}
                 </Label>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-zinc-900/50 border-zinc-800">
+          <Card className="bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-zinc-100">
+              <CardTitle className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100">
                 <Bell className="size-5 text-blue-400" />
                 ประกาศข่าวสาร
               </CardTitle>
-              <CardDescription className="text-zinc-400 text-sm">
+              <CardDescription className="text-zinc-500 dark:text-zinc-400 text-sm">
                 แสดงแถบข้อความแจ้งเตือนที่ด้านบนสุดของทุกหน้าจอ เพื่อประกาศข่าวสารหรือการแจ้งเตือนฉุกเฉินให้ทุกคนทราบ
               </CardDescription>
             </CardHeader>
@@ -145,9 +145,9 @@ export default function SystemSettingsPage() {
                   id="announcement-enabled"
                   checked={announcementEnabled}
                   onChange={(e) => setAnnouncementEnabled(e.target.checked)}
-                  className="size-4 rounded border-zinc-700 bg-zinc-900 text-blue-500 focus:ring-blue-500"
+                  className="size-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-blue-500 focus:ring-blue-500"
                 />
-                <Label htmlFor="announcement-enabled" className="text-sm font-semibold cursor-pointer text-zinc-300">
+                <Label htmlFor="announcement-enabled" className="text-sm font-semibold cursor-pointer text-zinc-700 dark:text-zinc-300">
                   เปิดแสดงแถบประกาศ
                 </Label>
               </div>
@@ -155,7 +155,7 @@ export default function SystemSettingsPage() {
               {announcementEnabled && (
                 <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2">
                   <div className="space-y-2">
-                    <Label className="text-xs text-zinc-400">ประเภทประกาศ</Label>
+                    <Label className="text-xs text-zinc-500 dark:text-zinc-400">ประเภทประกาศ</Label>
                     <div className="flex flex-wrap gap-2">
                       {[
                         { value: "INFO", label: "ข้อมูล (สีน้ำเงิน)", colorClass: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
@@ -170,7 +170,7 @@ export default function SystemSettingsPage() {
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                             announcementType === type.value 
                               ? `border-${type.value === 'INFO' ? 'blue' : type.value === 'SUCCESS' ? 'emerald' : type.value === 'WARNING' ? 'amber' : 'red'}-500 ${type.colorClass}` 
-                              : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800"
+                              : "border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                           }`}
                         >
                           {type.label}
@@ -180,7 +180,7 @@ export default function SystemSettingsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="announcement-text" className="text-xs text-zinc-400">
+                    <Label htmlFor="announcement-text" className="text-xs text-zinc-500 dark:text-zinc-400">
                       ข้อความประกาศ (รองรับข้อความสั้นๆ)
                     </Label>
                     <textarea
@@ -188,7 +188,7 @@ export default function SystemSettingsPage() {
                       value={announcementText}
                       onChange={(e) => setAnnouncementText(e.target.value)}
                       placeholder="เช่น ระบบจะปิดปรับปรุงในคืนนี้เวลา 24:00 น. ขออภัยในความไม่สะดวก"
-                      className="w-full p-3 bg-zinc-950 border border-zinc-800 text-zinc-100 text-sm rounded-xl min-h-[80px] focus-visible:ring-1 focus-visible:ring-blue-500/50 focus:outline-none"
+                      className="w-full p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm rounded-xl min-h-[80px] focus-visible:ring-1 focus-visible:ring-blue-500/50 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export default function SystemSettingsPage() {
             <Button
               type="submit"
               disabled={saving}
-              className="bg-orange-600 hover:bg-orange-700 text-white font-bold h-10 px-8 rounded-xl shadow-sm"
+              className="bg-orange-600 hover:bg-orange-700 text-zinc-900 dark:text-white font-bold h-10 px-8 rounded-xl shadow-sm"
             >
               {saving ? (
                 <>

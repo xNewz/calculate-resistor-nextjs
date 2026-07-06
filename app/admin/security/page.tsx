@@ -84,13 +84,13 @@ export default function SecurityPage() {
   const filteredIPs = bannedIPs.filter(b => b.ip.includes(searchTerm) || b.reason.includes(searchTerm));
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Navigation & Header */}
         <div className="space-y-4">
           <Link href="/admin">
-            <Button variant="ghost" className="text-zinc-400 hover:text-white px-0 hover:bg-transparent flex items-center gap-2">
+            <Button variant="ghost" className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white px-0 hover:bg-transparent flex items-center gap-2">
               <span className="text-lg">←</span>
               กลับหน้าแผงควบคุม
             </Button>
@@ -102,7 +102,7 @@ export default function SecurityPage() {
                 <ShieldAlert className="size-6 text-red-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-zinc-100 tracking-tight">ระบบความปลอดภัย (Security)</h1>
+                <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">ระบบความปลอดภัย (Security)</h1>
                 <p className="text-xs text-zinc-500 mt-0.5">จัดการการบล็อก IP และป้องกันการเดารหัสผ่าน</p>
               </div>
             </div>
@@ -123,12 +123,12 @@ export default function SecurityPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Main List */}
-          <Card className="bg-zinc-900/50 border-zinc-800 lg:col-span-2">
-            <CardHeader className="border-b border-zinc-800/50 pb-4">
+          <Card className="bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 lg:col-span-2">
+            <CardHeader className="border-b border-zinc-200/50 dark:border-zinc-800/50 pb-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle className="text-zinc-100">IP ที่ถูกระงับการใช้งาน</CardTitle>
-                  <CardDescription className="text-zinc-400 mt-1">รายชื่อ IP ที่ถูกบล็อกจากระบบ</CardDescription>
+                  <CardTitle className="text-zinc-900 dark:text-zinc-100">IP ที่ถูกระงับการใช้งาน</CardTitle>
+                  <CardDescription className="text-zinc-500 dark:text-zinc-400 mt-1">รายชื่อ IP ที่ถูกบล็อกจากระบบ</CardDescription>
                 </div>
                 <div className="relative w-full sm:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
@@ -137,7 +137,7 @@ export default function SecurityPage() {
                     placeholder="ค้นหา IP..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
                   />
                 </div>
               </div>
@@ -154,7 +154,7 @@ export default function SecurityPage() {
               ) : (
                 <div className="divide-y divide-zinc-800/50 max-h-[600px] overflow-y-auto">
                   {filteredIPs.map((b) => (
-                    <div key={b.ip} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-zinc-800/20 transition-colors">
+                    <div key={b.ip} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-zinc-100/20 dark:hover:bg-zinc-800/20 transition-colors">
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-red-400">{b.ip}</span>
@@ -164,8 +164,8 @@ export default function SecurityPage() {
                             <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold uppercase border border-amber-500/20">ชั่วคราว</span>
                           )}
                         </div>
-                        <div className="text-xs text-zinc-400 mt-1">
-                          เหตุผล: <span className="text-zinc-300">{b.reason}</span>
+                        <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                          เหตุผล: <span className="text-zinc-700 dark:text-zinc-300">{b.reason}</span>
                         </div>
                         <div className="text-[11px] text-zinc-500 mt-1 flex flex-wrap gap-x-4 gap-y-1">
                           <span>แบนเมื่อ: {new Date(b.createdAt).toLocaleString("th-TH")}</span>
@@ -178,7 +178,7 @@ export default function SecurityPage() {
                         disabled={isPending}
                         variant="outline"
                         size="sm"
-                        className="border-zinc-700 text-zinc-300 hover:text-emerald-400 hover:border-emerald-500/50 hover:bg-emerald-500/10"
+                        className="border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:text-emerald-400 hover:border-emerald-500/50 hover:bg-emerald-500/10"
                       >
                         <Unlock className="size-3.5 mr-1.5" />
                         ปลดบล็อก
@@ -191,9 +191,9 @@ export default function SecurityPage() {
           </Card>
 
           {/* Manual Ban Form */}
-          <Card className="bg-zinc-900/50 border-zinc-800 h-fit">
-            <CardHeader className="border-b border-zinc-800/50 pb-4">
-              <CardTitle className="text-zinc-100 flex items-center gap-2">
+          <Card className="bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 h-fit">
+            <CardHeader className="border-b border-zinc-200/50 dark:border-zinc-800/50 pb-4">
+              <CardTitle className="text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <ShieldX className="size-4 text-red-400" />
                 แบน IP ด้วยตนเอง
               </CardTitle>
@@ -201,7 +201,7 @@ export default function SecurityPage() {
             <CardContent className="pt-4">
               <form onSubmit={handleBan} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="ip" className="text-xs text-zinc-400">หมายเลข IP</Label>
+                  <Label htmlFor="ip" className="text-xs text-zinc-500 dark:text-zinc-400">หมายเลข IP</Label>
                   <input
                     id="ip"
                     type="text"
@@ -209,11 +209,11 @@ export default function SecurityPage() {
                     value={banIp}
                     onChange={(e) => setBanIp(e.target.value)}
                     placeholder="เช่น 192.168.1.1"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="reason" className="text-xs text-zinc-400">เหตุผลที่แบน</Label>
+                  <Label htmlFor="reason" className="text-xs text-zinc-500 dark:text-zinc-400">เหตุผลที่แบน</Label>
                   <input
                     id="reason"
                     type="text"
@@ -221,16 +221,16 @@ export default function SecurityPage() {
                     value={banReason}
                     onChange={(e) => setBanReason(e.target.value)}
                     placeholder="เช่น พยายามสแปมบอร์ด"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="duration" className="text-xs text-zinc-400">ระยะเวลา (ชั่วโมง)</Label>
+                  <Label htmlFor="duration" className="text-xs text-zinc-500 dark:text-zinc-400">ระยะเวลา (ชั่วโมง)</Label>
                   <select
                     id="duration"
                     value={banDuration}
                     onChange={(e) => setBanDuration(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
                   >
                     <option value="1">1 ชั่วโมง</option>
                     <option value="24">24 ชั่วโมง (1 วัน)</option>
@@ -241,7 +241,7 @@ export default function SecurityPage() {
                 <Button 
                   type="submit" 
                   disabled={isPending}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold transition-all"
+                  className="w-full bg-red-600 hover:bg-red-700 text-zinc-900 dark:text-white font-bold transition-all"
                 >
                   {isPending ? <Loader2 className="size-4 animate-spin" /> : <><Plus className="size-4 mr-1.5" /> เพิ่มการแบน</>}
                 </Button>

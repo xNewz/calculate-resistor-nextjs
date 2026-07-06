@@ -541,18 +541,18 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
   };
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 flex items-center justify-center p-4">
+    <div ref={containerRef} className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-900 dark:text-zinc-100 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
         
         {/* INTRO STATE */}
         {gameState === "intro" && (
           assignment.allowMobile === false && isMobileDevice ? (
-            <Card className="bg-zinc-900 border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.2)] rounded-2xl overflow-hidden border border-red-900/40 py-0 gap-0">
+            <Card className="bg-white dark:bg-zinc-900 border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.2)] rounded-2xl overflow-hidden border border-red-900/40 py-0 gap-0">
               <CardHeader className="text-center pb-6 pt-6 px-6 sm:px-8 border-b border-zinc-850 bg-red-500/5">
                 <div className="mx-auto p-4 rounded-full bg-red-500/10 border border-red-500/20 w-fit mb-3 text-red-500">
                   <ShieldAlert className="size-8 animate-bounce" />
                 </div>
-                <CardTitle className="text-xl sm:text-2xl font-black text-zinc-100 mb-2 font-heading tracking-tight">
+                <CardTitle className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2 font-heading tracking-tight">
                   ปฏิเสธการเข้าสอบผ่านอุปกรณ์มือถือ
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm text-red-400 font-medium">
@@ -563,13 +563,13 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                 <p className="text-xs sm:text-sm text-zinc-355 leading-relaxed">
                   เนื่องจากข้อสอบนี้มีการตั้งค่าความปลอดภัยขั้นสูงและ <strong className="text-red-400">ไม่อนุญาตให้เข้าทำข้อสอบผ่านโทรศัพท์มือถือหรือแท็บเล็ต</strong> เพื่อความเสถียรและความโปร่งใสในการตรวจสอบพฤติกรรม
                 </p>
-                <p className="text-[11px] sm:text-xs text-zinc-500 leading-relaxed bg-zinc-950/60 p-4 rounded-xl border border-zinc-850/80">
+                <p className="text-[11px] sm:text-xs text-zinc-500 leading-relaxed bg-zinc-50/60 dark:bg-zinc-950/60 p-4 rounded-xl border border-zinc-850/80">
                   กรุณาเปิดเบราว์เซอร์บนเครื่องคอมพิวเตอร์ตั้งโต๊ะ (Desktop PC) หรือโน้ตบุ๊ก (Laptop) เพื่อทำข้อสอบนี้
                 </p>
                 <div className="pt-2">
                   <Button
                     onClick={() => router.push(`/classroom/${assignment.classroomId}`)}
-                    className="w-full h-11 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl border border-zinc-700 cursor-pointer text-xs sm:text-sm"
+                    className="w-full h-11 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold rounded-xl border border-zinc-300 dark:border-zinc-700 cursor-pointer text-xs sm:text-sm"
                   >
                     กลับสู่หน้าห้องเรียน
                   </Button>
@@ -577,40 +577,40 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden border border-red-500/20 py-0 gap-0">
+            <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden border border-red-500/20 py-0 gap-0">
               <CardHeader className="text-center pb-6 pt-6 px-6 sm:px-8 border-b border-zinc-850 bg-red-500/5">
                 <div className="mx-auto p-4 rounded-full bg-red-500/10 border border-red-500/20 w-fit mb-3 text-red-400">
                   <ShieldAlert className="size-8" />
                 </div>
-                <CardTitle className="text-2xl font-black text-zinc-100 mb-2 font-heading tracking-tight">
+                <CardTitle className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-2 font-heading tracking-tight">
                   โหมดสอบ: {assignment.title}
                 </CardTitle>
-                <CardDescription className="text-sm text-zinc-400 font-medium">
+                <CardDescription className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
                   การทดสอบนี้มีการจับตาดูพฤติกรรมการทุจริตอย่างเข้มงวด
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6 sm:p-8 space-y-6">
                 
                 <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800">
                     <Maximize className="size-5 text-indigo-400 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-sm font-bold text-zinc-200">บังคับแสดงผลเต็มจอ</h4>
-                      <p className="text-xs text-zinc-400">คุณต้องอยู่ในโหมดเต็มจอตลอดการสอบ หากออกจากโหมดเต็มจอจะถือว่าทุจริต {isMobileDevice ? "(อุปกรณ์พกพาของท่านได้รับความยินยอมโดยระบบ)" : "(หากอุปกรณ์ไม่รองรับ เช่น มือถือระบบ iOS ระบบจะอนุโลมให้ทำข้อสอบได้ตามปกติ)"}</p>
+                      <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">บังคับแสดงผลเต็มจอ</h4>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">คุณต้องอยู่ในโหมดเต็มจอตลอดการสอบ หากออกจากโหมดเต็มจอจะถือว่าทุจริต {isMobileDevice ? "(อุปกรณ์พกพาของท่านได้รับความยินยอมโดยระบบ)" : "(หากอุปกรณ์ไม่รองรับ เช่น มือถือระบบ iOS ระบบจะอนุโลมให้ทำข้อสอบได้ตามปกติ)"}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800">
                     <AlertTriangle className="size-5 text-orange-400 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-sm font-bold text-zinc-200">ห้ามสลับแท็บหรือเปิดหน้าต่างอื่น</h4>
-                      <p className="text-xs text-zinc-400">ระบบจะบันทึกการละเมิดกฎ หากทำผิดครบ {maxViolations} ครั้ง ระบบจะบังคับส่งข้อสอบทันที</p>
+                      <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">ห้ามสลับแท็บหรือเปิดหน้าต่างอื่น</h4>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">ระบบจะบันทึกการละเมิดกฎ หากทำผิดครบ {maxViolations} ครั้ง ระบบจะบังคับส่งข้อสอบทันที</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800">
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800">
                     <Clock className="size-5 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-sm font-bold text-zinc-200">เวลาในการทำข้อสอบ</h4>
-                      <p className="text-xs text-zinc-400">
+                      <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">เวลาในการทำข้อสอบ</h4>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
                         {assignment.dueDate 
                           ? `ต้องส่งก่อนเวลา ${new Date(assignment.dueDate).toLocaleString("th-TH")} น. (เวลาที่เหลือ: ${overallTimeLeft !== null ? formatTime(overallTimeLeft) : "คำนวณ..."})` 
                           : "ไม่จำกัดเวลา"} (มีทั้งหมด {assignment.questionCount} ข้อ)
@@ -623,7 +623,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
                 <Button 
                   onClick={enterFullscreenAndStart}
-                  className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.3)] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all cursor-pointer"
+                  className="w-full h-12 bg-red-600 hover:bg-red-700 text-zinc-900 dark:text-white font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.3)] hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all cursor-pointer"
                 >
                   ยอมรับเงื่อนไขและเริ่มทำข้อสอบ
                 </Button>
@@ -634,7 +634,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
         {/* VIOLATION ALERT */}
         {gameState === "violationAlert" && (
-          <Card className="bg-zinc-900 border-red-500 shadow-[0_0_50px_rgba(220,38,38,0.3)] rounded-2xl overflow-hidden py-0 gap-0">
+          <Card className="bg-white dark:bg-zinc-900 border-red-500 shadow-[0_0_50px_rgba(220,38,38,0.3)] rounded-2xl overflow-hidden py-0 gap-0">
             <CardContent className="p-10 flex flex-col items-center text-center space-y-6">
               {activeTeacherWarning ? (
                 <>
@@ -647,10 +647,10 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                   </div>
                   <div className="space-y-3">
                     <h2 className="text-2xl font-black text-amber-400">คำเตือนจากอาจารย์ผู้สอน!</h2>
-                    <div className="bg-zinc-950/80 border border-zinc-800 p-5 rounded-xl max-w-md mx-auto my-2 text-zinc-200 font-bold text-sm italic">
+                    <div className="bg-zinc-50/80 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-5 rounded-xl max-w-md mx-auto my-2 text-zinc-800 dark:text-zinc-200 font-bold text-sm italic">
                       "{activeTeacherWarning.message}"
                     </div>
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
                       กรุณากดปุ่มรับทราบด้านล่างเพื่อยืนยันการรับทราบคำเตือน
                     </p>
                     <p className="text-red-400 font-bold text-xs animate-pulse">
@@ -668,8 +668,8 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                 <>
                   <AlertTriangle className="size-20 text-red-500 animate-pulse" />
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-black text-white">ตรวจพบพฤติกรรมน่าสงสัย!</h2>
-                    <p className="text-zinc-400">คุณได้ออกจากโหมดเต็มจอ หรือเปิดหน้าต่างอื่น</p>
+                    <h2 className="text-2xl font-black text-zinc-900 dark:text-white">ตรวจพบพฤติกรรมน่าสงสัย!</h2>
+                    <p className="text-zinc-500 dark:text-zinc-400">คุณได้ออกจากโหมดเต็มจอ หรือเปิดหน้าต่างอื่น</p>
                     <p className="text-red-400 font-bold text-lg">
                       คำเตือนครั้งที่ {violations} / {maxViolations}
                     </p>
@@ -694,19 +694,19 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
           <div className="space-y-4">
             
             {/* Exam Header */}
-            <div className="flex items-center justify-between p-4 bg-zinc-900/80 border border-zinc-800 rounded-2xl backdrop-blur-md">
+            <div className="flex items-center justify-between p-4 bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 rounded-2xl backdrop-blur-md">
               <div className="flex items-center gap-3">
                 <Badge variant="outline" className="border-red-500/30 text-red-400 bg-red-500/10 font-bold px-3 py-1">
                   โหมดสอบ
                 </Badge>
-                <span className="text-sm font-semibold text-zinc-300">
+                <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                   ข้อที่ {currentIndex + 1} / {assignment.questionCount}
                 </span>
               </div>
               
               {overallTimeLeft !== null && (
                 <div className={`flex items-center gap-2 font-mono font-bold text-lg px-4 py-1.5 rounded-lg border ${
-                  overallTimeLeft < 60 ? "bg-red-500/20 text-red-400 border-red-500/30 animate-pulse" : "bg-zinc-950 border-zinc-800 text-zinc-200"
+                  overallTimeLeft < 60 ? "bg-red-500/20 text-red-400 border-red-500/30 animate-pulse" : "bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200"
                 }`}>
                   <Clock className="size-5" />
                   {formatTime(overallTimeLeft)}
@@ -714,7 +714,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
               )}
             </div>
 
-            <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden relative">
+            <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden relative">
               <CardContent className="p-6 sm:p-10 flex flex-col items-center">
                 
                   <div className="w-full flex justify-center mb-10 mt-6 relative h-32 items-center">
@@ -735,7 +735,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
                 <div className="w-full max-w-sm space-y-4 transition-all duration-500">
                   <div className="space-y-1.5">
-                    <Label className="text-sm font-bold text-zinc-300 flex items-center justify-between">
+                    <Label className="text-sm font-bold text-zinc-700 dark:text-zinc-300 flex items-center justify-between">
                       คำตอบของคุณ
                       <span className="text-xs font-normal text-zinc-500">
                         {assignment.assignmentType === "MULTIMETER" 
@@ -757,7 +757,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                               className={`min-h-14 text-sm font-mono font-bold rounded-xl border transition-all duration-200 cursor-pointer text-wrap h-auto py-2 ${
                                 isSelected 
                                   ? "bg-red-500/25 border-red-500 text-red-200 shadow-[0_0_12px_rgba(239,68,68,0.2)]" 
-                                  : "bg-zinc-950/60 border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-zinc-200"
+                                  : "bg-zinc-50/60 dark:bg-zinc-950/60 border-zinc-200 dark:border-zinc-800 text-zinc-350 hover:bg-white dark:hover:bg-zinc-900 hover:text-zinc-800 dark:hover:text-zinc-200"
                               }`}
                               disabled={!isImageLoaded}
                             >
@@ -776,7 +776,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                           onKeyDown={handleKeyDown}
                           disabled={!isImageLoaded}
                           placeholder="พิมพ์คำตอบ..."
-                          className="h-14 bg-zinc-950 border-2 border-zinc-800 text-lg sm:text-xl font-bold px-4 transition-all group-hover:border-zinc-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 text-zinc-100 placeholder:font-normal placeholder:text-zinc-700 rounded-xl disabled:opacity-50 select-none"
+                          className="h-14 bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 text-lg sm:text-xl font-bold px-4 transition-all group-hover:border-zinc-300 dark:group-hover:hover:border-zinc-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 text-zinc-900 dark:text-zinc-100 placeholder:font-normal placeholder:text-zinc-700 rounded-xl disabled:opacity-50 select-none"
                           autoComplete="off"
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 font-bold text-zinc-500 text-lg">
@@ -793,7 +793,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                   <Button 
                     onClick={handleNext}
                     disabled={!isImageLoaded || processingRef.current || (assignment.questionMode === "CHOICE" && !userAnswer)}
-                    className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98] cursor-pointer"
+                    className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98] cursor-pointer"
                   >
                     {currentIndex === assignment.questionCount - 1 ? (
                       <span className="flex items-center gap-2">
@@ -813,13 +813,13 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
         {/* SUBMITTING STATE */}
         {gameState === "submitting" && (
-          <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden p-12 flex flex-col items-center justify-center space-y-6 min-h-[400px]">
+          <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden p-12 flex flex-col items-center justify-center space-y-6 min-h-[400px]">
             <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 size-24 bg-indigo-500/20 rounded-full blur-xl animate-pulse" />
               <Loader2 className="size-12 text-indigo-500 animate-spin relative z-10" />
             </div>
             <div className="text-center space-y-2">
-              <h2 className="text-xl font-bold text-white tracking-tight">กำลังส่งคำตอบและประมวลผลคะแนน</h2>
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight">กำลังส่งคำตอบและประมวลผลคะแนน</h2>
               <p className="text-zinc-500 text-sm">กรุณารอสักครู่...</p>
             </div>
           </Card>

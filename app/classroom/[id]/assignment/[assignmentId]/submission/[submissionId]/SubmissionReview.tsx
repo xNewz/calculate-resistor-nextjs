@@ -107,21 +107,21 @@ export default function SubmissionReview({
     if (assignment.assignmentType === "MULTIMETER" && q.multimeterData) {
       const type = q.multimeterData.range.type;
       return (
-        <div className="space-y-3 text-[11px] text-zinc-400 bg-zinc-950/40 p-4 rounded-xl border border-zinc-850 mt-3">
-          <h4 className="font-semibold text-zinc-200 text-xs flex items-center gap-1.5">
+        <div className="space-y-3 text-[11px] text-zinc-500 dark:text-zinc-400 bg-zinc-50/40 dark:bg-zinc-950/40 p-4 rounded-xl border border-zinc-850 mt-3">
+          <h4 className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs flex items-center gap-1.5">
             <HelpCircle className="size-3.5 text-indigo-400" />
             <span>วิธีอ่านค่ามัลติมิเตอร์ (ย่านวัด {q.multimeterData.range.name}):</span>
           </h4>
-          <p className="text-zinc-300">
-            เข็มชี้ที่เลข <strong className="text-white">{q.multimeterData.pointerValue}</strong> บนสเกล
+          <p className="text-zinc-700 dark:text-zinc-300">
+            เข็มชี้ที่เลข <strong className="text-zinc-900 dark:text-white">{q.multimeterData.pointerValue}</strong> บนสเกล
           </p>
           {type === "OHM" ? (
-            <p className="text-zinc-300">
+            <p className="text-zinc-700 dark:text-zinc-300">
               นำค่าที่อ่านได้คูณด้วยตัวคูณย่านวัด (x{q.multimeterData.range.maxScale}) <br/>
               = {q.multimeterData.pointerValue} × {q.multimeterData.range.maxScale} = <strong className="text-emerald-400">{q.multimeterData.value} Ω</strong>
             </p>
           ) : (
-            <p className="text-zinc-300">
+            <p className="text-zinc-700 dark:text-zinc-300">
               ย่านวัดตั้งไว้ที่ {q.multimeterData.range.name} (สเกลสูงสุด = {q.multimeterData.range.maxScale})<br/>
               = <strong className="text-emerald-400">{q.multimeterData.value} {type}</strong>
             </p>
@@ -152,8 +152,8 @@ export default function SubmissionReview({
     const infoTol = COLOR_MAP[tol];
 
     return (
-      <div className="space-y-3 text-[11px] text-zinc-400 bg-zinc-950/40 p-4 rounded-xl border border-zinc-850 mt-3">
-        <h4 className="font-semibold text-zinc-200 text-xs flex items-center gap-1.5">
+      <div className="space-y-3 text-[11px] text-zinc-500 dark:text-zinc-400 bg-zinc-50/40 dark:bg-zinc-950/40 p-4 rounded-xl border border-zinc-850 mt-3">
+        <h4 className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs flex items-center gap-1.5">
           <HelpCircle className="size-3.5 text-indigo-400" />
           <span>วิธีคำนวณรหัสสี ({q.bands} แถบสี):</span>
         </h4>
@@ -161,38 +161,38 @@ export default function SubmissionReview({
           <li className="flex items-center gap-2 flex-wrap">
             <span className="text-zinc-500 w-28">แถบที่ 1 (หลักที่ 1):</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: info1?.hex }} />
-            <span className="font-semibold text-zinc-300">{info1?.nameTh} ({info1?.nameEn})</span>
-            <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[9px] bg-zinc-900 text-zinc-400 border border-zinc-800">{d1}</Badge>
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">{info1?.nameTh} ({info1?.nameEn})</span>
+            <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[9px] bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800">{d1}</Badge>
           </li>
           <li className="flex items-center gap-2 flex-wrap">
             <span className="text-zinc-500 w-28">แถบที่ 2 (หลักที่ 2):</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: info2?.hex }} />
-            <span className="font-semibold text-zinc-300">{info2?.nameTh} ({info2?.nameEn})</span>
-            <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[9px] bg-zinc-900 text-zinc-400 border border-zinc-800">{d2}</Badge>
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">{info2?.nameTh} ({info2?.nameEn})</span>
+            <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[9px] bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800">{d2}</Badge>
           </li>
           {is5 && info3 && (
             <li className="flex items-center gap-2 flex-wrap">
               <span className="text-zinc-500 w-28">แถบที่ 3 (หลักที่ 3):</span>
               <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: info3?.hex }} />
-              <span className="font-semibold text-zinc-300">{info3?.nameTh} ({info3?.nameEn})</span>
-              <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[9px] bg-zinc-900 text-zinc-400 border border-zinc-800">{d3}</Badge>
+              <span className="font-semibold text-zinc-700 dark:text-zinc-300">{info3?.nameTh} ({info3?.nameEn})</span>
+              <Badge variant="secondary" className="px-1.5 h-4.5 rounded font-mono text-[9px] bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800">{d3}</Badge>
             </li>
           )}
           <li className="flex items-center gap-2 flex-wrap">
             <span className="text-zinc-500 w-28">แถบที่ {is5 ? 4 : 3} (ตัวคูณ):</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: infoMult?.hex }} />
-            <span className="font-semibold text-zinc-300">{infoMult?.nameTh} ({infoMult?.nameEn})</span>
-            <Badge variant="outline" className="font-mono px-1.5 h-4.5 rounded text-[9px] border-zinc-800 text-zinc-400">x {formatMultiplierValue(multiplierVal)}</Badge>
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">{infoMult?.nameTh} ({infoMult?.nameEn})</span>
+            <Badge variant="outline" className="font-mono px-1.5 h-4.5 rounded text-[9px] border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400">x {formatMultiplierValue(multiplierVal)}</Badge>
           </li>
           <li className="flex items-center gap-2 flex-wrap">
             <span className="text-zinc-500 w-28">แถบความคลาดเคลื่อน:</span>
             <div className="size-3 rounded-full border border-white/20" style={{ backgroundColor: infoTol?.hex }} />
-            <span className="font-semibold text-zinc-300">{infoTol?.nameTh} ({infoTol?.nameEn})</span>
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">{infoTol?.nameTh} ({infoTol?.nameEn})</span>
             <Badge variant="outline" className="font-mono text-indigo-400 border-indigo-500/20 bg-indigo-500/5 px-1.5 h-4.5 rounded text-[9px]">±{toleranceVal}%</Badge>
           </li>
         </ul>
-        <div className="pt-2 border-t border-zinc-850/80 font-mono text-zinc-300 flex flex-wrap gap-1.5 items-center">
-          <span className="font-semibold text-zinc-400">คำนวณเป็นสมการ:</span>
+        <div className="pt-2 border-t border-zinc-850/80 font-mono text-zinc-700 dark:text-zinc-300 flex flex-wrap gap-1.5 items-center">
+          <span className="font-semibold text-zinc-500 dark:text-zinc-400">คำนวณเป็นสมการ:</span>
           {is5 ? (
             <span>({d1}{d2}{d3}) x {formatMultiplierValue(multiplierVal)} = {q.resistance} Ω ({formatValue(q.resistance || 0)})</span>
           ) : (
@@ -204,20 +204,20 @@ export default function SubmissionReview({
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-zinc-900 dark:text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
         
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-          <Link href="/classroom" className="hover:text-zinc-300">ห้องเรียน</Link>
+          <Link href="/classroom" className="hover:text-zinc-700 dark:hover:text-zinc-300">ห้องเรียน</Link>
           <ChevronRight className="size-3" />
-          <Link href={`/classroom/${classroomId}`} className="hover:text-zinc-300">รายละเอียดห้อง</Link>
+          <Link href={`/classroom/${classroomId}`} className="hover:text-zinc-700 dark:hover:text-zinc-300">รายละเอียดห้อง</Link>
           <ChevronRight className="size-3" />
-          <span className="text-zinc-300">สรุปคะแนน</span>
+          <span className="text-zinc-700 dark:text-zinc-300">สรุปคะแนน</span>
         </div>
 
         {/* Score Card Banner */}
-        <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden backdrop-blur-md">
+        <Card className="bg-white/60 dark:bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden backdrop-blur-md">
           <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center space-y-4">
             <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full w-fit animate-bounce">
               <Trophy className="size-12" />
@@ -227,7 +227,7 @@ export default function SubmissionReview({
               <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                 {assignment.title}
               </CardTitle>
-              <CardDescription className="text-zinc-400 text-xs">
+              <CardDescription className="text-zinc-500 dark:text-zinc-400 text-xs">
                 ส่งทำเมื่อ: {new Date(submission.createdAt).toLocaleString("th-TH")} น.
               </CardDescription>
             </div>
@@ -237,7 +237,7 @@ export default function SubmissionReview({
                 {submission.score}
               </span>
               <span className="text-2xl text-zinc-500">/{assignment.questionCount}</span>
-              <span className="text-sm font-bold text-zinc-400 ml-1.5">คะแนน</span>
+              <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400 ml-1.5">คะแนน</span>
             </div>
 
             <p className={`text-xs font-semibold max-w-md ${verdict.color}`}>
@@ -245,7 +245,7 @@ export default function SubmissionReview({
             </p>
 
             <Link href={`/classroom/${classroomId}`} className="pt-2">
-              <Button variant="outline" className="border-zinc-850 hover:bg-zinc-800 text-xs font-semibold gap-1.5 rounded-lg h-9 cursor-pointer">
+              <Button variant="outline" className="border-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold gap-1.5 rounded-lg h-9 cursor-pointer">
                 <ArrowLeft className="size-4" />
                 <span>กลับไปยังห้องเรียน</span>
               </Button>
@@ -255,9 +255,9 @@ export default function SubmissionReview({
 
         {/* Proctoring / Cheating Report for Exams */}
         {assignment.isExam && (
-          <Card className="bg-zinc-900/40 border-zinc-850 shadow-md rounded-2xl overflow-hidden backdrop-blur-md">
+          <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 shadow-md rounded-2xl overflow-hidden backdrop-blur-md">
             <CardHeader className="border-b border-zinc-850 pb-4">
-              <CardTitle className="text-sm font-bold text-zinc-300 flex items-center gap-2">
+              <CardTitle className="text-sm font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
                 <ShieldAlert className="size-4 text-red-400" />
                 <span>รายงานพฤติกรรมระหว่างการสอบ (Exam Proctoring Report)</span>
               </CardTitle>
@@ -299,7 +299,7 @@ export default function SubmissionReview({
                       <h4 className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 pl-1">
                         ลำดับเหตุการณ์การละเมิดกฎการสอบ (Timeline Logs)
                       </h4>
-                      <div className="relative border-l border-zinc-800 ml-4 pl-4 space-y-4 text-xs py-1">
+                      <div className="relative border-l border-zinc-200 dark:border-zinc-800 ml-4 pl-4 space-y-4 text-xs py-1">
                         {violations.map((v, idx) => (
                           <div key={v.id} className="relative">
                             {/* Dot indicator */}
@@ -307,12 +307,12 @@ export default function SubmissionReview({
                             
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold text-zinc-300 font-sans">ละเมิดกฎครั้งที่ {idx + 1}</span>
+                                <span className="font-bold text-zinc-700 dark:text-zinc-300 font-sans">ละเมิดกฎครั้งที่ {idx + 1}</span>
                                 <span className="text-[10px] text-zinc-500 font-mono">
                                   {new Date(v.createdAt).toLocaleTimeString("th-TH")} น.
                                 </span>
                               </div>
-                              <p className="text-[11px] text-zinc-400">
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                                 {v.details || (
                                   <>
                                     {v.type === "TAB_SWITCH" && "สลับหน้าจอ (พับหน้าจอ / เปิดแท็บอื่น)"}
@@ -349,11 +349,11 @@ export default function SubmissionReview({
                   <AccordionItem
                     key={index}
                     value={`item-${index}`}
-                    className="bg-zinc-900/40 border border-zinc-850 hover:border-zinc-800/80 rounded-xl overflow-hidden shadow-sm"
+                    className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-850 hover:border-zinc-200/80 dark:hover:border-zinc-800/80 rounded-xl overflow-hidden shadow-sm"
                   >
                     <AccordionTrigger className="px-5 py-4 hover:no-underline text-xs flex justify-between cursor-pointer">
                       <div className="flex items-center gap-3.5 w-full text-left">
-                        <span className="font-bold text-zinc-400">ข้อที่ {index + 1}</span>
+                        <span className="font-bold text-zinc-500 dark:text-zinc-400">ข้อที่ {index + 1}</span>
                         
                         <div className="flex items-center gap-1.5">
                           {attempt.isCorrect ? (
@@ -373,8 +373,8 @@ export default function SubmissionReview({
                           {`แถบสี: ${q.bands} สี`}
                         </span>
 
-                        <div className="ml-auto pr-3 font-semibold text-zinc-300">
-                          เฉลย: <span className="font-mono text-zinc-200">
+                        <div className="ml-auto pr-3 font-semibold text-zinc-700 dark:text-zinc-300">
+                          เฉลย: <span className="font-mono text-zinc-800 dark:text-zinc-200">
                             {`${q.formatted} ${q.tolerance ? `±${q.tolerance}%` : ''}`}
                           </span>
                         </div>
@@ -395,13 +395,13 @@ export default function SubmissionReview({
 
                         {/* Score Summary Info */}
                         <div className="grid grid-cols-2 gap-4 max-w-md text-xs">
-                          <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
+                          <div className="bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
                             <span className="text-[10px] text-zinc-550 block">คำตอบของคุณ</span>
                             <span className={`font-mono font-bold ${attempt.isCorrect ? "text-emerald-400" : "text-red-400"}`}>
                               {attempt.userAnswer}
                             </span>
                           </div>
-                          <div className="bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
+                          <div className="bg-zinc-50/40 dark:bg-zinc-950/40 border border-zinc-850 p-3 rounded-lg">
                             <span className="text-[10px] text-zinc-550 block">คำตอบที่ถูกต้อง</span>
                             <span className="font-mono font-bold text-emerald-400">
                               {q.formatted}
@@ -419,12 +419,12 @@ export default function SubmissionReview({
               })}
             </Accordion>
           ) : (
-            <Card className="bg-zinc-900/40 border-zinc-850 p-6 rounded-2xl text-center backdrop-blur-md">
+            <Card className="bg-white/40 dark:bg-zinc-900/40 border-zinc-850 p-6 rounded-2xl text-center backdrop-blur-md">
               <CardContent className="p-4 flex flex-col items-center justify-center space-y-2">
-                <div className="p-2.5 bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 rounded-full w-fit">
-                  <BookOpen className="size-6 text-zinc-400" />
+                <div className="p-2.5 bg-zinc-100/50 dark:bg-zinc-800/50 border border-zinc-300/50 dark:border-zinc-700/50 text-zinc-500 dark:text-zinc-400 rounded-full w-fit">
+                  <BookOpen className="size-6 text-zinc-500 dark:text-zinc-400" />
                 </div>
-                <p className="text-sm font-semibold text-zinc-300">
+                <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                   ผู้สอนไม่ได้เปิดใช้งานระบบการแสดงเฉลยสำหรับการทดสอบนี้
                 </p>
                 <p className="text-xs text-zinc-500">

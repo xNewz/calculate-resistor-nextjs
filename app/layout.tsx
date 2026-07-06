@@ -43,17 +43,17 @@ export default async function RootLayout({
   if (isMaintenanceMode && session?.role !== "ADMIN") {
     return (
       <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.variable} ${kanit.variable} ${geistMono.variable} font-sans antialiased bg-zinc-950 text-zinc-100 min-h-screen flex items-center justify-center`}>
+        <body className={`${inter.variable} ${kanit.variable} ${geistMono.variable} font-sans antialiased bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex items-center justify-center`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            <div className="text-center space-y-4 max-w-md p-6 bg-zinc-900/40 border border-zinc-800 rounded-2xl shadow-2xl">
+            <div className="text-center space-y-4 max-w-md p-6 bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl">
               <ShieldAlert className="size-16 text-orange-500 mx-auto animate-pulse" />
-              <h1 className="text-2xl font-black text-zinc-100 tracking-tight">ระบบกำลังปิดปรับปรุง</h1>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">ระบบกำลังปิดปรับปรุง</h1>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
                 ขออภัยในความไม่สะดวก ขณะนี้เว็บไซต์กำลังอยู่ในช่วงปิดปรับปรุงและบำรุงรักษาระบบ (Maintenance Mode) 
                 กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลัง
               </p>

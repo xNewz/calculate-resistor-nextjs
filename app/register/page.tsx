@@ -78,7 +78,7 @@ export default function RegisterPage() {
 
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider ml-1">
+                <Label htmlFor="name" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
                   ชื่อ-นามสกุล
                 </Label>
                 <div className="relative group">
@@ -88,7 +88,7 @@ export default function RegisterPage() {
                     name="name"
                     type="text"
                     placeholder="นายเรียนดี ขยันยิ่ง"
-                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner"
+                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-white dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner"
                     required
                   />
                 </div>
@@ -99,7 +99,7 @@ export default function RegisterPage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider ml-1">
+                <Label htmlFor="email" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
                   อีเมล
                 </Label>
                 <div className="relative group">
@@ -109,7 +109,7 @@ export default function RegisterPage() {
                     name="email"
                     type="email"
                     placeholder="student@school.ac.th"
-                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner"
+                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-white dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner"
                     required
                   />
                 </div>
@@ -120,7 +120,7 @@ export default function RegisterPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider ml-1">
+                <Label htmlFor="password" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
                   รหัสผ่าน
                 </Label>
                 <div className="relative group">
@@ -130,7 +130,7 @@ export default function RegisterPage() {
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner tracking-widest"
+                    className="pl-11 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-950/50 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 hover:bg-zinc-200 dark:hover:bg-white dark:hover:bg-zinc-900 transition-all duration-200 shadow-inner tracking-widest"
                     required
                   />
                 </div>
@@ -142,7 +142,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="w-full h-12 mt-2 bg-indigo-600 text-white hover:bg-indigo-700 font-bold transition-all duration-200 shadow-[0_0_20px_rgba(79,70,229,0.2)] hover:shadow-[0_0_25px_rgba(79,70,229,0.3)] rounded-xl text-base"
+                className="w-full h-12 mt-2 bg-indigo-600 text-zinc-900 dark:text-white hover:bg-indigo-700 font-bold transition-all duration-200 shadow-[0_0_20px_rgba(79,70,229,0.2)] hover:shadow-[0_0_25px_rgba(79,70,229,0.3)] rounded-xl text-base"
               >
                 {isPending ? (
                   <span className="flex items-center justify-center gap-2">

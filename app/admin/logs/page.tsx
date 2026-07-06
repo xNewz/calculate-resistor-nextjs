@@ -119,19 +119,19 @@ export default function SystemLogsPage() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-zinc-500">
         <ShieldAlert className="size-12 text-red-500/50" />
         <p className="text-sm text-red-400">{error}</p>
-        <Button onClick={fetchLogs} variant="outline" size="sm" className="border-zinc-800 hover:bg-zinc-800">ลองใหม่</Button>
+        <Button onClick={fetchLogs} variant="outline" size="sm" className="border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800">ลองใหม่</Button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
 
         {/* Navigation & Header */}
         <div className="space-y-4">
           <Link href="/admin">
-            <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 -ml-2 h-8 gap-1">
+            <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 -ml-2 h-8 gap-1">
               <ChevronLeft className="size-4" />
               กลับหน้าแผงควบคุม
             </Button>
@@ -143,7 +143,7 @@ export default function SystemLogsPage() {
                 <ScrollText className="size-6 text-blue-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-zinc-100 tracking-tight">บันทึกระบบ (System Logs)</h1>
+                <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">บันทึกระบบ (System Logs)</h1>
                 <p className="text-xs text-zinc-500 mt-0.5">ตรวจสอบกิจกรรมต่างๆ และข้อผิดพลาดที่เกิดขึ้นในระบบ</p>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function SystemLogsPage() {
                 onClick={exportToExcel}
                 variant="outline"
                 size="sm"
-                className="border-zinc-800 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 gap-2 h-9"
+                className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 gap-2 h-9"
                 disabled={filteredLogs.length === 0}
               >
                 <Download className="size-3.5" />
@@ -163,7 +163,7 @@ export default function SystemLogsPage() {
                 onClick={fetchLogs}
                 variant="outline"
                 size="sm"
-                className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 gap-2 h-9"
+                className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 gap-2 h-9"
               >
                 <RefreshCw className="size-3.5" />
                 รีเฟรชข้อมูลล่าสุด
@@ -180,15 +180,15 @@ export default function SystemLogsPage() {
               placeholder="ค้นหาจากการกระทำ, รายละเอียด หรือชื่อผู้ใช้..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-zinc-900/60 border-zinc-800 text-zinc-100 h-10 text-sm focus:border-indigo-500/50"
+              className="pl-9 bg-white/60 dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 h-10 text-sm focus:border-indigo-500/50"
             />
           </div>
           <div className="w-full sm:w-48 shrink-0">
             <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val || "ALL")}>
-              <SelectTrigger className="bg-zinc-900/60 border-zinc-800 h-10 text-sm">
+              <SelectTrigger className="bg-white/60 dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 h-10 text-sm">
                 <SelectValue placeholder="ทุกสถานะ" />
               </SelectTrigger>
-              <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+              <SelectContent className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100">
                 <SelectItem value="ALL">ทุกสถานะ</SelectItem>
                 <SelectItem value="SUCCESS">
                   <div className="flex items-center gap-2 text-emerald-400">
@@ -211,7 +211,7 @@ export default function SystemLogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="bg-zinc-900/30 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-white/30 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
           {filteredLogs.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center text-center gap-3">
               <ScrollText className="size-10 text-zinc-800" />
@@ -221,7 +221,7 @@ export default function SystemLogsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap sm:whitespace-normal">
                 <thead>
-                  <tr className="bg-zinc-900/60 border-b border-zinc-800 text-zinc-500 text-[11px] font-bold uppercase tracking-wider">
+                  <tr className="bg-white/60 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 text-[11px] font-bold uppercase tracking-wider">
                     <th className="px-5 py-3.5 w-[140px]">วัน-เวลา</th>
                     <th className="px-5 py-3.5 w-[160px]">ประเภทกิจกรรม</th>
                     <th className="px-5 py-3.5 w-[120px]">สถานะ</th>
@@ -231,15 +231,15 @@ export default function SystemLogsPage() {
                 </thead>
                 <tbody className="divide-y divide-zinc-800/60">
                   {filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-zinc-800/30 transition-colors group">
-                      <td className="px-5 py-4 text-xs text-zinc-400 font-mono">
+                    <tr key={log.id} className="hover:bg-zinc-100/30 dark:hover:bg-zinc-800/30 transition-colors group">
+                      <td className="px-5 py-4 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                         {new Date(log.createdAt).toLocaleString("th-TH", {
                           year: "2-digit", month: "2-digit", day: "2-digit",
                           hour: "2-digit", minute: "2-digit", second: "2-digit"
                         })}
                       </td>
                       <td className="px-5 py-4">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700">
                           {log.action}
                         </span>
                       </td>
@@ -258,13 +258,13 @@ export default function SystemLogsPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-zinc-300 text-xs">
+                      <td className="px-5 py-4 text-zinc-700 dark:text-zinc-300 text-xs">
                         {log.details}
                       </td>
                       <td className="px-5 py-4">
                         {log.user ? (
                           <div>
-                            <div className="font-semibold text-zinc-200 text-xs truncate max-w-[150px]">{log.user.name}</div>
+                            <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs truncate max-w-[150px]">{log.user.name}</div>
                             <div className="text-[10px] text-zinc-500 truncate max-w-[150px]">{log.user.email}</div>
                           </div>
                         ) : (
