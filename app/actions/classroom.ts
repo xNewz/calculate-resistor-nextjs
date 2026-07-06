@@ -255,10 +255,10 @@ export async function submitQuizAction(
     return { success: false, error: "ไม่มีสิทธิ์ในการดำเนินการนี้ (เฉพาะผู้เรียนเท่านั้น)" };
   }
 
-  try {
-    let assignmentTitle = "ไม่ทราบชื่อ";
-    let isExamMode = false;
+  let assignmentTitle = "ไม่ทราบชื่อ";
+  let isExamMode = false;
 
+  try {
     // Verify assignment exists and student is enrolled in its classroom
     const assignment = await prisma.assignment.findUnique({
       where: { id: assignmentId },
