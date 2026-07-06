@@ -133,7 +133,7 @@ export default function HomePage() {
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 items-center justify-center">
           <Link href="/register">
-            <Button className="h-11 px-7 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-sm rounded-xl gap-2 cursor-pointer shadow-lg shadow-indigo-900/40">
+            <Button className="h-11 px-7 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl gap-2 cursor-pointer shadow-lg shadow-indigo-900/40">
               เริ่มใช้งานฟรี
               <ArrowRight className="size-4" />
             </Button>
@@ -357,7 +357,7 @@ export default function HomePage() {
         {/* Background decorative glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
 
-        <div className="max-w-3xl mx-auto relative bg-gradient-to-b from-zinc-900/60 to-zinc-950/80 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-8 sm:p-12 shadow-2xl overflow-hidden text-center">
+        <div className="max-w-3xl mx-auto relative bg-gradient-to-b from-white/90 to-zinc-100/90 dark:from-zinc-900/60 dark:to-zinc-950/80 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-8 sm:p-12 shadow-2xl overflow-hidden text-center">
           {/* Inner glows */}
           <div className="absolute -right-20 -top-20 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -376,7 +376,7 @@ export default function HomePage() {
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/register" className="w-full sm:w-auto">
-              <Button className="h-11 px-8 bg-indigo-600 hover:bg-indigo-700 text-zinc-900 dark:text-white font-bold text-sm rounded-xl gap-2 cursor-pointer w-full sm:w-auto transition-all shadow-lg shadow-indigo-900/35">
+              <Button className="h-11 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl gap-2 cursor-pointer w-full sm:w-auto transition-all shadow-lg shadow-indigo-900/35">
                 เริ่มต้นใช้งานบัญชีฟรี
                 <ArrowRight className="size-4" />
               </Button>
@@ -389,7 +389,7 @@ export default function HomePage() {
           </div>
 
           {/* Core highlights row */}
-          <div className="mt-12 pt-8 border-t border-zinc-850/60 grid grid-cols-3 gap-2 sm:gap-4 text-center">
+          <div className="mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800/60 grid grid-cols-3 gap-2 sm:gap-4 text-center">
             {[
               { label: "Interactive Tools", val: "เครื่องมือแบบโต้ตอบ" },
               { label: "Classroom Support", val: "รองรับระบบห้องเรียน" },
