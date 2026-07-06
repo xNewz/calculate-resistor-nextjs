@@ -66,7 +66,7 @@ interface AssignmentQuizProps {
     assignmentType?: string;
     questionCount: number;
     questionMode?: string;
-    customQuestions?: any[];
+    isExam?: boolean;
   };
 }
 
@@ -93,9 +93,6 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
 
   // Generate questions list
   const generateQuestions = useCallback(() => {
-    if (assignment.assignmentType === "CUSTOM" && assignment.customQuestions) {
-      return assignment.customQuestions;
-    }
     return generateSeededQuestions(
       userId,
       assignment.id,
@@ -138,14 +135,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
 
       let isCorrect = false;
       if (cleanAnswer && !isTimeoutState) {
-        if (assignment.assignmentType === "CUSTOM") {
-          const correctAns = currentQuestion.correctAnswer || "";
-          if (currentQuestion.type === "CHOICE") {
-            isCorrect = cleanAnswer === correctAns;
-          } else {
-            isCorrect = cleanAnswer.trim().toLowerCase() === correctAns.trim().toLowerCase();
-          }
-        } else if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
+        if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
           const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
           if (parsed !== null) {
             const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
@@ -199,7 +189,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
 
   // Timer countdown
   useEffect(() => {
-    if (gameState !== "playing" || (!isImageLoaded && assignment.assignmentType !== "CUSTOM")) return;
+    if (gameState !== "playing" || (!isImageLoaded && assignment.assignmentType !== "MULTIMETER")) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -260,9 +250,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                 <div className="bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
                   <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">ประเภทแบบฝึกหัด</span>
                   <span className="text-sm font-bold text-zinc-200 mt-1">
-                    {assignment.assignmentType === "CUSTOM"
-                      ? "-"
-                      : assignment.assignmentType === "MULTIMETER"
+                    {assignment.assignmentType === "MULTIMETER"
                         ? "มัลติมิเตอร์"
                         : `ตัวต้านทาน ${assignment.bandType} แถบสี`}
                   </span>
@@ -279,12 +267,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                   คำชี้แจงกติกาแบบฝึกหัด:
                 </h4>
                 <ul className="list-disc pl-5 space-y-1.5">
-                  {assignment.assignmentType === "CUSTOM" ? (
-                    <>
-                      <li>ตอบคำถามที่ผู้สอนกำหนดให้ถูกต้อง</li>
-                      <li>มีเวลานับถอยหลังในตอบข้อละ 30 วินาที</li>
-                    </>
-                  ) : assignment.assignmentType === "MULTIMETER" ? (
+                  {assignment.assignmentType === "MULTIMETER" ? (
                     <>
                       <li>อ่านค่าจากหน้าปัดมัลติมิเตอร์แบบเข็ม ตามย่านวัดที่กำหนด</li>
                       <li>มีเวลานับถอยหลังในตอบข้อละ 30 วินาที</li>
@@ -345,7 +328,6 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
               <CardContent className="pt-6 space-y-8">
 
                 {/* Visual Resistor */}
-                {assignment.assignmentType !== "CUSTOM" && (
                   <div className="py-4 min-h-[180px] flex flex-col justify-center relative">
                     <div className={isImageLoaded ? "block" : "hidden"}>
                       {assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData ? (
@@ -361,22 +343,19 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
                       </div>
                     )}
                   </div>
-                )}
 
                 {/* Input form or Choices Grid */}
                 <div className="space-y-4 max-w-md mx-auto">
                   <div className="space-y-2">
                     <Label htmlFor="answer-input" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block text-center">
-                      {assignment.assignmentType === "CUSTOM"
-                        ? currentQuestion.text
-                        : assignment.assignmentType === "MULTIMETER"
+                      {assignment.assignmentType === "MULTIMETER"
                           ? (currentQuestion.multimeterData?.range.type === "OHM" ? "เลือกคำตอบจากเข็ม (หน่วย: โอห์ม Ω)" : "เลือกคำตอบจากเข็ม (หน่วย: โวลต์ V)")
                           : "เลือกค่าความต้านทานที่ถูกต้อง (หน่วย: โอห์ม Ω)"}
                     </Label>
 
-                    {((assignment.questionMode === "CHOICE" && currentQuestion.choices) || (assignment.assignmentType === "CUSTOM" && currentQuestion.type === "CHOICE" && currentQuestion.options)) ? (
+                    {assignment.questionMode === "CHOICE" && currentQuestion.choices ? (
                       <div className="grid grid-cols-2 gap-3 pt-2">
-                        {(currentQuestion.choices || currentQuestion.options || []).map((choice: string) => {
+                        {(currentQuestion.choices || []).map((choice: string) => {
                           const isSelected = userAnswer === choice;
                           return (
                             <Button

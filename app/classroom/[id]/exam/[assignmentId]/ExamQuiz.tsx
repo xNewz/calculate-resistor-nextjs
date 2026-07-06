@@ -56,7 +56,6 @@ interface ExamQuizProps {
     allowMobile?: boolean;
     dueDate?: Date | string | null;
     questionMode?: string;
-    customQuestions?: any[];
   };
 }
 
@@ -115,9 +114,6 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
   // Generate questions
   const generateQuestions = useCallback(() => {
-    if (assignment.assignmentType === "CUSTOM" && assignment.customQuestions) {
-      return assignment.customQuestions;
-    }
     const list: Question[] = [];
     const type = assignment.assignmentType || "RESISTOR";
     const mode = assignment.questionMode || "INPUT";
@@ -480,14 +476,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
     let isCorrect = false;
     if (cleanAnswer) {
-      if (assignment.assignmentType === "CUSTOM") {
-        const correctAns = currentQuestion.correctAnswer || "";
-        if (currentQuestion.type === "CHOICE") {
-          isCorrect = cleanAnswer === correctAns;
-        } else {
-          isCorrect = cleanAnswer.trim().toLowerCase() === correctAns.trim().toLowerCase();
-        }
-      } else if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
+      if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
         const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
         if (parsed !== null) {
           const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
@@ -728,7 +717,6 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
             <Card className="bg-zinc-900/60 border-zinc-850 shadow-2xl rounded-2xl overflow-hidden relative">
               <CardContent className="p-6 sm:p-10 flex flex-col items-center">
                 
-                {assignment.assignmentType !== "CUSTOM" && (
                   <div className="w-full flex justify-center mb-10 mt-6 relative h-32 items-center">
                     <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full scale-150 -z-10" />
                     {assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData ? (
@@ -744,22 +732,19 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                       />
                     )}
                   </div>
-                )}
 
                 <div className="w-full max-w-sm space-y-4 transition-all duration-500">
                   <div className="space-y-1.5">
                     <Label className="text-sm font-bold text-zinc-300 flex items-center justify-between">
-                      {assignment.assignmentType === "CUSTOM" ? currentQuestion.text : "คำตอบของคุณ"}
+                      คำตอบของคุณ
                       <span className="text-xs font-normal text-zinc-500">
-                        {assignment.assignmentType === "CUSTOM"
-                          ? ""
-                          : assignment.assignmentType === "MULTIMETER" 
+                        {assignment.assignmentType === "MULTIMETER" 
                           ? (currentQuestion.multimeterData?.range.type === "OHM" ? "เลือกคำตอบหน่วย: โอห์ม (Ω)" : "เลือกคำตอบหน่วย: โวลต์ (V)") 
                           : "เลือกคำตอบที่ถูกต้อง"}
                       </span>
                     </Label>
                     
-                    {((assignment.questionMode === "CHOICE" && currentQuestion.choices) || (assignment.assignmentType === "CUSTOM" && currentQuestion.type === "CHOICE" && currentQuestion.options)) ? (
+                    {assignment.questionMode === "CHOICE" && currentQuestion.choices ? (
                       <div className="grid grid-cols-2 gap-3 pt-2">
                         {(currentQuestion.choices || currentQuestion.options || []).map((choice) => {
                           const isSelected = userAnswer === choice;
@@ -774,7 +759,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                                   ? "bg-red-500/25 border-red-500 text-red-200 shadow-[0_0_12px_rgba(239,68,68,0.2)]" 
                                   : "bg-zinc-950/60 border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-zinc-200"
                               }`}
-                              disabled={assignment.assignmentType !== "CUSTOM" && !isImageLoaded}
+                              disabled={!isImageLoaded}
                             >
                               {choice}
                             </Button>
@@ -789,27 +774,25 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
                           value={userAnswer}
                           onChange={(e) => setUserAnswer(e.target.value)}
                           onKeyDown={handleKeyDown}
-                          disabled={assignment.assignmentType !== "CUSTOM" && !isImageLoaded}
+                          disabled={!isImageLoaded}
                           placeholder="พิมพ์คำตอบ..."
                           className="h-14 bg-zinc-950 border-2 border-zinc-800 text-lg sm:text-xl font-bold px-4 transition-all group-hover:border-zinc-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 text-zinc-100 placeholder:font-normal placeholder:text-zinc-700 rounded-xl disabled:opacity-50 select-none"
                           autoComplete="off"
                         />
-                        {assignment.assignmentType !== "CUSTOM" && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 font-bold text-zinc-500 text-lg">
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 font-bold text-zinc-500 text-lg">
                             <span className="font-serif italic">
                               {assignment.assignmentType === "MULTIMETER" 
                                 ? (currentQuestion.multimeterData?.range.type === "OHM" ? "Ω" : "V") 
                                 : "Ω"}
                             </span>
-                          </div>
-                        )}
+                        </div>
                       </div>
                     )}
                   </div>
 
                   <Button 
                     onClick={handleNext}
-                    disabled={(assignment.assignmentType !== "CUSTOM" && !isImageLoaded) || processingRef.current || ((assignment.questionMode === "CHOICE" || currentQuestion.type === "CHOICE") && !userAnswer)}
+                    disabled={!isImageLoaded || processingRef.current || (assignment.questionMode === "CHOICE" && !userAnswer)}
                     className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98] cursor-pointer"
                   >
                     {currentIndex === assignment.questionCount - 1 ? (

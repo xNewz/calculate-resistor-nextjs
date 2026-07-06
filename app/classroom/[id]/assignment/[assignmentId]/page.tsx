@@ -77,7 +77,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
         assignmentType: assignment.assignmentType,
         questionCount: assignment.questionCount,
         questionMode: assignment.questionMode,
-        customQuestions: (assignment.customQuestions as any[]) || undefined,
+        isExam: assignment.isExam,
       }}
     />
   );
