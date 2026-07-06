@@ -16,6 +16,7 @@ import {
   AlertTriangle,
   Download
 } from "lucide-react";
+import * as XLSX from "xlsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
@@ -67,7 +68,7 @@ export default function SystemLogsPage() {
     return matchSearch && matchStatus;
   });
 
-  const exportToCSV = () => {
+  const exportToExcel = () => {
     if (filteredLogs.length === 0) return;
     
     const headers = ["ID", "วันที่-เวลา", "ประเภทกิจกรรม", "สถานะ", "รายละเอียด", "ชื่อผู้ดำเนินการ", "อีเมล", "สิทธิ์"];
@@ -77,28 +78,31 @@ export default function SystemLogsPage() {
       new Date(log.createdAt).toLocaleString("th-TH"),
       log.action,
       log.status,
-      `"${log.details.replace(/"/g, '""')}"`,
-      log.user ? `"${log.user.name.replace(/"/g, '""')}"` : "System",
+      log.details,
+      log.user ? log.user.name : "System",
       log.user?.email || "-",
       log.user?.role || "-"
     ]);
     
-    const csvContent = [
-      headers.join(","),
-      ...rows.map(r => r.join(","))
-    ].join("\n");
+    const worksheetData = [headers, ...rows];
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
     
-    // Add BOM for UTF-8 Excel support
-    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
+    // Auto-fit columns by calculating max width for each column
+    const colWidths = headers.map((_, colIndex) => {
+      const maxWidth = worksheetData.reduce((max, row) => {
+        const cellValue = row[colIndex] ? row[colIndex].toString() : "";
+        // Thai characters and English differ in visual width, a slight multiplier helps
+        return Math.max(max, cellValue.length);
+      }, 10); // Minimum width 10
+      return { wch: maxWidth + 2 }; // +2 for padding
+    });
     
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `system_logs_${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    worksheet['!cols'] = colWidths;
+    
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "System Logs");
+    
+    XLSX.writeFile(workbook, `system_logs_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   if (loading) {
@@ -146,14 +150,14 @@ export default function SystemLogsPage() {
 
             <div className="flex items-center gap-2">
               <Button
-                onClick={exportToCSV}
+                onClick={exportToExcel}
                 variant="outline"
                 size="sm"
                 className="border-zinc-800 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 gap-2 h-9"
                 disabled={filteredLogs.length === 0}
               >
                 <Download className="size-3.5" />
-                Export CSV
+                Export Excel
               </Button>
               <Button
                 onClick={fetchLogs}
