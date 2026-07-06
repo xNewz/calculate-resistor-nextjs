@@ -24,6 +24,7 @@ interface UserRecord {
   id: string;
   email: string;
   name: string;
+  image?: string;
   role: UserRole;
   createdAt: string | Date;
   lastActive?: string | Date;
@@ -282,8 +283,8 @@ export default function AdminUsersPage() {
                     <tr key={user.id} className="hover:bg-zinc-800/20 transition-colors group">
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={`size-9 rounded-full flex items-center justify-center font-black text-sm shrink-0 ${cfg.badgeClass} border`}>
-                            {user.name.charAt(0).toUpperCase()}
+                          <div className={`size-9 rounded-full flex items-center justify-center font-black text-sm shrink-0 overflow-hidden ${cfg.badgeClass} border`}>
+                            {user.image ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" /> : user.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <div className="font-semibold text-zinc-200 text-sm">{user.name}</div>

@@ -45,6 +45,7 @@ interface DashboardStats {
     id: string;
     name: string;
     email: string;
+    image?: string;
     role: string;
     createdAt: string | Date;
   }>;
@@ -262,11 +263,11 @@ export default function AdminDashboardPage() {
                     {stats.recentUsers.map((u) => (
                       <div key={u.id} className="p-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors">
                         <div className="flex items-center gap-3 overflow-hidden">
-                          <div className={`size-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${u.role === "ADMIN" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
+                          <div className={`size-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden ${u.role === "ADMIN" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
                               u.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" :
                                 "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                             }`}>
-                            {u.name.charAt(0).toUpperCase()}
+                            {u.image ? <img src={u.image} alt={u.name} className="w-full h-full object-cover" /> : u.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="truncate">
                             <div className="font-semibold text-zinc-200 text-xs truncate">{u.name}</div>

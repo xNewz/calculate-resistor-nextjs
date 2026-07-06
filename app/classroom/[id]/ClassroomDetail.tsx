@@ -63,6 +63,7 @@ interface ClassroomDetailProps {
     id: string;
     email: string;
     name: string;
+    image?: string | null;
     role: "LEARNER" | "TEACHER" | "ADMIN";
   };
   classroom: {
@@ -70,7 +71,7 @@ interface ClassroomDetailProps {
     code: string;
     name: string;
     description: string | null;
-    teacher: { name: string };
+    teacher: { name: string; image?: string | null };
   };
   assignments: any[];
   enrollments: any[];
@@ -973,8 +974,8 @@ export default function ClassroomDetail({
                 <Card className="bg-zinc-900/40 border-zinc-850 p-4 rounded-xl">
                   <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">อาจารย์ผู้สอน</h3>
                   <div className="flex items-center gap-3">
-                    <div className="size-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-black text-indigo-400 text-xs">
-                      {classroom.teacher.name.charAt(0)}
+                    <div className="size-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-black text-indigo-400 text-xs overflow-hidden">
+                      {classroom.teacher.image ? <img src={classroom.teacher.image} alt={classroom.teacher.name} className="w-full h-full object-cover" /> : classroom.teacher.name.charAt(0)}
                     </div>
                     <div>
                       <div className="font-bold text-sm text-zinc-200">{classroom.teacher.name}</div>
@@ -997,8 +998,8 @@ export default function ClassroomDetail({
                       {enrollments.map((enr) => (
                         <div key={enr.id} className="py-3 flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2.5">
-                            <div className="size-7 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-zinc-400 text-xs">
-                              {enr.user.name.charAt(0)}
+                            <div className="size-7 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-zinc-400 text-xs overflow-hidden">
+                              {enr.user.image ? <img src={enr.user.image} alt={enr.user.name} className="w-full h-full object-cover" /> : enr.user.name.charAt(0)}
                             </div>
                             <span className="font-medium text-zinc-300">{enr.user.name}</span>
                           </div>

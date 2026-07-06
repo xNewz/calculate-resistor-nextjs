@@ -26,6 +26,7 @@ export default async function ClassroomDetailPage({ params }: ClassroomPageProps
       teacher: {
         select: {
           name: true,
+          image: true,
         },
       },
     },
@@ -69,6 +70,7 @@ export default async function ClassroomDetailPage({ params }: ClassroomPageProps
           id: true,
           name: true,
           email: true,
+          image: true,
         },
       },
     },
