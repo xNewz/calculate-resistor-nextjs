@@ -433,27 +433,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <UserCog className="mr-2 size-3.5" />
                   <span>แก้ไขข้อมูลส่วนตัว</span>
                 </DropdownMenuItem>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 focus:text-zinc-900 dark:focus:text-zinc-100">
-                    <Sun className="mr-2 size-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
-                    <Moon className="mr-2 size-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                    <span>เปลี่ยนธีม</span>
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
-                    <DropdownMenuItem onClick={() => setTheme("light")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
-                      <Sun className="mr-2 size-3.5" />
-                      <span>สว่าง (Light)</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("dark")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
-                      <Moon className="mr-2 size-3.5" />
-                      <span>มืด (Dark)</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("system")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
-                      <Laptop className="mr-2 size-3.5" />
-                      <span>ตามระบบ (System)</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
+                <DropdownMenuLabel className="text-xs text-zinc-500 font-semibold px-2 py-1">เปลี่ยนธีม</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => setTheme("light")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                  <Sun className="mr-2 size-3.5" />
+                  <span>สว่าง (Light)</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                  <Moon className="mr-2 size-3.5" />
+                  <span>มืด (Dark)</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                  <Laptop className="mr-2 size-3.5" />
+                  <span>ตามระบบ (System)</span>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
                 <DropdownMenuItem onClick={handleLogout} className="text-xs text-red-500 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-500/10 cursor-pointer">
                   <LogOut className="mr-2 size-3.5" />
@@ -609,27 +602,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <UserCog className="mr-2 size-3.5" />
                       <span>แก้ไขข้อมูลส่วนตัว</span>
                     </DropdownMenuItem>
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 focus:text-zinc-900 dark:focus:text-zinc-100">
-                        <Sun className="mr-2 size-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
-                        <Moon className="mr-2 size-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                        <span>เปลี่ยนธีม</span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl">
-                        <DropdownMenuItem onClick={() => setTheme("light")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
-                          <Sun className="mr-2 size-3.5" />
-                          <span>สว่าง (Light)</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme("dark")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
-                          <Moon className="mr-2 size-3.5" />
-                          <span>มืด (Dark)</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme("system")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
-                          <Laptop className="mr-2 size-3.5" />
-                          <span>ตามระบบ (System)</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
+                    <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
+                    <DropdownMenuLabel className="text-xs text-zinc-500 font-semibold px-2 py-1">เปลี่ยนธีม</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={() => setTheme("light")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                      <Sun className="mr-2 size-3.5" />
+                      <span>สว่าง (Light)</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("dark")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                      <Moon className="mr-2 size-3.5" />
+                      <span>มืด (Dark)</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("system")} className="text-xs cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900">
+                      <Laptop className="mr-2 size-3.5" />
+                      <span>ตามระบบ (System)</span>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
                     <DropdownMenuItem onClick={handleLogout} className="text-xs text-red-500 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-500/10 cursor-pointer">
                       <LogOut className="mr-2 size-3.5" />
