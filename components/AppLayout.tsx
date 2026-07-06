@@ -31,6 +31,7 @@ import { getSessionAction, logoutAction, updateProfileAction, pingAction } from 
 import { getUserClassroomsAction } from "@/app/actions/classroom";
 import { Button } from "./ui/button";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface UserSession {
   userId: string;
@@ -273,6 +274,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
               {/* Right Login/Register CTA */}
               <div className="flex items-center gap-2">
+                <ThemeToggle />
                 <Link href="/login">
                   <Button variant="ghost" className="h-9 px-3.5 text-xs text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/50 cursor-pointer">
                     เข้าสู่ระบบ
@@ -405,6 +407,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </span>
             </div>
 
+            <ThemeToggle />
+
             <Button
               onClick={() => setShowProfileModal(true)}
               variant="ghost"
@@ -450,6 +454,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {/* User Badge initials */}
           <div className={`size-7.5 rounded-full flex items-center justify-center font-bold text-xs overflow-hidden ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400" : "bg-emerald-400/10 text-emerald-400"
             }`}>
