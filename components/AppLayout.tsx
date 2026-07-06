@@ -161,57 +161,59 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     // },
   ];
 
-  const dashboardNavItems = [
-    ...(user ? [{
-      href: "/learn",
-      label: "บทเรียน",
-      icon: BookOpen,
-      description: "สื่อการสอนการอ่านรหัสสีตัวต้านทาน"
-    }] : []),
-    ...(user ? [{
-      href: "/quiz",
-      label: "เกมตอบคำถาม (Quiz)",
-      icon: Award,
-      description: "ทดสอบการคำนวณรหัสสี"
-    }] : []),
-    ...(user ? [{
-      href: "/classroom",
-      label: "ห้องเรียนทั้งหมด",
-      icon: LayoutDashboard,
-      description: "ห้องเรียนวิชารหัสสี"
-    }] : []),
+  const dashboardNavGroups = [
+    {
+      label: "การเรียนรู้ (Learning)",
+      items: [
+        ...(user ? [{
+          href: "/learn",
+          label: "บทเรียน",
+          icon: BookOpen,
+        }] : []),
+        ...(user ? [{
+          href: "/quiz",
+          label: "เกมตอบคำถาม (Quiz)",
+          icon: Award,
+        }] : []),
+        ...(user ? [{
+          href: "/classroom",
+          label: "ห้องเรียนทั้งหมด",
+          icon: LayoutDashboard,
+        }] : []),
+      ]
+    },
     ...(user?.role === "ADMIN" ? [{
-      href: "/admin",
-      label: "แผงควบคุม (Dashboard)",
-      icon: Activity,
-      description: "ภาพรวมระบบทั้งหมด",
-      exact: true
-    }] : []),
-    ...(user?.role === "ADMIN" ? [{
-      href: "/admin/users",
-      label: "จัดการผู้ใช้งาน",
-      icon: ShieldAlert,
-      description: "Admin Panel"
-    }] : []),
-    ...(user?.role === "ADMIN" ? [{
-      href: "/admin/logs",
-      label: "บันทึกระบบ (Logs)",
-      icon: ScrollText,
-      description: "System Logs"
-    }] : []),
-    ...(user?.role === "ADMIN" ? [{
-      href: "/admin/settings",
-      label: "ตั้งค่าระบบ",
-      icon: Settings,
-      description: "System Settings"
-    }] : []),
-    ...(user?.role === "ADMIN" ? [{
-      href: "/admin/security",
-      label: "ความปลอดภัย",
-      icon: ShieldAlert,
-      description: "Security & Banned IPs"
+      label: "ระบบแอดมิน (Admin Panel)",
+      items: [
+        {
+          href: "/admin",
+          label: "แผงควบคุม (Dashboard)",
+          icon: Activity,
+          exact: true
+        },
+        {
+          href: "/admin/users",
+          label: "จัดการผู้ใช้งาน",
+          icon: Users,
+        },
+        {
+          href: "/admin/security",
+          label: "ความปลอดภัย (IP)",
+          icon: ShieldAlert,
+        },
+        {
+          href: "/admin/logs",
+          label: "บันทึกระบบ (Logs)",
+          icon: ScrollText,
+        },
+        {
+          href: "/admin/settings",
+          label: "ตั้งค่าระบบ",
+          icon: Settings,
+        }
+      ]
     }] : [])
-  ];
+  ].filter(group => group.items.length > 0);
 
   // Mobile drawer toggle
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
@@ -313,32 +315,36 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
 
           {/* Navigation Links */}
-          <div className="space-y-1">
-            <span className="px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">เมนูระบบ</span>
-            {dashboardNavItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = (item as any).exact
-                ? pathname === item.href
-                : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+          <div className="space-y-4">
+            {dashboardNavGroups.map((group, idx) => (
+              <div key={idx} className="space-y-1">
+                <span className="px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">{group.label}</span>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = (item as any).exact
+                    ? pathname === item.href
+                    : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border border-transparent group",
-                    isActive
-                      ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.08)]"
-                      : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/30"
-                  )}
-                >
-                  <Icon className={cn("size-4 shrink-0 transition-transform", isActive ? "text-indigo-400 scale-110" : "text-zinc-500 group-hover:text-zinc-350")} />
-                  <div className="flex flex-col">
-                    <span>{item.label}</span>
-                  </div>
-                </Link>
-              );
-            })}
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border border-transparent group",
+                        isActive
+                          ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.08)]"
+                          : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/30"
+                      )}
+                    >
+                      <Icon className={cn("size-4 shrink-0 transition-transform", isActive ? "text-indigo-400 scale-110" : "text-zinc-500 group-hover:text-zinc-350")} />
+                      <div className="flex flex-col">
+                        <span>{item.label}</span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </div>
 
           {/* Quick Classroom access in sidebar */}
@@ -480,29 +486,34 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
 
               {/* Navigation Items */}
-              <div className="space-y-1">
-                {dashboardNavItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = (item as any).exact
-                    ? pathname === item.href
-                    : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border border-transparent",
-                        isActive
-                          ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
-                          : "text-zinc-450 hover:text-zinc-200 hover:bg-zinc-900/30"
-                      )}
-                    >
-                      <Icon className="size-4" />
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
+              <div className="space-y-4">
+                {dashboardNavGroups.map((group, idx) => (
+                  <div key={idx} className="space-y-1">
+                    <span className="px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">{group.label}</span>
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = (item as any).exact
+                        ? pathname === item.href
+                        : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border border-transparent",
+                            isActive
+                              ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                              : "text-zinc-450 hover:text-zinc-200 hover:bg-zinc-900/30"
+                          )}
+                        >
+                          <Icon className="size-4" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
 
               {/* Classrooms quick links on mobile */}

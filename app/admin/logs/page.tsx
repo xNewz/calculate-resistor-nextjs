@@ -4,12 +4,12 @@ import React, { useEffect, useState } from "react";
 import { getSystemLogsAction } from "@/app/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  ScrollText, 
-  Loader2, 
-  ShieldAlert, 
-  RefreshCw, 
-  CheckCircle2, 
+import {
+  ScrollText,
+  Loader2,
+  ShieldAlert,
+  RefreshCw,
+  CheckCircle2,
   XCircle,
   Search,
   Filter,
@@ -56,13 +56,13 @@ export default function SystemLogsPage() {
   };
 
   const filteredLogs = logs.filter(log => {
-    const matchSearch = 
-      log.details.toLowerCase().includes(search.toLowerCase()) || 
+    const matchSearch =
+      log.details.toLowerCase().includes(search.toLowerCase()) ||
       log.action.toLowerCase().includes(search.toLowerCase()) ||
       (log.user && log.user.name.toLowerCase().includes(search.toLowerCase()));
-    
+
     const matchStatus = filterStatus === "ALL" || log.status === filterStatus;
-    
+
     return matchSearch && matchStatus;
   });
 
@@ -88,7 +88,7 @@ export default function SystemLogsPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
-        
+
         {/* Navigation & Header */}
         <div className="space-y-4">
           <Link href="/admin">
@@ -97,7 +97,7 @@ export default function SystemLogsPage() {
               กลับหน้าแผงควบคุม
             </Button>
           </Link>
-          
+
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
@@ -108,7 +108,7 @@ export default function SystemLogsPage() {
                 <p className="text-xs text-zinc-500 mt-0.5">ตรวจสอบกิจกรรมต่างๆ และข้อผิดพลาดที่เกิดขึ้นในระบบ</p>
               </div>
             </div>
-            
+
             <Button
               onClick={fetchLogs}
               variant="outline"
@@ -183,7 +183,7 @@ export default function SystemLogsPage() {
                     <tr key={log.id} className="hover:bg-zinc-800/30 transition-colors group">
                       <td className="px-5 py-4 text-xs text-zinc-400 font-mono">
                         {new Date(log.createdAt).toLocaleString("th-TH", {
-                          year: "2-digit", month: "2-digit", day: "2-digit", 
+                          year: "2-digit", month: "2-digit", day: "2-digit",
                           hour: "2-digit", minute: "2-digit", second: "2-digit"
                         })}
                       </td>
@@ -227,9 +227,9 @@ export default function SystemLogsPage() {
             </div>
           )}
         </div>
-        
+
         <div className="text-center text-xs text-zinc-600">
-          แสดงข้อมูล {filteredLogs.length} รายการ (ล่าสุด 200 รายการ)
+          แสดงข้อมูล {filteredLogs.length} รายการ (ล่าสุด 50 รายการ)
         </div>
 
       </div>

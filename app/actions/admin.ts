@@ -43,7 +43,7 @@ export async function getUsersAction() {
 export async function adminUpdateUserRoleAction(id: string, role: "LEARNER" | "TEACHER" | "ADMIN") {
   try {
     const adminUser = await checkAdmin();
-    
+
     // Prevent removing the last admin or changing own role
     if (adminUser.id === id && role !== "ADMIN") {
       return { success: false, error: "ไม่สามารถเปลี่ยนสิทธิ์ของตนเองได้" };
@@ -53,7 +53,7 @@ export async function adminUpdateUserRoleAction(id: string, role: "LEARNER" | "T
       where: { id },
       data: { role },
     });
-    
+
     revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
@@ -64,7 +64,7 @@ export async function adminUpdateUserRoleAction(id: string, role: "LEARNER" | "T
 export async function adminDeleteUserAction(id: string) {
   try {
     const adminUser = await checkAdmin();
-    
+
     if (adminUser.id === id) {
       return { success: false, error: "ไม่สามารถลบบัญชีตนเองได้" };
     }
@@ -72,7 +72,7 @@ export async function adminDeleteUserAction(id: string) {
     await prisma.user.delete({
       where: { id },
     });
-    
+
     revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
@@ -83,7 +83,7 @@ export async function adminDeleteUserAction(id: string) {
 export async function adminCreateUserAction(formData: FormData) {
   try {
     await checkAdmin();
-    
+
     const email = formData.get("email") as string;
     const name = formData.get("name") as string;
     const password = formData.get("password") as string;
@@ -179,7 +179,7 @@ export async function getSystemLogsAction() {
     await checkAdmin();
     const logs = await prisma.systemLog.findMany({
       orderBy: { createdAt: "desc" },
-      take: 200,
+      take: 50,
       include: {
         user: { select: { name: true, email: true, role: true } }
       }
@@ -212,7 +212,7 @@ export async function getSystemSettingsAction() {
 export async function updateSystemSettingsAction(formData: FormData) {
   try {
     const adminUser = await checkAdmin();
-    
+
     const maintenanceModeStr = formData.get("maintenanceMode") as string;
     const announcementEnabledStr = formData.get("announcementEnabled") as string;
     const announcementText = formData.get("announcementText") as string;
