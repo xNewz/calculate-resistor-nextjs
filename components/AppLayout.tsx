@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, startTransition } from "react";
+import React, { useState, useEffect, useRef, startTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -71,14 +71,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
   const [mobileUserMenuOpen, setMobileUserMenuOpen] = useState(false);
 
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
+  const mobileUserMenuRef = useRef<HTMLDivElement>(null);
+
   // Close menus on click outside
   useEffect(() => {
-    const handleClick = () => {
-      setDesktopMenuOpen(false);
-      setMobileUserMenuOpen(false);
+    const handleClick = (e: MouseEvent) => {
+      if (desktopMenuRef.current && !desktopMenuRef.current.contains(e.target as Node)) {
+        setDesktopMenuOpen(false);
+      }
+      if (mobileUserMenuRef.current && !mobileUserMenuRef.current.contains(e.target as Node)) {
+        setMobileUserMenuOpen(false);
+      }
     };
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   useEffect(() => {
@@ -424,7 +431,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </span>
             </div>
 
-            <div className="relative">
+            <div className="relative" ref={desktopMenuRef}>
               <Button 
                 onClick={(e: React.MouseEvent) => { e.stopPropagation(); setDesktopMenuOpen(!desktopMenuOpen); setMobileUserMenuOpen(false); }}
                 variant="ghost" 
@@ -610,7 +617,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 </div>
 
-                <div className="relative">
+                <div className="relative" ref={mobileUserMenuRef}>
                   <Button 
                     onClick={(e: React.MouseEvent) => { e.stopPropagation(); setMobileUserMenuOpen(!mobileUserMenuOpen); setDesktopMenuOpen(false); }}
                     variant="ghost" 
