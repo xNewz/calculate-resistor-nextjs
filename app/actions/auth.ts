@@ -1,9 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { encrypt, getSession } from "@/lib/auth";
+import { logSystemEvent } from "@/lib/logger";
+import { checkRateLimit, recordFailedAttempt, clearAttempts } from "@/lib/rateLimit";
 
 
 export type AuthState = {
@@ -26,6 +28,15 @@ export async function registerAction(
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;
   const roleInput = formData.get("role") as string;
+
+  const reqHeaders = await headers();
+  const ip = reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "unknown-ip";
+  const rateLimitKey = `register:${ip}`;
+
+  const limit = checkRateLimit(rateLimitKey);
+  if (!limit.allowed) {
+    return { success: false, error: "ทำรายการบ่อยเกินไป กรุณารอสักครู่ (15 นาที) แล้วลองใหม่" };
+  }
 
   // Simple validation
   const errors: Record<string, string> = {};
@@ -56,6 +67,12 @@ export async function registerAction(
     });
 
     if (existingUser) {
+      const justBlocked = recordFailedAttempt(rateLimitKey);
+      if (justBlocked) {
+        await logSystemEvent("REGISTER_BRUTE_FORCE", "ERROR", `ตรวจพบสแปมการสมัครสมาชิกจาก IP: ${ip} (อีเมล: ${email})`);
+      } else {
+        await logSystemEvent("REGISTER_FAILED", "WARNING", `สมัครสมาชิกไม่สำเร็จ: อีเมล ${email} มีในระบบแล้ว (IP: ${ip})`);
+      }
       return {
         success: false,
         error: "อีเมลนี้ถูกใช้งานแล้วในระบบ",
@@ -92,6 +109,9 @@ export async function registerAction(
       path: "/",
     });
 
+    clearAttempts(rateLimitKey);
+    await logSystemEvent("REGISTER_SUCCESS", "SUCCESS", `สมัครสมาชิกสำเร็จสำหรับอีเมล ${email} (IP: ${ip})`, user.id);
+
     return { success: true };
   } catch (error) {
     console.error("Registration error:", error);
@@ -116,6 +136,15 @@ export async function loginAction(
     return { success: false, error: "กรุณากรอกรหัสผ่าน" };
   }
 
+  const reqHeaders = await headers();
+  const ip = reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "unknown-ip";
+  const rateLimitKey = `login:${email}:${ip}`;
+
+  const limit = checkRateLimit(rateLimitKey);
+  if (!limit.allowed) {
+    return { success: false, error: "เข้าสู่ระบบผิดพลาดหลายครั้งเกินไป บัญชีถูกระงับชั่วคราวเป็นเวลา 15 นาที" };
+  }
+
   try {
     // Find user
     const user = await prisma.user.findUnique({
@@ -123,12 +152,24 @@ export async function loginAction(
     });
 
     if (!user) {
+      const justBlocked = recordFailedAttempt(rateLimitKey);
+      if (justBlocked) {
+        await logSystemEvent("LOGIN_BRUTE_FORCE", "ERROR", `ตรวจพบการสุ่มรหัสผ่าน (Brute Force) สำหรับอีเมล ${email} จาก IP: ${ip}`);
+      } else {
+        await logSystemEvent("LOGIN_FAILED", "WARNING", `เข้าสู่ระบบไม่สำเร็จ: ไม่พบผู้ใช้งาน ${email} (IP: ${ip})`);
+      }
       return { success: false, error: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" };
     }
 
     // Compare password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
+      const justBlocked = recordFailedAttempt(rateLimitKey);
+      if (justBlocked) {
+        await logSystemEvent("LOGIN_BRUTE_FORCE", "ERROR", `ตรวจพบการสุ่มรหัสผ่าน (Brute Force) สำหรับอีเมล ${email} จาก IP: ${ip}`);
+      } else {
+        await logSystemEvent("LOGIN_FAILED", "WARNING", `เข้าสู่ระบบไม่สำเร็จ: รหัสผ่านผิดสำหรับ ${email} (IP: ${ip})`);
+      }
       return { success: false, error: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" };
     }
 
@@ -154,6 +195,9 @@ export async function loginAction(
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
+
+    clearAttempts(rateLimitKey);
+    await logSystemEvent("LOGIN_SUCCESS", "SUCCESS", `เข้าสู่ระบบสำเร็จ (IP: ${ip})`, user.id);
 
     return { success: true, role: user.role };
   } catch (error) {

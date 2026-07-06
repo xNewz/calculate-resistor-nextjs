@@ -2,7 +2,7 @@ import { prisma } from "./prisma";
 
 export async function logSystemEvent(
   action: string,
-  status: "SUCCESS" | "ERROR",
+  status: "SUCCESS" | "ERROR" | "WARNING",
   details: string,
   userId?: string
 ) {
