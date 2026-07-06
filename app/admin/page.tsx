@@ -12,11 +12,13 @@ import {
   BookOpen,
   FolderClosed,
   PenTool,
-  CheckCircle2,
   User as UserIcon,
+  CheckCircle2,
   Loader2,
   RefreshCw,
-  Clock
+  Clock,
+  Settings,
+  ScrollText
 } from "lucide-react";
 import {
   PieChart,
@@ -133,10 +135,22 @@ export default function AdminDashboardPage() {
             >
               <RefreshCw className="size-4" />
             </Button>
+            <Link href="/admin/logs">
+              <Button variant="outline" className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
+                <ScrollText className="size-4 text-blue-400" />
+                บันทึกระบบ
+              </Button>
+            </Link>
+            <Link href="/admin/settings">
+              <Button variant="outline" className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
+                <Settings className="size-4 text-orange-400" />
+                ตั้งค่าส่วนกลาง
+              </Button>
+            </Link>
             <Link href="/admin/users">
               <Button className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
-                <Users className="size-4" />
-                จัดการผู้ใช้งาน
+                <Users className="size-4 text-emerald-400" />
+                จัดการผู้ใช้
               </Button>
             </Link>
           </div>

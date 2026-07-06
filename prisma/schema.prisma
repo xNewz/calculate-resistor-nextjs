@@ -116,3 +116,11 @@ model SystemLog {
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 }
+
+model SystemSetting {
+  id                  String   @id @default("global") // Enforce single row
+  maintenanceMode     Boolean  @default(false)
+  announcementText    String?  @db.Text
+  announcementEnabled Boolean  @default(false)
+  updatedAt           DateTime @updatedAt
+}

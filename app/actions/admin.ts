@@ -189,3 +189,65 @@ export async function getSystemLogsAction() {
     return { success: false, error: error.message || "Failed to fetch system logs" };
   }
 }
+
+export async function getSystemSettingsAction() {
+  try {
+    await checkAdmin();
+    let settings = await prisma.systemSetting.findUnique({
+      where: { id: "global" }
+    });
+
+    if (!settings) {
+      settings = await prisma.systemSetting.create({
+        data: { id: "global" }
+      });
+    }
+
+    return { success: true, settings };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Failed to fetch settings" };
+  }
+}
+
+export async function updateSystemSettingsAction(formData: FormData) {
+  try {
+    const adminUser = await checkAdmin();
+    
+    const maintenanceModeStr = formData.get("maintenanceMode") as string;
+    const announcementEnabledStr = formData.get("announcementEnabled") as string;
+    const announcementText = formData.get("announcementText") as string;
+
+    const maintenanceMode = maintenanceModeStr === "true" || maintenanceModeStr === "on";
+    const announcementEnabled = announcementEnabledStr === "true" || announcementEnabledStr === "on";
+
+    const settings = await prisma.systemSetting.upsert({
+      where: { id: "global" },
+      update: {
+        maintenanceMode,
+        announcementEnabled,
+        announcementText: announcementText || null,
+      },
+      create: {
+        id: "global",
+        maintenanceMode,
+        announcementEnabled,
+        announcementText: announcementText || null,
+      }
+    });
+
+    // Log the change
+    await prisma.systemLog.create({
+      data: {
+        action: "UPDATE_SETTINGS",
+        status: "SUCCESS",
+        details: `อัปเดตการตั้งค่าระบบ: Maintenance Mode=${maintenanceMode}, Announcement=${announcementEnabled}`,
+        userId: adminUser.id,
+      }
+    });
+
+    revalidatePath("/", "layout"); // Revalidate entire app structure
+    return { success: true, settings };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Failed to update settings" };
+  }
+}
