@@ -34,6 +34,7 @@ import {
   Legend
 } from "recharts";
 import Link from "next/link";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface DashboardStats {
   users: {
@@ -94,21 +95,32 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<number>(60); // Default 1 min
 
   useEffect(() => {
     fetchStats();
   }, []);
 
-  const fetchStats = async () => {
-    setLoading(true);
+  useEffect(() => {
+    if (refreshInterval === 0) return;
+    
+    const interval = setInterval(() => {
+      fetchStats(true);
+    }, refreshInterval * 1000);
+    
+    return () => clearInterval(interval);
+  }, [refreshInterval]);
+
+  const fetchStats = async (silent = false) => {
+    if (!silent) setLoading(true);
     const res = await getAdminDashboardStatsAction();
     if (res.success && res.stats) {
       setStats(res.stats as unknown as DashboardStats);
       setError(null);
     } else {
-      setError(res.error || "ไม่สามารถโหลดข้อมูลสถิติได้");
+      if (!silent) setError(res.error || "ไม่สามารถโหลดข้อมูลสถิติได้");
     }
-    setLoading(false);
+    if (!silent) setLoading(false);
   };
 
   if (loading) {
@@ -125,7 +137,7 @@ export default function AdminDashboardPage() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-zinc-500">
         <ShieldAlert className="size-12 text-red-500/50" />
         <p className="text-sm text-red-400">{error}</p>
-        <Button onClick={fetchStats} variant="outline" size="sm" className="border-zinc-800 hover:bg-zinc-800">ลองใหม่</Button>
+        <Button onClick={() => fetchStats(false)} variant="outline" size="sm" className="border-zinc-800 hover:bg-zinc-800">ลองใหม่</Button>
       </div>
     );
   }
@@ -153,12 +165,28 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1 h-9">
+              <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Auto-Refresh:</span>
+              <Select value={refreshInterval.toString()} onValueChange={(val) => setRefreshInterval(Number(val))}>
+                <SelectTrigger className="h-6 w-24 border-none bg-transparent shadow-none text-xs text-zinc-200 focus:ring-0 p-0 pr-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200 text-xs">
+                  <SelectItem value="0">ปิด (Off)</SelectItem>
+                  <SelectItem value="5">ทุก 5 วินาที</SelectItem>
+                  <SelectItem value="15">ทุก 15 วินาที</SelectItem>
+                  <SelectItem value="30">ทุก 30 วินาที</SelectItem>
+                  <SelectItem value="60">ทุก 1 นาที</SelectItem>
+                  <SelectItem value="300">ทุก 5 นาที</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button
-              onClick={fetchStats}
+              onClick={() => fetchStats(false)}
               variant="ghost"
               size="icon"
-              className="text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+              className="text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer h-9 w-9"
               title="รีเฟรชข้อมูล"
             >
               <RefreshCw className="size-4" />
