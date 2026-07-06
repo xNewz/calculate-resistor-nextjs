@@ -111,7 +111,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
-        
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
             <Link href="/admin/settings">
               <Button variant="outline" className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 font-semibold text-xs px-4 h-9 rounded-lg cursor-pointer gap-2 transition-colors">
                 <Settings className="size-4 text-orange-400" />
-                ตั้งค่าส่วนกลาง
+                ตั้งค่าระบบ
               </Button>
             </Link>
             <Link href="/admin/users">
@@ -197,7 +197,7 @@ export default function AdminDashboardPage() {
 
         {/* Charts & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
+
           {/* User Roles Pie Chart */}
           <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden flex flex-col shadow-sm">
             <CardHeader className="border-b border-zinc-800/60 pb-4">
@@ -226,7 +226,7 @@ export default function AdminDashboardPage() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: "#09090b", borderColor: "#27272a", borderRadius: "8px", fontSize: "12px", fontWeight: "bold" }}
                       itemStyle={{ color: "#f4f4f5" }}
                       formatter={(value: any) => [`${value} บัญชี`, "จำนวน"]}
@@ -240,7 +240,7 @@ export default function AdminDashboardPage() {
 
           {/* Recent Activity: Users & Classrooms */}
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* Newest Users */}
             <Card className="bg-zinc-900/40 border-zinc-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
               <CardHeader className="border-b border-zinc-800/60 pb-4">
@@ -256,11 +256,10 @@ export default function AdminDashboardPage() {
                     {stats.recentUsers.map((u) => (
                       <div key={u.id} className="p-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors">
                         <div className="flex items-center gap-3 overflow-hidden">
-                          <div className={`size-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
-                            u.role === "ADMIN" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
-                            u.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" :
-                            "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                          }`}>
+                          <div className={`size-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${u.role === "ADMIN" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
+                              u.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" :
+                                "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            }`}>
                             {u.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="truncate">
@@ -273,11 +272,10 @@ export default function AdminDashboardPage() {
                             <Clock className="size-2.5" />
                             {new Date(u.createdAt).toLocaleDateString("th-TH")}
                           </div>
-                          <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${
-                            u.role === "ADMIN" ? "bg-red-500/5 text-red-400 border-red-500/20" :
-                            u.role === "TEACHER" ? "bg-indigo-500/5 text-indigo-400 border-indigo-500/20" :
-                            "bg-emerald-500/5 text-emerald-400 border-emerald-500/20"
-                          }`}>
+                          <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${u.role === "ADMIN" ? "bg-red-500/5 text-red-400 border-red-500/20" :
+                              u.role === "TEACHER" ? "bg-indigo-500/5 text-indigo-400 border-indigo-500/20" :
+                                "bg-emerald-500/5 text-emerald-400 border-emerald-500/20"
+                            }`}>
                             {u.role === "TEACHER" ? "ผู้สอน" : u.role === "ADMIN" ? "แอดมิน" : "ผู้เรียน"}
                           </span>
                         </div>

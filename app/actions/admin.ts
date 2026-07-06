@@ -216,6 +216,7 @@ export async function updateSystemSettingsAction(formData: FormData) {
     const maintenanceModeStr = formData.get("maintenanceMode") as string;
     const announcementEnabledStr = formData.get("announcementEnabled") as string;
     const announcementText = formData.get("announcementText") as string;
+    const announcementType = formData.get("announcementType") as string || "INFO";
 
     const maintenanceMode = maintenanceModeStr === "true" || maintenanceModeStr === "on";
     const announcementEnabled = announcementEnabledStr === "true" || announcementEnabledStr === "on";
@@ -226,12 +227,14 @@ export async function updateSystemSettingsAction(formData: FormData) {
         maintenanceMode,
         announcementEnabled,
         announcementText: announcementText || null,
+        announcementType,
       },
       create: {
         id: "global",
         maintenanceMode,
         announcementEnabled,
         announcementText: announcementText || null,
+        announcementType,
       }
     });
 

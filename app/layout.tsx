@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 import AppLayout from "@/components/AppLayout";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { AlertTriangle, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ShieldAlert, Info, CheckCircle2, XCircle } from "lucide-react";
 
 export default async function RootLayout({
   children,
@@ -55,14 +55,29 @@ export default async function RootLayout({
       </html>
     );
   }
+  const type = settings?.announcementType || "INFO";
+  let bannerColors = "bg-blue-600/20 border-blue-500/30 text-blue-300";
+  let Icon = Info;
+  
+  if (type === "WARNING") {
+    bannerColors = "bg-amber-600/20 border-amber-500/30 text-amber-300";
+    Icon = AlertTriangle;
+  } else if (type === "ERROR") {
+    bannerColors = "bg-red-600/20 border-red-500/30 text-red-300";
+    Icon = XCircle;
+  } else if (type === "SUCCESS") {
+    bannerColors = "bg-emerald-600/20 border-emerald-500/30 text-emerald-300";
+    Icon = CheckCircle2;
+  }
+
   return (
     <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
       <body
         className={`${inter.variable} ${kanit.variable} ${geistMono.variable} font-sans antialiased`}
       >
         {isAnnouncement && settings?.announcementText && (
-          <div className="w-full bg-blue-600/20 border-b border-blue-500/30 text-blue-300 px-4 py-2.5 text-xs sm:text-sm font-semibold text-center flex items-center justify-center gap-2 z-50">
-            <AlertTriangle className="size-4 shrink-0" />
+          <div className={`w-full border-b px-4 py-2.5 text-xs sm:text-sm font-semibold text-center flex items-center justify-center gap-2 z-50 ${bannerColors}`}>
+            <Icon className="size-4 shrink-0" />
             <span>{settings.announcementText}</span>
           </div>
         )}

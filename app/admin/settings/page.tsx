@@ -14,6 +14,7 @@ export default function SystemSettingsPage() {
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [announcementEnabled, setAnnouncementEnabled] = useState(false);
   const [announcementText, setAnnouncementText] = useState("");
+  const [announcementType, setAnnouncementType] = useState("INFO");
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function SystemSettingsPage() {
       setMaintenanceMode(res.settings.maintenanceMode);
       setAnnouncementEnabled(res.settings.announcementEnabled);
       setAnnouncementText(res.settings.announcementText || "");
+      setAnnouncementType(res.settings.announcementType || "INFO");
     } else {
       setMessage({ text: res.error || "ไม่สามารถโหลดการตั้งค่าระบบได้", type: "error" });
     }
@@ -37,14 +39,15 @@ export default function SystemSettingsPage() {
     e.preventDefault();
     setSaving(true);
     setMessage(null);
-    
+
     const formData = new FormData();
     if (maintenanceMode) formData.append("maintenanceMode", "true");
     if (announcementEnabled) formData.append("announcementEnabled", "true");
     formData.append("announcementText", announcementText);
+    formData.append("announcementType", announcementType);
 
     const res = await updateSystemSettingsAction(formData);
-    
+
     if (res.success) {
       setMessage({ text: "การตั้งค่าระบบถูกบันทึกเรียบร้อยแล้ว", type: "success" });
     } else {
@@ -65,7 +68,7 @@ export default function SystemSettingsPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        
+
         {/* Navigation & Header */}
         <div className="space-y-4">
           <Link href="/admin">
@@ -74,14 +77,14 @@ export default function SystemSettingsPage() {
               กลับหน้าแผงควบคุม
             </Button>
           </Link>
-          
+
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20">
                 <Settings className="size-6 text-orange-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-zinc-100 tracking-tight">ตั้งค่าส่วนกลาง (System Settings)</h1>
+                <h1 className="text-2xl font-black text-zinc-100 tracking-tight">ตั้งค่าระบบ (System Settings)</h1>
                 <p className="text-xs text-zinc-500 mt-0.5">จัดการสถานะของเว็บไซต์และการแจ้งเตือนแบบโกลบอล</p>
               </div>
             </div>
@@ -98,7 +101,7 @@ export default function SystemSettingsPage() {
           <Card className="bg-zinc-900/50 border-zinc-800">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-zinc-100">
-                <ShieldAlert className="size-5 text-red-500" /> 
+                <ShieldAlert className="size-5 text-red-500" />
                 โหมดปิดปรับปรุง (Maintenance Mode)
               </CardTitle>
               <CardDescription className="text-zinc-400 text-sm">
@@ -107,9 +110,9 @@ export default function SystemSettingsPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-2 bg-zinc-950 p-4 rounded-xl border border-zinc-800/50">
-                <input 
+                <input
                   type="checkbox"
-                  id="maintenance-mode" 
+                  id="maintenance-mode"
                   checked={maintenanceMode}
                   onChange={(e) => setMaintenanceMode(e.target.checked)}
                   className="size-4 rounded border-zinc-700 bg-zinc-900 text-red-500 focus:ring-red-500"
@@ -128,8 +131,8 @@ export default function SystemSettingsPage() {
           <Card className="bg-zinc-900/50 border-zinc-800">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-zinc-100">
-                <Bell className="size-5 text-blue-400" /> 
-                ประกาศส่วนกลาง (Global Announcement)
+                <Bell className="size-5 text-blue-400" />
+                ประกาศข่าวสาร
               </CardTitle>
               <CardDescription className="text-zinc-400 text-sm">
                 แสดงแถบข้อความแจ้งเตือนที่ด้านบนสุดของทุกหน้าจอ เพื่อประกาศข่าวสารหรือการแจ้งเตือนฉุกเฉินให้ทุกคนทราบ
@@ -137,9 +140,9 @@ export default function SystemSettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-2">
-                <input 
+                <input
                   type="checkbox"
-                  id="announcement-enabled" 
+                  id="announcement-enabled"
                   checked={announcementEnabled}
                   onChange={(e) => setAnnouncementEnabled(e.target.checked)}
                   className="size-4 rounded border-zinc-700 bg-zinc-900 text-blue-500 focus:ring-blue-500"
@@ -150,17 +153,44 @@ export default function SystemSettingsPage() {
               </div>
 
               {announcementEnabled && (
-                <div className="space-y-2 pt-2 animate-in fade-in slide-in-from-top-2">
-                  <Label htmlFor="announcement-text" className="text-xs text-zinc-400">
-                    ข้อความประกาศ (รองรับข้อความสั้นๆ)
-                  </Label>
-                  <textarea
-                    id="announcement-text"
-                    value={announcementText}
-                    onChange={(e) => setAnnouncementText(e.target.value)}
-                    placeholder="เช่น ระบบจะปิดปรับปรุงในคืนนี้เวลา 24:00 น. ขออภัยในความไม่สะดวก"
-                    className="w-full p-3 bg-zinc-950 border border-zinc-800 text-zinc-100 text-sm rounded-xl min-h-[80px] focus-visible:ring-1 focus-visible:ring-blue-500/50 focus:outline-none"
-                  />
+                <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2">
+                  <div className="space-y-2">
+                    <Label className="text-xs text-zinc-400">ประเภทประกาศ</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: "INFO", label: "ข้อมูล (สีน้ำเงิน)", colorClass: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
+                        { value: "SUCCESS", label: "สำเร็จ (สีเขียว)", colorClass: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+                        { value: "WARNING", label: "แจ้งเตือน (สีเหลือง)", colorClass: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+                        { value: "ERROR", label: "ข้อผิดพลาด (สีแดง)", colorClass: "text-red-400 bg-red-500/10 border-red-500/20" }
+                      ].map((type) => (
+                        <button
+                          key={type.value}
+                          type="button"
+                          onClick={() => setAnnouncementType(type.value)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                            announcementType === type.value 
+                              ? `border-${type.value === 'INFO' ? 'blue' : type.value === 'SUCCESS' ? 'emerald' : type.value === 'WARNING' ? 'amber' : 'red'}-500 ${type.colorClass}` 
+                              : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800"
+                          }`}
+                        >
+                          {type.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="announcement-text" className="text-xs text-zinc-400">
+                      ข้อความประกาศ (รองรับข้อความสั้นๆ)
+                    </Label>
+                    <textarea
+                      id="announcement-text"
+                      value={announcementText}
+                      onChange={(e) => setAnnouncementText(e.target.value)}
+                      placeholder="เช่น ระบบจะปิดปรับปรุงในคืนนี้เวลา 24:00 น. ขออภัยในความไม่สะดวก"
+                      className="w-full p-3 bg-zinc-950 border border-zinc-800 text-zinc-100 text-sm rounded-xl min-h-[80px] focus-visible:ring-1 focus-visible:ring-blue-500/50 focus:outline-none"
+                    />
+                  </div>
                 </div>
               )}
             </CardContent>

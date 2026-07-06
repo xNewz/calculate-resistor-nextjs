@@ -23,7 +23,8 @@ import {
   ShieldAlert,
   Activity,
   BarChart,
-  ScrollText
+  ScrollText,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSessionAction, logoutAction, updateProfileAction, pingAction } from "@/app/actions/auth";
@@ -88,11 +89,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           setProfileSuccess(true);
           const updatedSession = await getSessionAction();
           setUser(updatedSession);
-          
+
           // Clear password fields on successful save
           setCurrentPassword("");
           setNewPassword("");
-          
+
           startTransition(() => {
             router.refresh();
           });
@@ -129,11 +130,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // Keep-alive ping to update online status
   useEffect(() => {
     if (!user) return;
-    
+
     const ping = () => {
       pingAction().catch(console.error);
     };
-    
+
     // Ping right away, then every 60 seconds
     ping();
     const interval = setInterval(ping, 60000);
@@ -197,6 +198,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       label: "บันทึกระบบ (Logs)",
       icon: ScrollText,
       description: "System Logs"
+    }] : []),
+    ...(user?.role === "ADMIN" ? [{
+      href: "/admin/settings",
+      label: "ตั้งค่าระบบ",
+      icon: Settings,
+      description: "System Settings"
     }] : [])
   ];
 
@@ -221,7 +228,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-50 w-full border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
-              
+
               <Link href="/" className="flex items-center gap-2 group cursor-pointer">
                 <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors">
                   <Zap className="size-5 text-indigo-400" />
@@ -283,10 +290,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // 2. DASHBOARD LAYOUT (Logged in users - Sidebar Workspace Layout)
   return (
     <div className="min-h-screen bg-black text-zinc-100 flex flex-col lg:flex-row">
-      
+
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden lg:flex w-[260px] border-r border-zinc-900 bg-zinc-950/60 backdrop-blur-md flex-col justify-between shrink-0 h-screen sticky top-0 z-30">
-        
+
         {/* Top brand & navigation */}
         <div className="p-4 space-y-6 overflow-y-auto flex-1">
           {/* Logo */}
@@ -304,10 +311,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <span className="px-2.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">เมนูระบบ</span>
             {dashboardNavItems.map((item) => {
               const Icon = item.icon;
-              const isActive = (item as any).exact 
-                ? pathname === item.href 
+              const isActive = (item as any).exact
+                ? pathname === item.href
                 : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-              
+
               return (
                 <Link
                   key={item.href}
@@ -369,19 +376,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* User Info & Profile at Bottom */}
         <div className="p-4 border-t border-zinc-900 bg-zinc-950/20">
           <div className="flex items-center gap-2.5 p-1 rounded-xl bg-zinc-900/40 border border-zinc-900 px-3 py-2.5">
-            <div className={`size-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 ${
-              user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-            }`}>
+            <div className={`size-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+              }`}>
               {user.name.charAt(0)}
             </div>
-            
+
             <div className="min-w-0 flex-1">
               <div className="font-bold text-xs text-zinc-200 truncate" title={user.name}>{user.name}</div>
               <span className={cn(
                 "inline-block text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md border mt-0.5",
                 user.role === "TEACHER" ? "bg-indigo-500/5 text-indigo-400 border-indigo-500/20" : "bg-emerald-500/5 text-emerald-400 border-emerald-500/20"
               )}>
-                                {user.role === "TEACHER" ? "ผู้สอน" : user.role === "ADMIN" ? "แอดมิน" : "ผู้เรียน"}
+                {user.role === "TEACHER" ? "ผู้สอน" : user.role === "ADMIN" ? "แอดมิน" : "ผู้เรียน"}
               </span>
             </div>
 
@@ -420,7 +426,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           >
             <Menu className="size-5" />
           </Button>
-          
+
           <Link href="/classroom" className="flex items-center gap-1.5">
             <Zap className="size-4 text-indigo-400" />
             <span className="font-extrabold text-sm uppercase tracking-wider text-zinc-200">
@@ -431,9 +437,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="flex items-center gap-2">
           {/* User Badge initials */}
-          <div className={`size-7.5 rounded-full flex items-center justify-center font-bold text-xs ${
-            user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400" : "bg-emerald-400/10 text-emerald-400"
-          }`}>
+          <div className={`size-7.5 rounded-full flex items-center justify-center font-bold text-xs ${user.role === "TEACHER" ? "bg-indigo-500/10 text-indigo-400" : "bg-emerald-400/10 text-emerald-400"
+            }`}>
             {user.name.charAt(0)}
           </div>
         </div>
@@ -450,7 +455,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Drawer container */}
           <div className="relative w-64 bg-zinc-950 border-r border-zinc-900 h-full flex flex-col justify-between z-10 shadow-2xl p-4">
-            
+
             <div className="space-y-6">
               {/* Header inside drawer */}
               <div className="flex items-center justify-between pb-2 border-b border-zinc-900">
@@ -472,8 +477,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="space-y-1">
                 {dashboardNavItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = (item as any).exact 
-                    ? pathname === item.href 
+                  const isActive = (item as any).exact
+                    ? pathname === item.href
                     : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
                   return (
                     <Link
@@ -537,7 +542,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-0.5">
                   <Button
                     onClick={() => { setMobileMenuOpen(false); setShowProfileModal(true); }}
@@ -548,7 +553,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   >
                     <UserCog className="size-3.5" />
                   </Button>
-                  
+
                   <Button
                     onClick={handleLogout}
                     variant="ghost"
@@ -570,7 +575,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {children}
       </main>
-      
+
       {/* EDIT PROFILE MODAL */}
       {showProfileModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
@@ -590,7 +595,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <X className="size-4" />
               </Button>
             </div>
-            
+
             <div className="p-6">
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 {profileError && (
