@@ -258,8 +258,14 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
             <CardContent className="pt-6 space-y-6 text-xs">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
-                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">ประเภทตัวต้านทาน</span>
-                  <span className="text-sm font-bold text-zinc-200 mt-1">{assignment.bandType} แถบสี</span>
+                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">ประเภทแบบฝึกหัด</span>
+                  <span className="text-sm font-bold text-zinc-200 mt-1">
+                    {assignment.assignmentType === "CUSTOM" 
+                      ? "ข้อสอบแบบอิสระ" 
+                      : assignment.assignmentType === "MULTIMETER"
+                      ? "มัลติมิเตอร์"
+                      : `ตัวต้านทาน ${assignment.bandType} แถบสี`}
+                  </span>
                 </div>
                 <div className="bg-zinc-950/50 border border-zinc-850 p-4 rounded-xl text-center">
                   <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">จำนวนข้อสอบ</span>

@@ -692,7 +692,7 @@ export default function ClassroomDetail({
                               </Badge>
                             )}
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
-                              {assignment.assignmentType === "MULTIMETER" ? "มัลติมิเตอร์" : `${assignment.bandType} แถบสี`}
+                              {assignment.assignmentType === "CUSTOM" ? "อิสระ" : assignment.assignmentType === "MULTIMETER" ? "มัลติมิเตอร์" : `${assignment.bandType} แถบสี`}
                             </Badge>
                             <Badge variant="outline" className="border-zinc-700 bg-zinc-800/30 text-zinc-300 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
                               {assignment.questionMode === "CHOICE" ? "4 ตัวเลือก" : "แบบกรอก"}
