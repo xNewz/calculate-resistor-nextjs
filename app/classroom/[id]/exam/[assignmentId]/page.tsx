@@ -50,6 +50,6 @@ export default async function ExamPage({
   }
 
   return (
-    <ExamQuiz assignment={assignment} />
+    <ExamQuiz assignment={assignment as any} />
   );
 }

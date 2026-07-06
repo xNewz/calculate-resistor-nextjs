@@ -34,10 +34,15 @@ import {
 } from "lucide-react";
 
 interface Question {
+  id?: string;
+  text?: string;
+  type?: "CHOICE" | "TEXT";
+  options?: string[];
+  correctAnswer?: string;
   bands?: 4 | 5;
   colors?: string[];
   resistance?: number;
-  formatted: string;
+  formatted?: string;
   tolerance?: number;
   multimeterData?: MultimeterQuestion;
   choices?: string[];
@@ -365,7 +370,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
 
                     {((assignment.questionMode === "CHOICE" && currentQuestion.choices) || (assignment.assignmentType === "CUSTOM" && currentQuestion.type === "CHOICE" && currentQuestion.options)) ? (
                       <div className="grid grid-cols-2 gap-3 pt-2">
-                        {(currentQuestion.choices || currentQuestion.options || []).map((choice) => {
+                        {(currentQuestion.choices || currentQuestion.options || []).map((choice: string) => {
                           const isSelected = userAnswer === choice;
                           return (
                             <Button
