@@ -14,6 +14,8 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
   const [totalStudents, setTotalStudents] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
+  const isExamEnded = assignment.dueDate && new Date() > new Date(assignment.dueDate);
+
   // Send warning states
   const [warningStudent, setWarningStudent] = useState<{ id: string; name: string } | null>(null);
   const [warningMessage, setWarningMessage] = useState("");
@@ -32,13 +34,16 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
 
   useEffect(() => {
     fetchViolations();
-    // Poll every 3 seconds
+    
+    // Stop polling if exam has ended
+    if (isExamEnded) return;
+
     const interval = setInterval(() => {
       fetchViolations();
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [assignment.id]);
+  }, [assignment.id, isExamEnded]);
 
   const handleSendWarning = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,10 +82,16 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
               หน้าต่างสำหรับผู้สอนเพื่อตรวจสอบการทุจริตแบบเรียลไทม์
             </p>
           </div>
-          <Badge variant="outline" className="border-red-500/30 text-red-400 bg-red-500/10 px-3 py-1 font-bold">
-            <div className="size-2 rounded-full bg-red-500 animate-pulse mr-2" />
-            กำลังจับตาดู...
-          </Badge>
+          {isExamEnded ? (
+            <Badge variant="outline" className="border-zinc-500/30 text-zinc-400 bg-zinc-500/10 px-3 py-1 font-bold">
+              การสอบสิ้นสุดแล้ว
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="border-red-500/30 text-red-400 bg-red-500/10 px-3 py-1 font-bold">
+              <div className="size-2 rounded-full bg-red-500 animate-pulse mr-2" />
+              กำลังจับตาดู...
+            </Badge>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -151,7 +162,7 @@ export default function LiveMonitor({ assignment }: { assignment: any }) {
                             {isWarning ? `"${v.details}"` : v.details}
                           </p>
                         )}
-                        {!isWarning && (
+                        {!isWarning && !isExamEnded && (
                           <Button
                             variant="ghost"
                             size="sm"
