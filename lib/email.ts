@@ -198,6 +198,7 @@ export async function sendVerificationEmail(email: string, token: string) {
       </div>
     </body>
     </html>
+  `;
 
   return sendEmail({
     to: email,
