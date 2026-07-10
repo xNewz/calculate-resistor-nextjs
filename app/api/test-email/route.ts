@@ -5,6 +5,14 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const email = searchParams.get("email");
 
+  // Prevent usage in production to avoid spam/abuse
+  // We return a 404 to hide the existence of this route from malicious actors
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({
+      error: "Not Found"
+    }, { status: 404 });
+  }
+
   if (!email) {
     return NextResponse.json({
       error: "Missing email parameter. Usage: /api/test-email?email=your@email.com"

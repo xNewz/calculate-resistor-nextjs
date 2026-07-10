@@ -157,7 +157,7 @@ export async function sendVerificationEmail(email: string, token: string) {
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px 40px; text-align: center;">
           <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 0.5px;">
-            ยินดีต้อนรับสู่ระบบเรียนรู้!
+            ยินดีต้อนรับสู่ Practice-Lab
           </h1>
         </div>
 
