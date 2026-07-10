@@ -370,7 +370,9 @@ export default function SubmissionReview({
                         </div>
 
                         <span className="text-zinc-500 hidden sm:inline">
-                          {`แถบสี: ${q.bands} สี`}
+                          {assignment.assignmentType === "MULTIMETER" 
+                            ? `ย่านวัด: ${q.multimeterData?.range.name}`
+                            : `แถบสี: ${q.bands} สี`}
                         </span>
 
                         <div className="ml-auto pr-3 font-semibold text-zinc-700 dark:text-zinc-300">
