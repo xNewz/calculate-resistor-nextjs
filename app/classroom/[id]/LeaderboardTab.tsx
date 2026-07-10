@@ -63,8 +63,7 @@ export function LeaderboardTab({ enrollments, currentUserId }: LeaderboardTabPro
                           "transition-colors",
                           rank === 1 && "bg-amber-50/30 hover:bg-amber-100/30 dark:bg-amber-500/5 dark:hover:bg-amber-500/10",
                           rank === 2 && "bg-zinc-50 hover:bg-zinc-100/80 dark:bg-zinc-900/30 dark:hover:bg-zinc-900/50",
-                          rank === 3 && "bg-orange-50/30 hover:bg-orange-100/40 dark:bg-orange-500/5 dark:hover:bg-orange-500/10",
-                          isCurrentUser && "bg-indigo-50/50 hover:bg-indigo-100/50 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/30"
+                          rank === 3 && "bg-orange-50/30 hover:bg-orange-100/40 dark:bg-orange-500/5 dark:hover:bg-orange-500/10"
                         )}
                       >
                         <TableCell className="font-medium text-center py-4">
