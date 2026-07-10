@@ -7,6 +7,7 @@ import { logSystemEvent } from "@/lib/logger";
 import { generateSeededQuestions } from "@/lib/seededQuestions";
 import { parseTextAnswer } from "@/lib/resistor";
 import { parseMultimeterAnswer } from "@/lib/multimeter";
+import { sendAssignmentNotification } from "@/lib/email";
 
 export type ActionResponse = {
   success: boolean;
@@ -236,6 +237,32 @@ export async function createAssignmentAction(
 
     const examText = isExam ? " (โหมดสอบ)" : "";
     await logSystemEvent("CREATE_ASSIGNMENT", "SUCCESS", `สร้างแบบฝึกหัด "${title}"${examText} ในห้องเรียนสำเร็จ`, session.userId);
+
+    // Fetch enrolled students and send email notification
+    try {
+      const students = await prisma.user.findMany({
+        where: {
+          enrollments: {
+            some: { classroomId },
+          },
+        },
+        select: { email: true },
+      });
+
+      const studentEmails = students.map((s) => s.email).filter(Boolean);
+      
+      // Fire and forget (don't await so we don't block the UI)
+      sendAssignmentNotification(studentEmails, {
+        title: assignment.title,
+        description: assignment.description,
+        isExam: assignment.isExam,
+        dueDate: assignment.dueDate,
+        classroomId: assignment.classroomId,
+      }).catch(err => console.error("Failed to send assignment notification email:", err));
+      
+    } catch (emailError) {
+      console.error("Error fetching students for email notification:", emailError);
+    }
 
     revalidatePath(`/classroom/${classroomId}`);
     return { success: true, data: assignment };
