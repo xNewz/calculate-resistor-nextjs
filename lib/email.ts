@@ -59,7 +59,14 @@ export async function sendAssignmentNotification(
     }`;
 
   const dueDateText = assignmentDetails.dueDate
-    ? new Date(assignmentDetails.dueDate).toLocaleString("th-TH") + " น."
+    ? new Date(assignmentDetails.dueDate).toLocaleString("th-TH", {
+        timeZone: "Asia/Bangkok",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }) + " น."
     : "ไม่มีกำหนดส่ง";
 
   // Base URL for links (usually set in env, fallback to localhost for dev)
