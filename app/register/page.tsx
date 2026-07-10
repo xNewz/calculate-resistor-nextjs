@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,9 +30,8 @@ export default function RegisterPage() {
     startTransition(async () => {
       const result = await registerAction(null, formData);
       if (result.success) {
-        // Redirect to classroom page
-        router.push("/classroom");
-        router.refresh();
+        setSuccessMsg("สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบกล่องจดหมายในอีเมลของคุณเพื่อยืนยันบัญชี");
+        (e.target as HTMLFormElement).reset();
       } else {
         if (result.error) {
           setError(result.error);
@@ -73,6 +73,11 @@ export default function RegisterPage() {
                 <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2">
                   <ShieldAlert className="size-4 shrink-0" />
                   <span className="font-medium">{error}</span>
+                </div>
+              )}
+              {successMsg && (
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2">
+                  <span className="font-medium">{successMsg}</span>
                 </div>
               )}
 

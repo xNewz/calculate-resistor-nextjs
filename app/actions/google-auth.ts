@@ -56,6 +56,7 @@ export async function googleLoginAction(credential: string): Promise<GoogleAuthS
           name: name || "ผู้ใช้ Google",
           googleId,
           image: picture,
+          emailVerified: new Date(),
           role: "LEARNER", // Default role
           // password is left null because it's optional
         },
@@ -107,7 +108,7 @@ export async function linkGoogleAccountAction(credential: string): Promise<Googl
 
     const { email, picture, sub: googleId } = payload;
 
-    // Optional: You could check if this googleId is already linked to another account
+    // Check if this googleId is already linked to another account
     const existingLink = await prisma.user.findUnique({
       where: { googleId },
     });
@@ -116,9 +117,19 @@ export async function linkGoogleAccountAction(credential: string): Promise<Googl
       return { success: false, error: "บัญชี Google นี้ถูกใช้งานโดยผู้ใช้อื่นแล้ว" };
     }
 
+    // Check if the Google email is already used by another account
+    const existingEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingEmail && existingEmail.id !== session.userId) {
+      return { success: false, error: "อีเมลของบัญชี Google นี้เชื่อมต่อกับบัญชีผู้ใช้อื่นในระบบแล้ว" };
+    }
+
     const user = await prisma.user.update({
       where: { id: session.userId },
       data: {
+        email, // Update email to match Google account
         googleId,
         image: picture,
       },

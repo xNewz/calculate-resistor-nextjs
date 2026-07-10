@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loginAction } from "@/app/actions/auth";
+import { loginAction, resendVerificationAction } from "@/app/actions/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,9 @@ export default function LoginPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,8 +39,32 @@ export default function LoginPage() {
         if (result.error) {
           setError(result.error);
         }
+        if (result.fieldErrors?.email === "NOT_VERIFIED") {
+          setUnverifiedEmail(formData.get("email") as string);
+        } else {
+          setUnverifiedEmail(null);
+        }
       }
     });
+  };
+
+  const handleResend = async () => {
+    if (!unverifiedEmail) return;
+    setIsResending(true);
+    setError(null);
+    setSuccessMsg(null);
+    
+    try {
+      const res = await resendVerificationAction(unverifiedEmail);
+      if (res.success) {
+        setSuccessMsg("ส่งอีเมลยืนยันตัวตนใหม่แล้ว กรุณาตรวจสอบกล่องข้อความของคุณ");
+        setUnverifiedEmail(null);
+      } else {
+        setError(res.error || "ไม่สามารถส่งอีเมลได้");
+      }
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -67,9 +94,29 @@ export default function LoginPage() {
           <CardContent className="pt-2">
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2">
-                  <ShieldAlert className="size-4 shrink-0" />
-                  <span className="font-medium">{error}</span>
+                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex flex-col gap-2.5 animate-in fade-in slide-in-from-top-2">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldAlert className="size-4 shrink-0" />
+                    <span className="font-medium">{error}</span>
+                  </div>
+                  {unverifiedEmail && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResend}
+                      disabled={isResending}
+                      className="w-full bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20 h-9"
+                    >
+                      {isResending ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
+                      ส่งอีเมลยืนยันตัวตนอีกครั้ง
+                    </Button>
+                  )}
+                </div>
+              )}
+              {successMsg && (
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2">
+                  <span className="font-medium">{successMsg}</span>
                 </div>
               )}
 

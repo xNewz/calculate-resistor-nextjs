@@ -7,6 +7,8 @@ import { encrypt, getSession } from "@/lib/auth";
 import { logSystemEvent } from "@/lib/logger";
 import { checkRateLimit, recordFailedAttempt, clearAttempts } from "@/lib/rateLimit";
 import { checkIPBanStatus, autoBanIP } from "./security";
+import { sendVerificationEmail } from "@/lib/email";
+import crypto from "crypto";
 
 export type AuthState = {
   success: boolean;
@@ -89,7 +91,7 @@ export async function registerAction(
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user without logging in immediately
     const user = await prisma.user.create({
       data: {
         email,
@@ -99,26 +101,21 @@ export async function registerAction(
       },
     });
 
-    // Create session token
-    const token = await encrypt({
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-      image: user.image || undefined,
-      role: user.role,
+    // Generate Verification Token
+    const token = crypto.randomBytes(32).toString("hex");
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      },
     });
 
-    // Save cookie
-    const cookieStore = await cookies();
-    cookieStore.set("auth_token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: "/",
-    });
+    // Send Verification Email
+    await sendVerificationEmail(email, token);
 
     clearAttempts(rateLimitKey);
-    await logSystemEvent("REGISTER_SUCCESS", "SUCCESS", `สมัครสมาชิกสำเร็จสำหรับอีเมล ${email} (IP: ${ip})`, user.id);
+    await logSystemEvent("REGISTER_SUCCESS", "SUCCESS", `สมัครสมาชิกสำเร็จ (รอการยืนยันอีเมล) สำหรับอีเมล ${email} (IP: ${ip})`, user.id);
 
     return { success: true };
   } catch (error) {
@@ -178,6 +175,10 @@ export async function loginAction(
 
     if (!user.password) {
       return { success: false, error: "บัญชีนี้เชื่อมต่อกับ Google โปรดเข้าสู่ระบบด้วย Google หรือตั้งรหัสผ่านใหม่" };
+    }
+
+    if (!user.emailVerified) {
+      return { success: false, error: "บัญชีของคุณยังไม่ได้ยืนยันอีเมล กรุณาตรวจสอบกล่องจดหมาย หรือขอลิงก์ยืนยันใหม่", fieldErrors: { email: "NOT_VERIFIED" } };
     }
 
     // Compare password
@@ -365,6 +366,61 @@ export async function updateProfileAction(
   } catch (error) {
     console.error("Update profile error:", error);
     return { success: false, error: "เกิดข้อผิดพลาดในการบันทึกข้อมูลส่วนตัว" };
+  }
+}
+
+export async function resendVerificationAction(email: string): Promise<AuthState> {
+  if (!email || !email.includes("@")) {
+    return { success: false, error: "กรุณากรอกอีเมลให้ถูกต้อง" };
+  }
+
+  const reqHeaders = await headers();
+  const ip = reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "unknown-ip";
+  
+  const rateLimitKey = `resend-verify:${ip}`;
+  const limit = checkRateLimit(rateLimitKey);
+  if (!limit.allowed) {
+    return { success: false, error: "ทำรายการบ่อยเกินไป กรุณารอสักครู่ (15 นาที) แล้วลองใหม่" };
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Don't reveal user existence, just return success
+      return { success: true }; 
+    }
+
+    if (user.emailVerified) {
+      return { success: false, error: "อีเมลนี้ได้รับการยืนยันแล้ว สามารถเข้าสู่ระบบได้เลย" };
+    }
+
+    // Check existing token
+    const existingToken = await prisma.verificationToken.findFirst({
+      where: { identifier: email },
+    });
+
+    let token = "";
+    if (existingToken && existingToken.expires > new Date()) {
+      token = existingToken.token;
+    } else {
+      if (existingToken) {
+        await prisma.verificationToken.delete({ where: { id: existingToken.id } });
+      }
+      token = crypto.randomBytes(32).toString("hex");
+      await prisma.verificationToken.create({
+        data: {
+          identifier: email,
+          token,
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        },
+      });
+    }
+
+    await sendVerificationEmail(email, token);
+    return { success: true };
+  } catch (error) {
+    console.error("Resend verification error:", error);
+    return { success: false, error: "ระบบขัดข้อง ไม่สามารถส่งอีเมลได้" };
   }
 }
 

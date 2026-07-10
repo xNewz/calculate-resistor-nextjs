@@ -28,9 +28,8 @@ export async function sendEmail({
 
   try {
     const info = await transporter.sendMail({
-      from: `"${process.env.SMTP_FROM_NAME || "Calculate Resistor LMS"}" <${
-        process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER
-      }>`,
+      from: `"${process.env.SMTP_FROM_NAME || "Practice-Lab"}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER
+        }>`,
       to,
       bcc,
       subject,
@@ -56,9 +55,8 @@ export async function sendAssignmentNotification(
 ) {
   if (studentEmails.length === 0) return false;
 
-  const subject = `[แจ้งเตือน] มี${assignmentDetails.isExam ? "การสอบ" : "แบบฝึกหัด"}ใหม่: ${
-    assignmentDetails.title
-  }`;
+  const subject = `[แจ้งเตือน] มี${assignmentDetails.isExam ? "การสอบ" : "แบบฝึกหัด"}ใหม่: ${assignmentDetails.title
+    }`;
 
   const dueDateText = assignmentDetails.dueDate
     ? new Date(assignmentDetails.dueDate).toLocaleString("th-TH") + " น."
@@ -76,11 +74,10 @@ export async function sendAssignmentNotification(
       
       <div style="background-color: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1f2937;">${assignmentDetails.title}</h3>
-        ${
-          assignmentDetails.description
-            ? `<p style="color: #4b5563; font-size: 14px;">${assignmentDetails.description}</p>`
-            : ""
-        }
+        ${assignmentDetails.description
+      ? `<p style="color: #4b5563; font-size: 14px;">${assignmentDetails.description}</p>`
+      : ""
+    }
         
         <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px;">
           <tr>
@@ -96,9 +93,8 @@ export async function sendAssignmentNotification(
         </table>
       </div>
 
-      <a href="${link}" style="display: inline-block; background-color: ${
-    assignmentDetails.isExam ? '#ef4444' : '#4f46e5'
-  }; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; margin-top: 10px;">
+      <a href="${link}" style="display: inline-block; background-color: ${assignmentDetails.isExam ? '#ef4444' : '#4f46e5'
+    }; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; margin-top: 10px;">
         เข้าสู่ห้องเรียนเพื่อทำแบบทดสอบ
       </a>
       
@@ -112,6 +108,36 @@ export async function sendAssignmentNotification(
   return sendEmail({
     to: process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER, // Send to self
     bcc: studentEmails,
+    subject,
+    html,
+  });
+}
+
+export async function sendVerificationEmail(email: string, token: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const verifyLink = `${baseUrl}/auth/verify?token=${token}`;
+
+  const subject = "ยืนยันการสมัครสมาชิก Practice-Lab";
+  const html = `
+    <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 10px; background-color: #ffffff;">
+      <h2 style="color: #4f46e5; margin-top: 0;">ยินดีต้อนรับสู่ระบบเรียนรู้!</h2>
+      <p style="color: #4b5563; font-size: 14px;">
+        กรุณายืนยันที่อยู่อีเมลของคุณเพื่อเปิดใช้งานบัญชี หากคุณไม่ได้สมัครบัญชีนี้ กรุณาเพิกเฉยต่ออีเมลฉบับนี้
+      </p>
+      
+      <a href="${verifyLink}" style="display: inline-block; background-color: #4f46e5; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; margin-top: 20px;">
+        คลิกที่นี่เพื่อยืนยันอีเมลของคุณ
+      </a>
+      
+      <p style="margin-top: 30px; font-size: 12px; color: #9ca3af;">
+        หรือคัดลอกลิงก์ด้านล่างไปวางในเบราว์เซอร์ของคุณ:<br/>
+        <a href="${verifyLink}" style="color: #4f46e5;">${verifyLink}</a>
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: email,
     subject,
     html,
   });

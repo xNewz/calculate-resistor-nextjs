@@ -20,6 +20,7 @@ model User {
   name              String
   googleId          String?      @unique
   image             String?      @db.Text
+  emailVerified     DateTime?
   role              Role         @default(LEARNER)
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
@@ -139,4 +140,14 @@ model BannedIP {
   expiresAt   DateTime? // null for permanent ban
   bannedById  String?   // User id of admin who banned, null if system
   bannedBy    User?     @relation(fields: [bannedById], references: [id], onDelete: SetNull)
+}
+
+model VerificationToken {
+  id         String   @id @default(uuid())
+  identifier String   // Email address
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+
+  @@unique([identifier, token])
 }
