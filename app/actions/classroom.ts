@@ -390,9 +390,45 @@ export async function submitQuizAction(
       },
     });
 
+    // --- Gamification Phase 1: Award EXP & Badges ---
+    const expEarned = calculatedScore * 10;
+    
+    // Update EXP in Enrollment
+    await prisma.enrollment.update({
+      where: {
+        userId_classroomId: {
+          userId: session.userId,
+          classroomId: assignment.classroomId,
+        }
+      },
+      data: {
+        exp: { increment: expEarned }
+      }
+    });
+
+    // Check for "FIRST_PERFECT" badge
+    if (calculatedScore === assignment.questionCount && assignment.questionCount > 0) {
+      const existingBadge = await prisma.userBadge.findUnique({
+        where: {
+          userId_badgeId: {
+            userId: session.userId,
+            badgeId: "FIRST_PERFECT",
+          }
+        }
+      });
+      if (!existingBadge) {
+        await prisma.userBadge.create({
+          data: {
+            userId: session.userId,
+            badgeId: "FIRST_PERFECT"
+          }
+        });
+      }
+    }
+
     const examText = assignment.isExam ? " (โหมดสอบ)" : "";
     const violationText = (assignment.isExam && violationCount > 0) ? ` [พบการละเมิดกฎ ${violationCount} ครั้ง]` : "";
-    await logSystemEvent("SUBMIT_QUIZ", "SUCCESS", `ส่งแบบฝึกหัด "${assignment.title}"${examText} สำเร็จ ได้คะแนน ${calculatedScore}/${assignment.questionCount}${violationText}`, session.userId);
+    await logSystemEvent("SUBMIT_QUIZ", "SUCCESS", `ส่งแบบฝึกหัด "${assignment.title}"${examText} สำเร็จ ได้คะแนน ${calculatedScore}/${assignment.questionCount}${violationText} ได้รับ ${expEarned} EXP`, session.userId);
 
     revalidatePath(`/classroom/${assignment.classroomId}`);
     return { success: true, data: submission };

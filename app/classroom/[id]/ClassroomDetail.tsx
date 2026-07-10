@@ -41,9 +41,11 @@ import {
   PieChart,
   Activity,
   AlertTriangle,
-  X
+  X,
+  Trophy
 } from "lucide-react";
 import { StudentStatsModal } from "@/components/StudentStatsModal";
+import { LeaderboardTab } from "./LeaderboardTab";
 import ResistorPreview from "@/components/ResistorPreview";
 import MultimeterPreview from "@/components/MultimeterPreview";
 
@@ -110,7 +112,7 @@ export default function ClassroomDetail({
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatsModal, setShowStatsModal] = useState(false);
-  const [selectedStatsStudent, setSelectedStatsStudent] = useState<{ id: string; name: string } | null>(null);
+  const [selectedStatsStudent, setSelectedStatsStudent] = useState<{ id: string; name: string; badges?: { badgeId: string }[] } | null>(null);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [analyzingAssignment, setAnalyzingAssignment] = useState<any | null>(null);
@@ -483,6 +485,10 @@ export default function ClassroomDetail({
             <TabsTrigger value="members" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
               <Users className="size-3.5" />
               <span>{user.role === "TEACHER" || user.role === "ADMIN" ? "สมุดคะแนน" : "รายชื่อเพื่อน"}</span>
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs h-9 rounded-lg flex-1 cursor-pointer gap-1.5">
+              <Trophy className="size-3.5" />
+              <span>กระดานผู้นำ</span>
             </TabsTrigger>
           </TabsList>
 
@@ -916,7 +922,7 @@ export default function ClassroomDetail({
                                   className="size-6 rounded-full text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 ml-auto cursor-pointer"
                                   title="ดูสถิติการเรียน"
                                   onClick={() => {
-                                    setSelectedStatsStudent({ id: enr.userId, name: enr.user.name });
+                                    setSelectedStatsStudent({ id: enr.userId, name: enr.user.name, badges: enr.user.badges });
                                     setShowStatsModal(true);
                                   }}
                                 >
@@ -999,6 +1005,11 @@ export default function ClassroomDetail({
                 </Card>
               </div>
             )}
+          </TabsContent>
+
+          {/* Leaderboard Tab */}
+          <TabsContent value="leaderboard" className="mt-6 focus-visible:outline-none focus-visible:ring-0">
+            <LeaderboardTab enrollments={enrollments} />
           </TabsContent>
         </Tabs>
 
@@ -1450,6 +1461,7 @@ export default function ClassroomDetail({
             classroomName={classroom.name}
             assignments={assignments}
             submissions={submissions.filter(s => s.studentId === selectedStatsStudent.id)}
+            badges={selectedStatsStudent.badges || []}
           />
         )}
 

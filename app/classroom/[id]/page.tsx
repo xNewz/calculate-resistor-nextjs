@@ -71,6 +71,11 @@ export default async function ClassroomDetailPage({ params }: ClassroomPageProps
           name: true,
           email: true,
           image: true,
+          badges: {
+            select: {
+              badgeId: true,
+            }
+          }
         },
       },
     },

@@ -31,6 +31,7 @@ interface StudentStatsModalProps {
     score: number;
     createdAt: Date | string;
   }[];
+  badges?: { badgeId: string }[];
 }
 
 export function StudentStatsModal({
@@ -40,6 +41,7 @@ export function StudentStatsModal({
   classroomName,
   assignments,
   submissions,
+  badges = [],
 }: StudentStatsModalProps) {
   // Memoize data calculations
   const { chartData, averagePercent, trend, trendDiff } = useMemo(() => {
@@ -213,6 +215,34 @@ export function StudentStatsModal({
                   </div>
                 </div>
               </div>
+
+              {/* Badges Section */}
+              {badges.length > 0 && (
+                <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
+                  <h4 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <Award className="size-4" /> เหรียญเกียรติยศ (Badges)
+                  </h4>
+                  <div className="flex flex-wrap gap-3">
+                    {badges.map((badge, idx) => {
+                      let badgeIcon = "🏆";
+                      let badgeName = badge.badgeId;
+                      let badgeColor = "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-200 dark:border-amber-500/30";
+                      
+                      if (badge.badgeId === "FIRST_PERFECT") {
+                        badgeIcon = "⭐";
+                        badgeName = "First Perfect Score";
+                      }
+                      
+                      return (
+                        <div key={idx} className={cn("px-3 py-1.5 rounded-full border text-xs font-bold flex items-center gap-1.5 shadow-sm", badgeColor)}>
+                          <span className="text-sm">{badgeIcon}</span>
+                          <span>{badgeName}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Chart Section */}
               <div className="bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 pt-6">
