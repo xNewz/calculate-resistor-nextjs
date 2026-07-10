@@ -78,6 +78,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
         questionCount: assignment.questionCount,
         questionMode: assignment.questionMode,
         isExam: assignment.isExam,
+        multimeterMode: assignment.multimeterMode,
       }}
     />
   );

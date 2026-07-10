@@ -67,6 +67,7 @@ interface AssignmentQuizProps {
     questionCount: number;
     questionMode?: string;
     isExam?: boolean;
+    multimeterMode?: string;
   };
 }
 
@@ -100,7 +101,7 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
       assignment.questionCount,
       assignment.questionMode || "INPUT",
       assignment.bandType,
-      (assignment as any).multimeterMode || "ALL"
+      assignment.multimeterMode || "ALL"
     );
   }, [userId, assignment]);
 
