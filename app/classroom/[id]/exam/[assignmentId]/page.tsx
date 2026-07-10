@@ -50,6 +50,6 @@ export default async function ExamPage({
   }
 
   return (
-    <ExamQuiz assignment={assignment as any} />
+    <ExamQuiz assignment={assignment as any} userId={session.userId} />
   );
 }

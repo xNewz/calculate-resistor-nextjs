@@ -12,6 +12,7 @@ import {
   generateResistorChoices,
 } from "@/lib/resistor";
 import { generateMultimeterChoices } from "@/lib/multimeter";
+import { generateSeededQuestions } from "@/lib/seededQuestions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -56,11 +57,13 @@ interface ExamQuizProps {
     allowMobile?: boolean;
     dueDate?: Date | string | null;
     questionMode?: string;
+    multimeterMode?: string;
   };
+  userId: string;
 }
 
 
-export default function ExamQuiz({ assignment }: ExamQuizProps) {
+export default function ExamQuiz({ assignment, userId }: ExamQuizProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -114,42 +117,16 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
 
   // Generate questions
   const generateQuestions = useCallback(() => {
-    const list: Question[] = [];
-    const type = assignment.assignmentType || "RESISTOR";
-    const mode = assignment.questionMode || "INPUT";
-
-    if (type === "MULTIMETER") {
-      for (let i = 0; i < assignment.questionCount; i++) {
-        const q = generateMultimeterQuestion();
-        const choices = mode === "CHOICE" ? generateMultimeterChoices(q.formatted, q.range.type) : undefined;
-        list.push({ formatted: q.formatted, multimeterData: q, choices });
-      }
-      return list;
-    }
-
-    const bands = parseInt(assignment.bandType, 10) as 4 | 5;
-    for (let i = 0; i < assignment.questionCount; i++) {
-      if (bands === 4) {
-        const first = digits[Math.floor(Math.random() * (digits.length - 1)) + 1];
-        const second = digits[Math.floor(Math.random() * digits.length)];
-        const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
-        const tol = tolerances[Math.floor(Math.random() * tolerances.length)];
-        const res = calculate4Band(first, second, mult, tol);
-        const choices = mode === "CHOICE" ? generateResistorChoices(res.formatted, 4) : undefined;
-        list.push({ bands: 4, colors: [first, second, mult, tol], ...res, choices });
-      } else {
-        const first = digits[Math.floor(Math.random() * (digits.length - 1)) + 1];
-        const second = digits[Math.floor(Math.random() * digits.length)];
-        const third = digits[Math.floor(Math.random() * digits.length)];
-        const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
-        const tol = tolerances[Math.floor(Math.random() * tolerances.length)];
-        const res = calculate5Band(first, second, third, mult, tol);
-        const choices = mode === "CHOICE" ? generateResistorChoices(res.formatted, 5) : undefined;
-        list.push({ bands: 5, colors: [first, second, third, mult, tol], ...res, choices });
-      }
-    }
-    return list;
-  }, [assignment]);
+    return generateSeededQuestions(
+      userId,
+      assignment.id,
+      assignment.assignmentType || "RESISTOR",
+      assignment.questionCount,
+      assignment.questionMode || "INPUT",
+      assignment.bandType,
+      assignment.multimeterMode || "ALL"
+    );
+  }, [assignment, userId]);
 
   const reportViolationToServer = async (type: string, details?: string) => {
     try {
@@ -477,7 +454,7 @@ export default function ExamQuiz({ assignment }: ExamQuizProps) {
     let isCorrect = false;
     if (cleanAnswer) {
       if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
-        const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
+        const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type as "DCV" | "ACV" | "OHM" | "DCmA");
         if (parsed !== null) {
           const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
           isCorrect = diff <= 0.001; 

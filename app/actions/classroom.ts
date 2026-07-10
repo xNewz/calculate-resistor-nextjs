@@ -157,6 +157,7 @@ export async function createAssignmentAction(
   const classroomId = formData.get("classroomId") as string;
   const dueDateStr = formData.get("dueDate") as string;
   const allowLateStr = formData.get("allowLate") as string;
+  const multimeterMode = formData.get("multimeterMode") as string || "ALL";
 
   if (!title || title.trim().length < 2) {
     return { success: false, error: "กรุณากรอกหัวข้อแบบฝึกหัดอย่างน้อย 2 ตัวอักษร" };
@@ -227,6 +228,7 @@ export async function createAssignmentAction(
         allowMobile,
         showSolutions,
         questionMode,
+        multimeterMode,
 
         classroomId,
       },
@@ -308,7 +310,8 @@ export async function submitQuizAction(
         assignment.assignmentType || "RESISTOR",
         assignment.questionCount,
         assignment.questionMode || "INPUT",
-        assignment.bandType
+        assignment.bandType,
+        assignment.multimeterMode || "ALL"
       );
 
     // Re-grade each answer on the server to prevent score tampering
@@ -322,7 +325,7 @@ export async function submitQuizAction(
 
       if (cleanAnswer && !attempt.isTimeout) {
         if (assignment.assignmentType === "MULTIMETER" && currentQuestion.multimeterData) {
-          const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type);
+          const parsed = parseMultimeterAnswer(cleanAnswer, currentQuestion.multimeterData.range.type as "DCV" | "ACV" | "OHM" | "DCmA");
           if (parsed !== null) {
             const diff = Math.abs(parsed - currentQuestion.multimeterData.value);
             isCorrect = diff <= 0.001;
@@ -512,6 +515,7 @@ export async function updateAssignmentAction(
   const allowMobileStr = formData.get("allowMobile") as string;
   const showSolutionsStr = formData.get("showSolutions") as string;
   const questionMode = formData.get("questionMode") as string || "INPUT";
+  const multimeterMode = formData.get("multimeterMode") as string || "ALL";
 
 
 
@@ -581,7 +585,7 @@ export async function updateAssignmentAction(
         allowMobile,
         showSolutions,
         questionMode,
-
+        multimeterMode,
       },
     });
 

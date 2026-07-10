@@ -99,7 +99,8 @@ export default function AssignmentQuiz({ classroomId, userId, assignment }: Assi
       assignment.assignmentType || "RESISTOR",
       assignment.questionCount,
       assignment.questionMode || "INPUT",
-      assignment.bandType
+      assignment.bandType,
+      (assignment as any).multimeterMode || "ALL"
     );
   }, [userId, assignment]);
 

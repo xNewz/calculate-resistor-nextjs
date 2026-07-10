@@ -73,6 +73,7 @@ model Assignment {
   showSolutions Boolean      @default(false)
   questionMode  String       @default("INPUT") // "INPUT" or "CHOICE"
 
+  multimeterMode String      @default("ALL") // "ALL", "V", "I", "R"
 
 
   classroomId   String

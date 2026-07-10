@@ -41,8 +41,17 @@ export function generateSeededResistorChoices(
 }
 
 // Deterministic question generator for multimeter
-export function generateSeededMultimeterQuestion(rng: SeededRandom): MultimeterQuestion {
-  const range = rng.choose(multimeterRanges);
+export function generateSeededMultimeterQuestion(rng: SeededRandom, mode: string = "ALL"): MultimeterQuestion {
+  let allowedRanges = multimeterRanges;
+  if (mode === "V") {
+    allowedRanges = multimeterRanges.filter(r => r.type === "DCV" || r.type === "ACV");
+  } else if (mode === "I") {
+    allowedRanges = multimeterRanges.filter(r => r.type === "DCmA");
+  } else if (mode === "R") {
+    allowedRanges = multimeterRanges.filter(r => r.type === "OHM");
+  }
+
+  const range = rng.choose(allowedRanges);
   let value = 0;
   let pointerValue = 0;
 
@@ -52,9 +61,15 @@ export function generateSeededMultimeterQuestion(rng: SeededRandom): MultimeterQ
     pointerValue = rng.choose(ohmTicks);
     value = pointerValue * range.maxScale;
   } else {
-    // DCV / ACV
-    if (range.maxScale === 10) {
+    // DCV / ACV / DCmA
+    if (range.maxScale === 2.5) {
+      pointerValue = rng.nextInt(0, 50) * 0.05;
+      pointerValue = Math.round(pointerValue * 100) / 100;
+    } else if (range.maxScale === 10) {
       pointerValue = rng.nextInt(0, 50) * 0.2;
+      pointerValue = Math.round(pointerValue * 10) / 10;
+    } else if (range.maxScale === 25) {
+      pointerValue = rng.nextInt(0, 50) * 0.5;
       pointerValue = Math.round(pointerValue * 10) / 10;
     } else if (range.maxScale === 50) {
       pointerValue = rng.nextInt(0, 50);
@@ -72,17 +87,17 @@ export function generateSeededMultimeterQuestion(rng: SeededRandom): MultimeterQ
   };
 }
 
-// Deterministic choices generator for multimeter
 export function generateSeededMultimeterChoices(
   correctFormatted: string, 
-  correctRangeType: "DCV" | "ACV" | "OHM", 
-  rng: SeededRandom
+  correctRangeType: "DCV" | "ACV" | "OHM" | "DCmA", 
+  rng: SeededRandom,
+  mode: string = "ALL"
 ): string[] {
   const set = new Set<string>([correctFormatted]);
   let attempts = 0;
   while (set.size < 4 && attempts < 100) {
     attempts++;
-    const q = generateSeededMultimeterQuestion(rng);
+    const q = generateSeededMultimeterQuestion(rng, mode);
     if (q.range.type === correctRangeType) {
       set.add(q.formatted);
     }
@@ -90,14 +105,14 @@ export function generateSeededMultimeterChoices(
   return rng.shuffle(Array.from(set));
 }
 
-// Main function to generate deterministic assignment/exam questions list
 export function generateSeededQuestions(
   studentId: string,
   assignmentId: string,
   assignmentType: string,
   questionCount: number,
   questionMode: string,
-  bandType: string
+  bandType: string,
+  multimeterMode: string = "ALL"
 ) {
   const seed = `${studentId}-${assignmentId}`;
   const rng = new SeededRandom(seed);
@@ -105,9 +120,9 @@ export function generateSeededQuestions(
 
   if (assignmentType === "MULTIMETER") {
     for (let i = 0; i < questionCount; i++) {
-      const q = generateSeededMultimeterQuestion(rng);
+      const q = generateSeededMultimeterQuestion(rng, multimeterMode);
       const choices = questionMode === "CHOICE" 
-        ? generateSeededMultimeterChoices(q.formatted, q.range.type, rng) 
+        ? generateSeededMultimeterChoices(q.formatted, q.range.type as "DCV" | "ACV" | "OHM" | "DCmA", rng, multimeterMode) 
         : undefined;
       list.push({
         formatted: q.formatted,

@@ -682,7 +682,7 @@ export default function ClassroomDetail({
                               </Badge>
                             )}
                             <Badge variant="outline" className="border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
-                              {assignment.assignmentType === "MULTIMETER" ? "มัลติมิเตอร์" : `${assignment.bandType} แถบสี`}
+                              {assignment.assignmentType === "MULTIMETER" ? `มัลติมิเตอร์${assignment.multimeterMode && assignment.multimeterMode !== "ALL" ? ` (${assignment.multimeterMode})` : ""}` : `${assignment.bandType} แถบสี`}
                             </Badge>
                             <Badge variant="outline" className="border-zinc-300 dark:border-zinc-700 bg-zinc-100/30 dark:bg-zinc-800/30 text-zinc-700 dark:text-zinc-300 text-[10px] py-0 px-2.5 h-5 rounded-full font-semibold">
                               {assignment.questionMode === "CHOICE" ? "4 ตัวเลือก" : "แบบกรอก"}
@@ -1073,7 +1073,20 @@ export default function ClassroomDetail({
                         </select>
                       </div>
                     ) : (
-                      <input type="hidden" name="bandType" value="4" />
+                      <div className="space-y-1.5">
+                        <Label htmlFor="multimeterMode" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">โหมดมัลติมิเตอร์</Label>
+                        <select
+                          id="multimeterMode"
+                          name="multimeterMode"
+                          className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-750/50 cursor-pointer"
+                        >
+                          <option value="ALL">สุ่มทั้งหมด (V, I, R)</option>
+                          <option value="V">เฉพาะโวลต์ (DCV, ACV)</option>
+                          <option value="I">เฉพาะกระแส (DCmA)</option>
+                          <option value="R">เฉพาะโอห์ม (Ω)</option>
+                        </select>
+                        <input type="hidden" name="bandType" value="4" />
+                      </div>
                     )}
 
                       <div className="space-y-1.5 col-span-2 sm:col-span-1">
@@ -1510,7 +1523,21 @@ export default function ClassroomDetail({
                         </select>
                       </div>
                     ) : (
-                      <input type="hidden" name="bandType" value={editingAssignment.bandType || "4"} />
+                      <div className="space-y-1.5">
+                        <Label htmlFor="edit-multimeterMode" className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">โหมดมัลติมิเตอร์</Label>
+                        <select
+                          id="edit-multimeterMode"
+                          name="multimeterMode"
+                          defaultValue={editingAssignment.multimeterMode || "ALL"}
+                          className="w-full h-10 px-2 bg-zinc-50/60 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs rounded-lg"
+                        >
+                          <option value="ALL">สุ่มทั้งหมด (V, I, R)</option>
+                          <option value="V">เฉพาะโวลต์ (DCV, ACV)</option>
+                          <option value="I">เฉพาะกระแส (DCmA)</option>
+                          <option value="R">เฉพาะโอห์ม (Ω)</option>
+                        </select>
+                        <input type="hidden" name="bandType" value={editingAssignment.bandType || "4"} />
+                      </div>
                     )}
 
                       <div className="space-y-1.5 col-span-2 sm:col-span-1">
