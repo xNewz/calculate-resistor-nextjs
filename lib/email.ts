@@ -60,13 +60,13 @@ export async function sendAssignmentNotification(
 
   const dueDateText = assignmentDetails.dueDate
     ? new Date(assignmentDetails.dueDate).toLocaleString("th-TH", {
-        timeZone: "Asia/Bangkok",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }) + " น."
+      timeZone: "Asia/Bangkok",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }) + " น."
     : "ไม่มีกำหนดส่ง";
 
   // Base URL for links (usually set in env, fallback to localhost for dev)
@@ -102,7 +102,7 @@ export async function sendAssignmentNotification(
 
       <a href="${link}" style="display: inline-block; background-color: ${assignmentDetails.isExam ? '#ef4444' : '#4f46e5'
     }; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; margin-top: 10px;">
-        เข้าสู่ห้องเรียนเพื่อทำแบบทดสอบ
+        คลิกที่นี่เพื่อเข้าสู่ห้องเรียน
       </a>
       
       <p style="margin-top: 30px; font-size: 12px; color: #9ca3af;">
