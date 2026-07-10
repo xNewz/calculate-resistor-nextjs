@@ -1009,7 +1009,7 @@ export default function ClassroomDetail({
 
           {/* Leaderboard Tab */}
           <TabsContent value="leaderboard" className="mt-6 focus-visible:outline-none focus-visible:ring-0">
-            <LeaderboardTab enrollments={enrollments} />
+            <LeaderboardTab enrollments={enrollments} currentUserId={user.id} />
           </TabsContent>
         </Tabs>
 
