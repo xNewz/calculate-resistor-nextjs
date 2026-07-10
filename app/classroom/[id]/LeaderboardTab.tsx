@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Medal, Award, Flame } from "lucide-react";
+import { Badge as UiBadge } from "@/components/ui/badge";
+import { Trophy, Medal, Award, Flame, Info, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BADGES } from "@/lib/gamification";
 
@@ -13,13 +13,23 @@ interface LeaderboardTabProps {
 }
 
 export function LeaderboardTab({ enrollments, currentUserId }: LeaderboardTabProps) {
+  const [showBadgesModal, setShowBadgesModal] = useState(false);
+
   // Sort enrollments by EXP descending
   const sortedEnrollments = [...enrollments].sort((a, b) => (b.exp || 0) - (a.exp || 0));
 
   return (
     <div className="space-y-6 animate-fade-in-up">
       <Card className="bg-white/90 dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-sm">
-        <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-6 text-center">
+        <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-6 text-center relative">
+          <div className="absolute right-4 top-4">
+            <button
+              onClick={() => setShowBadgesModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors"
+            >
+              <Award className="size-4" /> ดูเหรียญรางวัลทั้งหมด
+            </button>
+          </div>
           <div className="flex justify-center mb-4">
             <div className="size-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
               <Trophy className="size-8 text-amber-500" />
@@ -138,12 +148,12 @@ export function LeaderboardTab({ enrollments, currentUserId }: LeaderboardTabPro
                             )}>
                               {exp.toLocaleString()}
                             </span>
-                            <Badge variant="outline" className={cn(
+                            <UiBadge variant="outline" className={cn(
                                "uppercase text-[9px] px-1.5 py-0 h-4 font-bold rounded-sm border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400",
                                rank === 1 && "border-amber-200 text-amber-600 dark:border-amber-900 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/50"
                             )}>
                               EXP
-                            </Badge>
+                            </UiBadge>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -155,6 +165,79 @@ export function LeaderboardTab({ enrollments, currentUserId }: LeaderboardTabPro
           </div>
         </CardContent>
       </Card>
+
+      {/* All Badges Modal */}
+      {showBadgesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <Card className="w-full max-w-lg shadow-2xl bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+            <CardHeader className="border-b border-zinc-100 dark:border-zinc-800 pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Award className="size-5 text-amber-500" /> ทำเนียบเหรียญเกียรติยศ
+                </CardTitle>
+                <button 
+                  onClick={() => setShowBadgesModal(false)}
+                  className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-500"
+                >
+                  ✕
+                </button>
+              </div>
+              <CardDescription>
+                เงื่อนไขและวิธีได้รับเหรียญตรา (Badges) ในระบบ
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-4 max-h-[60vh] overflow-y-auto">
+              <div className="space-y-3">
+                {Object.entries(BADGES).map(([badgeId, config]) => {
+                  // Check if current user has this badge
+                  const currentUserEnrollment = enrollments.find(e => e.userId === currentUserId);
+                  const hasBadge = currentUserEnrollment?.user?.badges?.some((b: { badgeId: string }) => b.badgeId === badgeId);
+
+                  return (
+                    <div 
+                      key={badgeId} 
+                      className={cn(
+                        "flex items-start gap-4 p-4 rounded-xl border transition-all",
+                        hasBadge 
+                          ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-500/5 dark:border-emerald-500/20" 
+                          : "bg-zinc-50 border-zinc-200 dark:bg-zinc-900/50 dark:border-zinc-800"
+                      )}
+                    >
+                      <div className={cn(
+                        "flex items-center justify-center size-12 shrink-0 rounded-full border shadow-sm text-2xl",
+                        hasBadge ? config.colorClass : "bg-white dark:bg-zinc-800 grayscale opacity-60"
+                      )}>
+                        {config.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className={cn(
+                            "font-bold text-sm",
+                            hasBadge ? "text-emerald-800 dark:text-emerald-400" : "text-zinc-700 dark:text-zinc-300"
+                          )}>
+                            {config.name}
+                          </h4>
+                          {hasBadge && (
+                            <UiBadge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 text-[10px] px-1.5 py-0 h-4">
+                              <CheckCircle2 className="size-3 mr-1 inline" /> ได้รับแล้ว
+                            </UiBadge>
+                          )}
+                        </div>
+                        <p className={cn(
+                          "text-xs mt-1",
+                          hasBadge ? "text-emerald-600/80 dark:text-emerald-400/80" : "text-zinc-500 dark:text-zinc-400"
+                        )}>
+                          {config.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
