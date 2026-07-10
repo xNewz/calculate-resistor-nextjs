@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { downloadStudentGradebookCsv } from "@/lib/exportCsv";
+import { BADGES } from "@/lib/gamification";
 
 interface StudentStatsModalProps {
   isOpen: boolean;
@@ -224,19 +225,17 @@ export function StudentStatsModal({
                   </h4>
                   <div className="flex flex-wrap gap-3">
                     {badges.map((badge, idx) => {
-                      let badgeIcon = "🏆";
-                      let badgeName = badge.badgeId;
-                      let badgeColor = "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-200 dark:border-amber-500/30";
-                      
-                      if (badge.badgeId === "FIRST_PERFECT") {
-                        badgeIcon = "⭐";
-                        badgeName = "First Perfect Score";
-                      }
+                      const badgeConfig = BADGES[badge.badgeId];
+                      if (!badgeConfig) return null;
                       
                       return (
-                        <div key={idx} className={cn("px-3 py-1.5 rounded-full border text-xs font-bold flex items-center gap-1.5 shadow-sm", badgeColor)}>
-                          <span className="text-sm">{badgeIcon}</span>
-                          <span>{badgeName}</span>
+                        <div 
+                          key={idx} 
+                          title={badgeConfig.description}
+                          className={cn("px-3 py-1.5 rounded-full border text-xs font-bold flex items-center gap-1.5 shadow-sm", badgeConfig.colorClass)}
+                        >
+                          <span className="text-sm">{badgeConfig.icon}</span>
+                          <span>{badgeConfig.name}</span>
                         </div>
                       )
                     })}

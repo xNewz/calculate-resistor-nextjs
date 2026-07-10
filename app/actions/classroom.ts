@@ -406,22 +406,39 @@ export async function submitQuizAction(
       }
     });
 
-    // Check for "FIRST_PERFECT" badge
+    // Check for Gamification Badges
+    const newBadges: string[] = [];
+
+    // 1. FIRST_PERFECT badge
     if (calculatedScore === assignment.questionCount && assignment.questionCount > 0) {
+      newBadges.push("FIRST_PERFECT");
+    }
+
+    // 2. EXAM_PASSER badge
+    if (assignment.isExam && assignment.questionCount > 0 && (calculatedScore / assignment.questionCount) >= 0.8) {
+      newBadges.push("EXAM_PASSER");
+    }
+
+    // 3. HARD_WORKER badge
+    const subCount = await prisma.submission.count({
+      where: {
+        studentId: session.userId,
+        assignment: { classroomId: assignment.classroomId }
+      }
+    });
+    // Add +1 because the current submission is created but might not be fully aggregated if it's the 3rd one? Actually we just created it at line 382, so subCount will include it.
+    if (subCount >= 3) {
+      newBadges.push("HARD_WORKER");
+    }
+
+    // Award badges if not already awarded
+    for (const badgeId of newBadges) {
       const existingBadge = await prisma.userBadge.findUnique({
-        where: {
-          userId_badgeId: {
-            userId: session.userId,
-            badgeId: "FIRST_PERFECT",
-          }
-        }
+        where: { userId_badgeId: { userId: session.userId, badgeId } }
       });
       if (!existingBadge) {
         await prisma.userBadge.create({
-          data: {
-            userId: session.userId,
-            badgeId: "FIRST_PERFECT"
-          }
+          data: { userId: session.userId, badgeId }
         });
       }
     }

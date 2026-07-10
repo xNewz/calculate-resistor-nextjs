@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Award, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BADGES } from "@/lib/gamification";
 
 interface LeaderboardTabProps {
   enrollments: any[];
@@ -104,6 +105,27 @@ export function LeaderboardTab({ enrollments, currentUserId }: LeaderboardTabPro
                                 <span className="text-xs text-orange-500 dark:text-orange-400 flex items-center gap-1 font-medium mt-0.5">
                                   <Flame className="size-3" /> มาแรง
                                 </span>
+                              )}
+                              {enrollment.user.badges && enrollment.user.badges.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {enrollment.user.badges.map((b: { badgeId: string }, i: number) => {
+                                    const badgeConfig = BADGES[b.badgeId];
+                                    if (!badgeConfig) return null;
+                                    
+                                    return (
+                                      <div 
+                                        key={i} 
+                                        title={`${badgeConfig.name} (${badgeConfig.description})`} 
+                                        className={cn(
+                                          "flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-sm font-bold shadow-sm border",
+                                          badgeConfig.colorClass
+                                        )}
+                                      >
+                                        {badgeConfig.icon} {badgeConfig.name}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               )}
                             </div>
                           </div>
